@@ -25,7 +25,7 @@ export default function Process() {
                         alt='boy'
                         fill
                         objectFit='contain'
-                        src={`${setupImage}images/boy-laptop.webp`}
+                        src={`${setupImage}images/boy-laptop.png`}
                     />
                 </div>
             </div>

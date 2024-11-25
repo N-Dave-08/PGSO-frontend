@@ -19,7 +19,7 @@ export default function CTA() {
                     alt='worker'
                     fill
                     objectFit='cover'
-                    src={`${setupImage}images/welding.webp`}
+                    src={`${setupImage}images/welding.png`}
                 />
                 </Parallax>
             </section>
