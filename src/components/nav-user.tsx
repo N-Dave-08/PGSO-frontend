@@ -45,7 +45,7 @@ export function NavUser({
                             className="data-[state=open]:bg-white/10 data-[state=open]:text-base-content"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={`${setupImage}images/${user.avatar}`} alt={user.name} />
+                                <AvatarImage src={`${setupImage}images/morty.png`} alt={user.name} />
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
