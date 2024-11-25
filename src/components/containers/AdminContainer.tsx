@@ -2,7 +2,11 @@ import React from 'react'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import AdminSidebar from '@/components/sidebars/AdminSidebar'
 
-export default function AdminContainer({ children }: any) {
+interface AdminContainerProps { 
+    children: React.ReactNode; 
+}
+
+export default function AdminContainer({ children }: AdminContainerProps) {
     return (
         <SidebarProvider>
             <AdminSidebar />
