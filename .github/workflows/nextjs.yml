@@ -29,7 +29,7 @@ name: Build
 name: Deploy
       uses: hostinger/deploy-to-hostinger@v1
       with:
-        ftp_host: your-ftp-host
-        ftp_user: your-ftp-username
-        ftp_password: your-ftp-password
-        base_path: /path/to/your/subdomain
+        ftp_host: ftp://145.223.108.80
+        ftp_user: u665838367.pgso.bpc-bsis4d.com
+        ftp_password: o![EXNdJL[Z@+=7B
+        base_path: /public_html/dev
