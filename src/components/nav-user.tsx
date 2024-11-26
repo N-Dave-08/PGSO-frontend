@@ -24,15 +24,7 @@ import {
 } from "@/components/ui/sidebar"
 import { setupImage } from "@/helpers/setup"
 
-export function NavUser({
-    user,
-}: {
-    user: {
-        name: string
-        email: string
-        avatar: string
-    }
-}) {
+export function NavUser() {
     const { isMobile } = useSidebar()
 
     return (
@@ -45,12 +37,12 @@ export function NavUser({
                             className="data-[state=open]:bg-white/10 data-[state=open]:text-base-content"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={`${setupImage}images/morty.png`} alt={user.name} />
+                                <AvatarImage src={`${setupImage}images/morty.png`} alt="user" />
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">{user.name}</span>
-                                <span className="truncate text-xs">{user.email}</span>
+                                <span className="truncate font-semibold">John Doe</span>
+                                <span className="truncate text-xs">johndoe@gmail.com</span>
                             </div>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>

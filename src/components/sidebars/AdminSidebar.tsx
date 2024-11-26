@@ -15,7 +15,6 @@ import {
 import { usePathname } from 'next/navigation'
 import { routesData } from '@/helpers/routes'
 import { NavUser } from '@/components/nav-user'
-import { userData } from '@/helpers/mockData'
 import Link from 'next/link'
 
 export default function AdminSidebar() {
@@ -25,7 +24,7 @@ export default function AdminSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <NavUser user={userData.admin} />
+        <NavUser />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
