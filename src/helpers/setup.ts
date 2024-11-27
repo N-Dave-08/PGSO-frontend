@@ -1,1 +1,1 @@
-export const setupImage = "/"
+export const setupImage = "./"
