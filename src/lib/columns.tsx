@@ -71,6 +71,16 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
   },
   {
+    accessorKey: "department",
+    header: "Department",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("department")}</div>,
+  },
+  {
+    accessorKey: "division",
+    header: "Division",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("division")}</div>,
+  },
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
@@ -78,6 +88,24 @@ export const columns: ColumnDef<User>[] = [
         {row.getValue("status")}
       </div>
     ),
+  },
+  {
+    accessorKey: "dateCreated",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date Created
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dateCreated"))
+      return <div>{date.toLocaleString()}</div>
+    },
   },
   {
     accessorKey: "lastLogin",

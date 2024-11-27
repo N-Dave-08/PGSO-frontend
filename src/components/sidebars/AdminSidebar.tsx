@@ -36,6 +36,7 @@ export default function AdminSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={path === route.link}
+                    className='text-base-content/70'
                   >
                     <Link href={route.link}>
                       {route.icon}

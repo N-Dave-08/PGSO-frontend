@@ -80,7 +80,7 @@ export function UserTable() {
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto bg-primary text-primary-content border-primary hover:bg-primary/90">
+            <Button variant="secondary" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -105,14 +105,14 @@ export function UserTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border border-white/10 shadow-lg">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-base-300">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="first:rounded-tl-md last:rounded-tr-md">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -185,7 +185,7 @@ export function UserTable() {
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
-          <SelectContent side="top">
+          <SelectContent side="right">
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}

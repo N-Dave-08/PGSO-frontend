@@ -1,35 +1,49 @@
-# Sample workflow for building and deploying a Next.js site to GitHub Pages
-#
-# To get started with Next.js see: https://nextjs.org/docs/getting-started
-#
-name: Deploy to Hostinger
+name: Deploy Next.js to Hostinger
 
 on:
   push:
     branches:
-      
-main
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      
-name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      
-name: Build
-      run: |
-        npm install
-        npm run build
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-      
-name: Deploy
-      uses: hostinger/deploy-to-hostinger@v1
-      with:
-        ftp_host: ftp://145.223.108.80
-        ftp_user: u665838367.pgso.bpc-bsis4d.com
-        ftp_password: o![EXNdJL[Z@+=7B
-        base_path: /public_html/dev
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Export
+        run: npm run export
+
+      - name: Upload to Hostinger
+        uses: actions/upload-artifact@v2
+        with:
+          name: nextjs-build
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: nextjs-build
+          path: out
+
+      - name: Upload to Hostinger
+        run: |
+          lftp -c "set ftp:ssl-allow on; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev out/ ./ --ignore-time --parallel=10"
