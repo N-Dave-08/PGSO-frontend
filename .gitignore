@@ -43,6 +43,6 @@ next-env.d.ts
 next.config.ts
 
 #setup image
-/helper/setup.ts
+/src/helpers/setup.ts
 
 
