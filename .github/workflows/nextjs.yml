@@ -46,5 +46,5 @@ jobs:
 
       - name: Upload to Hostinger
         run: |
-          lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev out/ ./ --ignore-time --parallel=10"
+          lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u u665838367.pgso.bpc-bsis4d.com,o![EXNdJL[Z@+=7B ftp://145.223.108.80; mirror -Rev out/ ./ --ignore-time --parallel=10"
 
