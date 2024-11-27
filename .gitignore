@@ -40,7 +40,7 @@ yarn-error.log*
 next-env.d.ts
 
 #next.config.ts
-next.config.ts
+/next.config.ts
 
 #setup image
 /src/helpers/setup.ts
