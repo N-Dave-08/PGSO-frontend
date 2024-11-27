@@ -24,9 +24,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Export
-        run: npm run export
-
       - name: Upload to Hostinger
         uses: actions/upload-artifact@v3
         with:
