@@ -5,7 +5,8 @@ import {
     Building2, 
     Network, 
     FileText, 
-    Settings 
+    Settings,
+    ChartBarStacked
 } from 'lucide-react'
 
 interface RouteProps {
@@ -28,6 +29,11 @@ export const routesData: RoutesDataProps = {
         icon: <ClipboardList />,
         name: "Requests",
         link: "/admin/requests"
+    },
+    CATEGORIES: {
+        icon: <ChartBarStacked />,
+        name: "Categories",
+        link: "/admin/categories"
     },
     USERS: {
         icon: <Users />,

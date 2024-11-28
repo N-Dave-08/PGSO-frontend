@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -10,9 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User } from "@/helpers/user-data"
+import { Department } from "@/helpers/department-data"
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Department>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -51,43 +51,24 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "email",
+    accessorKey: "acronym",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Acronym
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue("acronym")}</div>,
   },
   {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
-  },
-  {
-    accessorKey: "department",
-    header: "Department",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("department")}</div>,
-  },
-  {
-    accessorKey: "division",
-    header: "Division",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("division")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className={row.getValue("status") === "Active" ? "text-green-600" : "text-red-600"}>
-        {row.getValue("status")}
-      </div>
-    ),
+    accessorKey: "description",
+    header: "Desription",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
   },
   {
     accessorKey: "dateCreated",
@@ -108,28 +89,10 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "lastLogin",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Last Login
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("lastLogin"))
-      return <div>{date.toLocaleString()}</div>
-    },
-  },
-  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original
+      const department = row.original
 
       return (
         <DropdownMenu>
@@ -143,12 +106,18 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
+              onClick={() => navigator.clipboard.writeText(department.id)}
             >
-              Copy user ID
+              Copy Department ID
             </DropdownMenuItem>
-            <DropdownMenuItem>View user details</DropdownMenuItem>
-            <DropdownMenuItem>Edit user</DropdownMenuItem>
+            <DropdownMenuItem>
+              <PenSquare />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Trash />
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

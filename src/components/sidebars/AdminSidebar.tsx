@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sidebar'
 import { usePathname } from 'next/navigation'
 import { routesData } from '@/helpers/routes'
-import { NavUser } from '@/components/nav-user'
+import { NavUser } from '@/components/navbars/nav-user'
 import Link from 'next/link'
 
 export default function AdminSidebar() {

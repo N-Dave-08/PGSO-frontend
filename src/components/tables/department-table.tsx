@@ -13,7 +13,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -38,10 +37,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { columns } from "@/lib/columns/user-columns"
-import { userData } from "@/helpers/user-data"
+import { columns } from "@/lib/columns/department-columns"
+import { departmentData } from "@/helpers/department-data"
 
-export function UserTable() {
+export function DepartmentTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -49,7 +48,7 @@ export function UserTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: userData,
+    data: departmentData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

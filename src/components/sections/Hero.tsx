@@ -1,5 +1,6 @@
 import React from 'react'
 import AnimatedBackground from '@/components/AnimatedBackground'
+import { Button } from '@/components/ui/button'
 
 export default function Hero() {
     return (
@@ -10,7 +11,7 @@ export default function Hero() {
                     <h1 className='text-5xl font-bold'>Provincial General Service Office Request Management System</h1>
                     <p className='text-xl'>Optimizing Government Services for Faster Request Processing</p>
                 </div>
-                <button className="btn">Get Started</button>
+                <Button>Get Started</Button>
             </section>
         </>
 
