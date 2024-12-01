@@ -17,10 +17,10 @@ interface LayoutProps {
 }
 
 export default function Layout({
-    head = null,
-    admin = null,
-    staff = null,
-    personnel = null
+    head,
+    admin,
+    staff,
+    personnel
 }: LayoutProps) {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
