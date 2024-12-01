@@ -10,13 +10,13 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
 }
 
 interface LayoutProps {
-    head: any
-    admin: any
-    staff: any
-    personnel: any
+    head: React.ReactNode
+    admin: React.ReactNode
+    staff: React.ReactNode
+    personnel: React.ReactNode
 }
 
-export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
+const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
@@ -51,3 +51,5 @@ export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
         </SidebarProvider>
     )
 }
+
+export default Layout;
