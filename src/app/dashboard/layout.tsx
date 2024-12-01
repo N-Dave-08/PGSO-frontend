@@ -51,7 +51,7 @@ export default function Layout({
         <SidebarProvider>
             <AdminSidebar />
             <main className='p-4 flex flex-col w-full'>
-                {role === 'admin' ? admin : role === 'head' ? head : role === 'staff' ? staff : personnel}
+                {role ? roleComponents[role] : null}
             </main>
         </SidebarProvider>
     )
