@@ -16,7 +16,7 @@ interface LayoutProps {
     personnel: string
 }
 
-export default function layout({ head, admin, staff, personnel }: LayoutProps) {
+export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
