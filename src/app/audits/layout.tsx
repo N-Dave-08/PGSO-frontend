@@ -16,7 +16,7 @@ interface LayoutProps {
     personnel: React.ReactNode;
 }
 
-const Layout: React.FC<Readonly<LayoutProps>> = ({ head, admin, staff, personnel }) => {
+const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
