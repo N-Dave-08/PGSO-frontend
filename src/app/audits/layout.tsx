@@ -9,50 +9,33 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
     return role
 }
 
-interface LayoutProps {
-    head: React.ReactNode
-    admin: React.ReactNode
-    staff: React.ReactNode
-    personnel: React.ReactNode
-}
+type Role = 'head' | 'admin' | 'staff' | 'personnel' | null
 
 export default function Layout({
-    head,
-    admin,
-    staff,
-    personnel
-}: LayoutProps) {
-    const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    const [role, setRole] = useState<Role>(null)
 
     useEffect(() => {
         const fetchSession = async () => {
             const session = await getSession()
             if (session) {
                 const userRole = checkUserRole(session.role);
-                setRole(
-                    userRole === 'head' ||
-                        userRole === 'admin' ||
-                        userRole === 'staff' ||
-                        userRole === 'personnel' ? userRole : null
-                );
+                setRole(userRole as Role);
             }
         }
         fetchSession()
     }, [])
 
-    const roleComponents = {
-        head: head,
-        admin: admin,
-        staff: staff,
-        personnel: personnel,
-    };
-
     return (
         <SidebarProvider>
             <AdminSidebar />
             <main className='p-4 flex flex-col w-full'>
-                {role ? roleComponents[role] : null}
+                {children}
             </main>
         </SidebarProvider>
     )
 }
+
