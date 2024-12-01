@@ -10,13 +10,13 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
 }
 
 interface LayoutProps {
-    head: React.ReactNode
-    admin: React.ReactNode
-    staff: React.ReactNode
-    personnel: React.ReactNode
+    head: React.ReactNode;
+    admin: React.ReactNode;
+    staff: React.ReactNode;
+    personnel: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
+const Layout: React.FC<Readonly<LayoutProps>> = ({ head, admin, staff, personnel }) => {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
@@ -26,9 +26,9 @@ const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
                 const userRole = checkUserRole(session.role);
                 setRole(
                     userRole === 'head' ||
-                        userRole === 'admin' ||
-                        userRole === 'staff' ||
-                        userRole === 'personnel' ? userRole : null
+                    userRole === 'admin' ||
+                    userRole === 'staff' ||
+                    userRole === 'personnel' ? userRole : null
                 );
             }
         }
