@@ -10,7 +10,6 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
 }
 
 interface LayoutProps {
-    children: React.ReactNode
     head?: React.ReactNode
     admin?: React.ReactNode
     staff?: React.ReactNode
@@ -18,7 +17,6 @@ interface LayoutProps {
 }
 
 export default function Layout({
-    children,
     head,
     admin,
     staff,
@@ -54,7 +52,6 @@ export default function Layout({
             <AdminSidebar />
             <main className='p-4 flex flex-col w-full'>
                 {role ? roleComponents[role] : null}
-                {children}
             </main>
         </SidebarProvider>
     )
