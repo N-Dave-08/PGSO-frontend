@@ -23,41 +23,41 @@ export const routesData: RoutesDataProps = {
     DASHBOARD: {
         icon: <LayoutDashboard />,
         name: "Dashboard",
-        link: "/admin/dashboard"
+        link: "/dashboard"
     },
     REQUESTS: {
         icon: <ClipboardList />,
         name: "Requests",
-        link: "/admin/requests"
+        link: "/requests"
     },
     CATEGORIES: {
         icon: <ChartBarStacked />,
         name: "Categories",
-        link: "/admin/categories"
+        link: "/categories"
     },
     USERS: {
         icon: <Users />,
         name: "Users",
-        link: "/admin/users"
+        link: "/users"
     },
     DEPARTMENTS: {
         icon: <Building2 />,
         name: "Departments",
-        link: "/admin/departments"
+        link: "/departments"
     },
     DIVISIONS: {
         icon: <Network />,
         name: "Divisions",
-        link: "/admin/divisions"
+        link: "/divisions"
     },
     AUDIT_LOGS: {
         icon: <FileText />,
         name: "Audit Logs",
-        link: "/admin/audits"
+        link: "/audits"
     },
     SETINGS: {
         icon: <Settings />,
         name: "Settings",
-        link: "/admin/settings"
+        link: "/settings"
     }
 }
