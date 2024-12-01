@@ -5,8 +5,15 @@ import { getSession } from '@/actions/auth'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import AdminSidebar from '@/components/sidebars/AdminSidebar'
 
-function checkUserRole(role) {
+function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
     return role
+}
+
+interface LayoutProps {
+    head: React.ReactNode
+    admin: React.ReactNode
+    staff: React.ReactNode
+    personnel: React.ReactNode
 }
 
 export default function Layout({
@@ -14,8 +21,8 @@ export default function Layout({
     admin,
     staff,
     personnel
-}) {
-    const [role, setRole] = useState(null)
+}: LayoutProps) {
+    const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
         const fetchSession = async () => {
