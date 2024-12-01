@@ -26,9 +26,11 @@ export default function Layout({
 
     useEffect(() => {
         const fetchSession = async () => {
-            const session = await getSession()
+            const session = getSession()
+            console.log("Session:", session);
             if (session) {
                 const userRole = checkUserRole(session.role);
+                console.log("User Role:", userRole);
                 setRole(
                     userRole === 'head' ||
                         userRole === 'admin' ||

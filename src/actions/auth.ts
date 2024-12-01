@@ -44,10 +44,10 @@ export async function authenticate(formData: FormData): Promise<AuthResult> {
     if (user) {
         Cookies.set('session', JSON.stringify({ email: user.email, role: user.role }), {
             expires: 7,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production' ? true : false,
             path: '/'
         })
-
+        console.log("Session set:", { email: user.email, role: user.role })
         return { success: true, message: 'log in successful', role: user.role }
     }
     return { success: false, message: 'invalid email or password' }
@@ -59,5 +59,6 @@ export function logout() {
 
 export function getSession(): { email: string; role: 'head' | 'admin' | 'staff' | 'personnel' } | null {
     const session = Cookies.get('session')
+    console.log("Retrieved session cookie:", session)
     return session ? JSON.parse(session) : null
 }

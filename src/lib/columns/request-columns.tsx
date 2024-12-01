@@ -67,23 +67,23 @@ export const columns: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "role",
-    header: "Desription",
+    header: "Role",
     cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
   },
   {
     accessorKey: "category",
-    header: "Desription",
+    header: "Category",
     cell: ({ row }) => <div className="capitalize">{row.getValue("category")}</div>,
   },
   {
     accessorKey: "priority",
-    header: "Desription",
+    header: "Priority",
     cell: ({ row }) => <div className="capitalize">{row.getValue("priority")}</div>,
   },
   {
-    accessorKey: "assignedTo",
-    header: "Desription",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("assignedTo")}</div>,
+    accessorKey: "assignTo",
+    header: "Assigned To",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("assignTo")}</div>,
   },
   {
     accessorKey: "requested",
@@ -99,7 +99,7 @@ export const columns: ColumnDef<Request>[] = [
       )
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
+      const date = new Date(row.getValue("requested"))
       return <div>{date.toLocaleString()}</div>
     },
   },
