@@ -9,17 +9,19 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
     return role
 }
 
+interface LayoutProps {
+    head: React.ReactNode
+    admin: React.ReactNode
+    staff: React.ReactNode
+    personnel: React.ReactNode
+}
+
 export default function Layout({
     head,
     admin,
     staff,
     personnel
-}: {
-    head: React.ReactNode
-    admin: React.ReactNode
-    staff: React.ReactNode
-    personnel: React.ReactNode
-}) {
+}: LayoutProps) {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
