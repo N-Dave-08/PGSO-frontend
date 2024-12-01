@@ -17,8 +17,6 @@ import { useRouter } from 'next/navigation'
 import { authenticate } from '@/actions/auth'
 
 export default function LoginModal() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [open, setOpen] = useState(false)
     const [isSecured, setIsSecured] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -60,7 +58,6 @@ export default function LoginModal() {
                                 type="email"
                                 placeholder="Enter your email"
                                 className='pl-10'
-                                value={email}
                                 required
                             />
                         </div>
@@ -75,7 +72,6 @@ export default function LoginModal() {
                                 type={`${isSecured ? 'text' : 'password'}`}
                                 placeholder="Enter your password"
                                 className='pl-10'
-                                value={password}
                                 required
                             />
                             <div onClick={handlePassword} className='absolute top-1/2 right-3 -translate-y-1/2 hover:cursor-pointer'>
