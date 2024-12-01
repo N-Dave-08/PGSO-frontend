@@ -9,6 +9,7 @@ import CTA from "@/components/sections/CTA";
 export default function Home() {
   return (
     <main className="min-h-screen">
+      asdasd
       <Navbar />
       <Hero />
       <Capabilities />
