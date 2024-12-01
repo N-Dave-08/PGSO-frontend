@@ -10,10 +10,10 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
 }
 
 interface LayoutProps {
-    head: React.ReactNode;
-    admin: React.ReactNode;
-    staff: React.ReactNode;
-    personnel: React.ReactNode;
+    head?: React.ReactNode;
+    admin?: React.ReactNode;
+    staff?: React.ReactNode;
+    personnel?: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
