@@ -16,20 +16,20 @@ interface LayoutProps {
     personnel: React.ReactNode
 }
 
-export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
+const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
         const fetchSession = async () => {
             const session = await getSession()
             if (session) {
-                const userRole = checkUserRole(session.role);
+                const userRole = checkUserRole(session.role)
                 setRole(
                     userRole === 'head' ||
-                        userRole === 'admin' ||
-                        userRole === 'staff' ||
-                        userRole === 'personnel' ? userRole : null
-                );
+                    userRole === 'admin' ||
+                    userRole === 'staff' ||
+                    userRole === 'personnel' ? userRole : null
+                )
             }
         }
         fetchSession()
@@ -40,7 +40,7 @@ export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
         admin: admin,
         staff: staff,
         personnel: personnel,
-    };
+    }
 
     return (
         <SidebarProvider>
@@ -51,3 +51,5 @@ export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
         </SidebarProvider>
     )
 }
+
+export default Layout
