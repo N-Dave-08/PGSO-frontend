@@ -1,6 +1,4 @@
-'use server'
-
-import { cookies } from "next/headers"
+import Cookies from 'js-cookie'
 
 type AuthResult = {
     success: boolean
@@ -43,12 +41,10 @@ export async function authenticate(formData: FormData): Promise<AuthResult> {
 
     const user = users.find(user => user.email === email && user.password === password)
 
-    const cookiesStore = await cookies();
     if (user) {
-        cookiesStore.set('session', JSON.stringify({ email: user.email, role: user.role }), {
-            httpOnly: true,
+        Cookies.set('session', JSON.stringify({ email: user.email, role: user.role }), {
+            expires: 7,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 * 7,
             path: '/'
         })
 
@@ -57,13 +53,11 @@ export async function authenticate(formData: FormData): Promise<AuthResult> {
     return { success: false, message: 'invalid email or password' }
 }
 
-export async function logout() {
-    const cookiesStore = await cookies()
-    cookiesStore.delete('session')
+export function logout() {
+    Cookies.remove('session')
 }
 
-export async function getSession(): Promise<{ email: string; role: 'head' | 'admin' | 'staff' | 'personnel' } | null> {
-    const cookiesStore = await cookies()
-    const session = cookiesStore.get('session')?.value
+export function getSession(): { email: string; role: 'head' | 'admin' | 'staff' | 'personnel' } | null {
+    const session = Cookies.get('session')
     return session ? JSON.parse(session) : null
 }
