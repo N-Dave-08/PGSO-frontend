@@ -11,7 +11,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
 } from '@/components/ui/sidebar'
 import { usePathname } from 'next/navigation'
 import { routesData } from '@/helpers/routes'
