@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getSession } from '@/actions/auth'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import AdminSidebar from '@/components/sidebars/AdminSidebar'
@@ -10,26 +10,26 @@ function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
 }
 
 interface LayoutProps {
-    head: ReactNode
-    admin: ReactNode
-    staff: ReactNode
-    personnel: ReactNode
+    head: any
+    admin: any
+    staff: any
+    personnel: any
 }
 
-const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
+export default function Layout({ head, admin, staff, personnel }: LayoutProps) {
     const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
 
     useEffect(() => {
         const fetchSession = async () => {
             const session = await getSession()
             if (session) {
-                const userRole = checkUserRole(session.role)
+                const userRole = checkUserRole(session.role);
                 setRole(
                     userRole === 'head' ||
-                    userRole === 'admin' ||
-                    userRole === 'staff' ||
-                    userRole === 'personnel' ? userRole : null
-                )
+                        userRole === 'admin' ||
+                        userRole === 'staff' ||
+                        userRole === 'personnel' ? userRole : null
+                );
             }
         }
         fetchSession()
@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
         admin: admin,
         staff: staff,
         personnel: personnel,
-    }
+    };
 
     return (
         <SidebarProvider>
@@ -51,5 +51,3 @@ const Layout: React.FC<LayoutProps> = ({ head, admin, staff, personnel }) => {
         </SidebarProvider>
     )
 }
-
-export default Layout
