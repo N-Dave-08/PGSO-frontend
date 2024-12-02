@@ -30,7 +30,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Welcome to the Dashboard, asjdbaskdbj{user.email}</h1>
+      <h1 className="text-2xl font-bold mb-4">Welcome to the Dashboard, {user.email}</h1>
       <p>Your role is: {role}</p>
     </div>
   )
