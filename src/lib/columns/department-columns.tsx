@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Department } from "@/helpers/department-data"
+import { Department } from "@/helpers/table-data/department-data"
 
 export const columns: ColumnDef<Department>[] = [
   {
@@ -19,7 +19,7 @@ export const columns: ColumnDef<Department>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() ? "indeterminate" : undefined)
+          (table.getIsSomePageRowsSelected() ? true : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -66,9 +66,12 @@ export const columns: ColumnDef<Department>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("acronym")}</div>,
   },
   {
-    accessorKey: "description",
-    header: "Desription",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
+    accessorKey: "divisions",
+    header: "Division",
+    cell: ({ row }) => {
+      const divisions = row.getValue("divisions") as string[]
+      return <div className="capitalize">{divisions.join(", ")}</div>
+    },
   },
   {
     accessorKey: "dateCreated",

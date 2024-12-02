@@ -28,8 +28,8 @@ export default function Audits() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">Audits</h1>
-      <p className='text-sm'>under development</p>
+      <h1 className="text-lg font-bold">Audit Logs</h1>
+      <p className='text-sm'>Tracking Every Action for Security</p>
     </div>
   )
 }

@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select"
 
 import {columns} from "@/lib/columns/request-columns"
-import { requestData } from "@/helpers/request-data"
+import { requestData } from "@/helpers/table-data/request-data"
 
 export function RequestTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -184,7 +184,7 @@ export function RequestTable() {
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
-          <SelectContent side="right">
+          <SelectContent side="top">
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}

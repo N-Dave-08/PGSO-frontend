@@ -37,10 +37,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { columns } from "@/lib/columns/category-columns"
-import { categoryData } from "@/helpers/table-data/category-data"
+import { columns } from "@/lib/columns/division-columns"
+import { divisionData } from "@/helpers/table-data/division-data"
 
-export function CategoryTable() {
+export function DivisionTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -48,7 +48,7 @@ export function CategoryTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: categoryData,
+    data: divisionData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

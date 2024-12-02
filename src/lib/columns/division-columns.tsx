@@ -10,9 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Category } from "@/helpers/table-data/category-data"
+import { Division } from "@/helpers/table-data/division-data"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: ColumnDef<Division>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -51,9 +52,30 @@ export const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "description",
-    header: "Desription",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
+    accessorKey: "officeLocation",
+    header: "Office Location",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("officeLocation")}</div>
+  },
+  {
+    accessorKey: "staff",
+    header: "Staffs",
+    cell: ({ row }) => {
+      const divisions = row.getValue("staff") as string[]
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost">
+            <div className="capitalize cursor-pointer">{divisions.length} Staffs</div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            {divisions.map((staff, index) => (
+              <div key={index}>{staff}</div>
+            ))}
+          </PopoverContent>
+        </Popover>
+      )
+    },
   },
   {
     accessorKey: "dateCreated",
@@ -77,7 +99,7 @@ export const columns: ColumnDef<Category>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const category = row.original
+      const department = row.original
 
       return (
         <DropdownMenu>
@@ -91,9 +113,9 @@ export const columns: ColumnDef<Category>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(category.id)}
+              onClick={() => navigator.clipboard.writeText(department.id)}
             >
-              Copy category ID
+              Copy Department ID
             </DropdownMenuItem>
             <DropdownMenuItem>
               <PenSquare />

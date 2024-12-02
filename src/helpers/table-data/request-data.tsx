@@ -1,8 +1,8 @@
 export type Request = {
     id: string
-    controlNum: number
+    controlNum: string
     requestedBy: string
-    role: string
+    role: "head" | "PGSO Staff"
     category: string
     priority: string
     assignTo: string
@@ -13,9 +13,9 @@ export type Request = {
   export const requestData: Request[] = [
     {
       id: "723ed52f",
-      controlNum: 123,
+      controlNum: "2024-0124", // Changed to the new format
       requestedBy: "John Doe",
-      role: "Manager",
+      role: "head",
       category: "Cleaning",
       priority: "High",
       assignTo: "Jane Doe",
@@ -24,9 +24,9 @@ export type Request = {
     },
     {
       id: "a1b2c3d4",
-      controlNum: 124,
+      controlNum: "2024-0125", // Changed to the new format
       requestedBy: "Jane Doe",
-      role: "Assistant",
+      role: "PGSO Staff",
       category: "Electrical",
       priority: "Medium",
       assignTo: "John Doe",
@@ -35,9 +35,9 @@ export type Request = {
     },
     {
       id: "e5f6g7h8",
-      controlNum: 125,
+      controlNum: "2024-0126", // Changed to the new format
       requestedBy: "Jim Smith",
-      role: "Engineer",
+      role: "PGSO Staff",
       category: "Plumbing",
       priority: "Low",
       assignTo: "Emily Johnson",
@@ -46,9 +46,9 @@ export type Request = {
     },
     {
       id: "i9j0k1l2",
-      controlNum: 126,
+      controlNum: "2024-0127", // Changed to the new format
       requestedBy: "Emily Johnson",
-      role: "Designer",
+      role: "head",
       category: "Carpentry",
       priority: "High",
       assignTo: "Jim Smith",
@@ -57,9 +57,9 @@ export type Request = {
     },
     {
       id: "m3n4o5p6",
-      controlNum: 127,
+      controlNum: "2024-0128", // Changed to the new format
       requestedBy: "Michael Brown",
-      role: "Manager",
+      role: "head",
       category: "Cleaning",
       priority: "Medium",
       assignTo: "Sarah Lee",
@@ -68,9 +68,9 @@ export type Request = {
     },
     {
       id: "q7r8s9t0",
-      controlNum: 128,
+      controlNum: "2024-0129", // Changed to the new format
       requestedBy: "Sarah Lee",
-      role: "Assistant",
+      role: "PGSO Staff",
       category: "Electrical",
       priority: "Low",
       assignTo: "Michael Brown",

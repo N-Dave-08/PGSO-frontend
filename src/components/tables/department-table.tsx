@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/department-columns"
-import { departmentData } from "@/helpers/department-data"
+import { departmentData } from "@/helpers/table-data/department-data"
 
 export function DepartmentTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -184,7 +184,7 @@ export function DepartmentTable() {
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
-          <SelectContent side="right">
+          <SelectContent side="top">
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}

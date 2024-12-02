@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/user-columns"
-import { userData } from "@/helpers/user-data"
+import { userData } from "@/helpers/table-data/user-data"
 
 export function UserTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -185,7 +185,7 @@ export function UserTable() {
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue placeholder={table.getState().pagination.pageSize} />
           </SelectTrigger>
-          <SelectContent side="right">
+          <SelectContent side="top">
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <SelectItem key={pageSize} value={`${pageSize}`}>
                 {pageSize}

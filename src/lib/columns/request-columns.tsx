@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Request } from "@/helpers/request-data"
+import { Request } from "@/helpers/table-data/request-data"
 
 export const columns: ColumnDef<Request>[] = [
   {
@@ -19,7 +19,7 @@ export const columns: ColumnDef<Request>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() ? "indeterminate" : undefined)
+          (table.getIsSomePageRowsSelected() ? true : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"

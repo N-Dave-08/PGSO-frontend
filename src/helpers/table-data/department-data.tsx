@@ -4,6 +4,7 @@ export type Department = {
     acronym: string
     description: string
     dateCreated: string
+    divisions: string[]
   }
   
   export const departmentData: Department[] = [
@@ -13,6 +14,7 @@ export type Department = {
       acronym: "GO",
       description: "This department is responsible for the overall governance of the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Governor's Office", "Administrative Division", "Finance Division"],
     },
     {
       id: "489e1d42",
@@ -20,6 +22,7 @@ export type Department = {
       acronym: "GO-PS",
       description: "This department provides personal support to the Governor.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Personal Staff", "Security Detail", "Protocol Office"],
     },
     {
       id: "a762d9c0",
@@ -27,6 +30,7 @@ export type Department = {
       acronym: "VGO",
       description: "This department supports the Vice Governor in their duties.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Vice Governor's Office", "Legislative Affairs", "Public Relations"],
     },
     {
       id: "b3f12e8d",
@@ -34,6 +38,7 @@ export type Department = {
       acronym: "VGO-PS",
       description: "This department provides personal support to the Vice Governor.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Personal Staff", "Security Detail", "Protocol Office"],
     },
     {
       id: "e9d71f6a",
@@ -41,6 +46,7 @@ export type Department = {
       acronym: "OSSP",
       description: "This department supports the Secretary to the Provincial Board.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Secretary's Office", "Legislative Research", "Committee Affairs"],
     },
     {
       id: "c4e5f6g7",
@@ -48,6 +54,7 @@ export type Department = {
       acronym: "BENRO",
       description: "This department is responsible for environmental conservation and natural resources management.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Environmental Conservation", "Natural Resources Management", "Research and Development"],
     },
     {
       id: "h8i9j0k1",
@@ -55,6 +62,7 @@ export type Department = {
       acronym: "BPC",
       description: "This department provides technical education and training.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Academic Affairs", "Student Affairs", "Research and Extension"],
     },
     {
       id: "l2m3n4o5",
@@ -62,6 +70,7 @@ export type Department = {
       acronym: "PAO",
       description: "This department handles the financial accounting and management of the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Financial Management", "Accounting Services", "Budget and Treasury"],
     },
     {
       id: "p6q7r8s9",
@@ -69,6 +78,7 @@ export type Department = {
       acronym: "PA's Office",
       description: "This department supports the Provincial Administrator in their duties.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Administrative Services", "Human Resource Management", "General Services"],
     },
     {
       id: "t0u1v2w3",
@@ -76,6 +86,7 @@ export type Department = {
       acronym: "PAO",
       description: "This department promotes agricultural development in the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Agricultural Development", "Farm-to-Market Road", "Agricultural Extension"],
     },
     {
       id: "x4y5z6a7",
@@ -83,6 +94,7 @@ export type Department = {
       acronym: "PAO",
       description: "This department is responsible for property assessment and taxation.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Property Assessment", "Taxation", "Real Property Appraisal"],
     },
     {
       id: "b8c9d0e1",
@@ -90,6 +102,7 @@ export type Department = {
       acronym: "PBO",
       description: "This department prepares and manages the provincial budget.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Budget Preparation", "Budget Execution", "Financial Planning"],
     },
     {
       id: "f2g3h4i5",
@@ -97,6 +110,7 @@ export type Department = {
       acronym: "PCSJMO",
       description: "This department is responsible for civil security and jail management.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Civil Security", "Jail Management", "Fire Protection"],
     },
     {
       id: "j6k7l8m9",
@@ -104,6 +118,7 @@ export type Department = {
       acronym: "PCEDO",
       description: "This department promotes cooperative and enterprise development.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Cooperative Development", "Enterprise Development", "Microfinance"],
     },
     {
       id: "n0o1p2q3",
@@ -111,6 +126,7 @@ export type Department = {
       acronym: "PDRRMO",
       description: "This department is responsible for disaster risk reduction and management.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Disaster Risk Reduction", "Disaster Management", "Emergency Response"],
     },
     {
       id: "r4s5t6u7",
@@ -118,6 +134,7 @@ export type Department = {
       acronym: "PEO",
       description: "This department handles infrastructure development and maintenance.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Infrastructure Development", "Maintenance and Repair", "Engineering Services"],
     },
     {
       id: "v8w9x0y1",
@@ -125,6 +142,7 @@ export type Department = {
       acronym: "PGSO",
       description: "This department provides general services and support to the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["General Services", "Supply and Property Management", "Motor Pool"],
     },
     {
       id: "z2a3b4c5",
@@ -132,6 +150,7 @@ export type Department = {
       acronym: "PHACTO",
       description: "This department promotes cultural heritage and tourism.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Cultural Heritage", "Tourism Development", "Arts and Culture"],
     },
     {
       id: "d6e7f8g9",
@@ -139,6 +158,7 @@ export type Department = {
       acronym: "PHRMO",
       description: "This department handles human resource management for the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Human Resource Management", "Personnel Administration", "Training and Development"],
     },
     {
       id: "h1i2j3k4",
@@ -146,6 +166,7 @@ export type Department = {
       acronym: "PITO",
       description: "This department is responsible for IT infrastructure and services.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["IT Infrastructure", "Software Development", "Network Services"],
     },
     {
       id: "l5m6n7o8",
@@ -153,6 +174,7 @@ export type Department = {
       acronym: "PLO",
       description: "This department provides legal services and support to the province.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Legal Services", "Litigation", "Legal Research"],
     },
     {
       id: "p9q0r1s2",
@@ -160,6 +182,7 @@ export type Department = {
       acronym: "PPDO",
       description: "This department is responsible for planning and development initiatives.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Planning and Development", "Urban Planning", "Rural Development"],
     },
     {
       id: "t3u4v5w6",
@@ -167,6 +190,7 @@ export type Department = {
       acronym: "PPAO",
       description: "This department handles public affairs and information.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Public Affairs", "Information Services", "Media Relations"],
     },
     {
       id: "x7y8z9a0",
@@ -174,6 +198,7 @@ export type Department = {
       acronym: "PPESO",
       description: "This department provides employment services and support.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Employment Services", "Job Placement", "Labor Market Information"],
     },
     {
       id: "b1c2d3e4",
@@ -181,6 +206,7 @@ export type Department = {
       acronym: "PPHO",
       description: "This department is responsible for public health services and programs.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Public Health Services", "Health Programs", "Health Education"],
     },
     {
       id: "f5g6h7i8",
@@ -188,6 +214,7 @@ export type Department = {
       acronym: "PSWDO",
       description: "This department provides social welfare and development services.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Social Welfare Services", "Development Programs", "Family and Community Welfare"],
     },
     {
       id: "j9k0l1m2",
@@ -195,6 +222,7 @@ export type Department = {
       acronym: "PTO",
       description: "This department handles treasury operations and management.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Treasury Operations", "Cash Management", "Investment Management"],
     },
     {
       id: "n3o4p5q6",
@@ -202,6 +230,7 @@ export type Department = {
       acronym: "PVO",
       description: "This department is responsible for animal health and welfare.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Animal Health", "Veterinary Services", "Animal Welfare"],
     },
     {
       id: "r7s8t9u0",
@@ -209,5 +238,6 @@ export type Department = {
       acronym: "PYSDO",
       description: "This department promotes youth development and sports.",
       dateCreated: "2020-01-01T08:00:00",
+      divisions: ["Youth Development", "Sports Development", "Recreation and Leisure"],
     },
   ]
