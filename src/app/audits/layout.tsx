@@ -7,7 +7,8 @@ import AdminSidebar from '@/components/sidebars/AdminSidebar'
 
 
 interface UserType {
-    email: string;
+    id: number
+    email: string
 }
 
 export default function Layout({

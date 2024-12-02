@@ -3,8 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Define the UserType interface
+interface UserType {
+  id: number
+  email: string
+}
+
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<UserType | null>(null)
   const router = useRouter()
 
   useEffect(() => {
