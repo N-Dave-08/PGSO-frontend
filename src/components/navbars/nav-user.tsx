@@ -23,16 +23,9 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { setupImage } from "@/helpers/setup"
-import { logout } from "@/actions/auth"
-import { useRouter } from "next/navigation"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
-    const router = useRouter()
-    const handleLogout = () => {
-        logout()
-        router.push('/')
-      }
 
     return (
         <SidebarMenu>
@@ -63,7 +56,7 @@ export function NavUser() {
                             <User />
                             Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="focus:text-base-content focus:bg-white/10" onClick={handleLogout}>
+                        <DropdownMenuItem className="focus:text-base-content focus:bg-white/10">
                             <LogOut />
                             Log out
                         </DropdownMenuItem>
