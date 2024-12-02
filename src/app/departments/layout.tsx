@@ -18,11 +18,11 @@ export default function Layout({
     personnel,
     staff,
 }: {
-    children: React.ReactNode
-    admin: React.ReactNode
-    head: React.ReactNode
-    personnel: React.ReactNode
-    staff: React.ReactNode
+    children?: React.ReactNode
+    admin?: React.ReactNode
+    head?: React.ReactNode
+    personnel?: React.ReactNode
+    staff?: React.ReactNode
 }) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
