@@ -28,7 +28,7 @@ export default function Departments() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">Departmentss</h1>
+      <h1 className="text-lg font-bold">Departments</h1>
       <p className='text-sm'>Strength in Specialized Sectors</p>
     </div>
   )
