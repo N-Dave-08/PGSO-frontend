@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import AdminSidebar from '@/components/sidebars/AdminSidebar'
 
+
+interface UserType {
+    email: string;
+}
+
 export default function Layout({
     children,
     admin,
@@ -18,8 +23,8 @@ export default function Layout({
     personnel: React.ReactNode
     staff: React.ReactNode
 }) {
-    const [user, setUser] = useState<any>(null)
-    const [role, setRole] = useState<any>(null)
+    const [user, setUser] = useState<UserType | null>(null)
+    const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
 
     useEffect(() => {
