@@ -27,11 +27,17 @@ import {
 } from "@/components/ui/sidebar"
 import { setupImage } from "@/helpers/setup"
 
+interface UserType {
+    id: number
+    email: string
+}
+
 export function NavUser() {
+
     const { isMobile } = useSidebar()
     const router = useRouter()
-    const [user, setUser] = useState<any>(null)
-    const [role, setRole] = useState<any>(null)
+    const [user, setUser] = useState<UserType | null>(null)
+    const [role, setRole] = useState<string | null>(null)
 
     useEffect(() => {
         setRole(localStorage.getItem('role'))
