@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, ChangeEvent, FormEvent } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -14,25 +14,40 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeClosed, Mail, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { authenticate } from '@/actions/auth'
+import axios, { AxiosResponse } from 'axios'
+
+interface LoginResponse { 
+    message: string; 
+    token: string; 
+}
 
 export default function LoginModal() {
-    const [open, setOpen] = useState(false)
-    const [isSecured, setIsSecured] = useState(true)
+    const [open, setOpen] = useState<boolean>(false)
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [message, setMessage] = useState<string>('')
+    const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
-    async function handleSubmit(formData: FormData) {
-        const result = await authenticate(formData)
-        if (result.success) {
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            const response: AxiosResponse<LoginResponse> = await axios.post('https://server.pgso.bpc-bsis4d.com/public/api/login', {
+                email,
+                password,
+            })
+            setMessage(response.data.message)
+            localStorage.setItem('token', response.data.token)
             router.push('/dashboard')
-        } else {
-            setError(result.message)
+        } catch (error) {
+            setMessage('Login failed. Please check your credentials.')
         }
     }
 
     const handlePassword = () => {
-        setIsSecured(!isSecured)
+        setIsShowPassword(!isShowPassword)
     }
 
     return (
@@ -47,7 +62,7 @@ export default function LoginModal() {
                         Enter your credentials to access your account.
                     </DialogDescription>
                 </DialogHeader>
-                <form action={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <div className="relative">
@@ -56,6 +71,8 @@ export default function LoginModal() {
                                 name='email'
                                 id="email"
                                 type="email"
+                                value={email}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                                 placeholder="Enter your email"
                                 className='pl-10'
                                 required
@@ -69,14 +86,16 @@ export default function LoginModal() {
                             <Input
                                 name='password'
                                 id="password"
-                                type={`${isSecured ? 'text' : 'password'}`}
+                                type={`${isShowPassword ? 'text' : 'password'}`}
+                                value={password}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
                                 className='pl-10'
                                 required
                             />
                             <div onClick={handlePassword} className='absolute top-1/2 right-3 -translate-y-1/2 hover:cursor-pointer'>
                                 {
-                                    isSecured ? <Eye className='size-4' /> : <EyeClosed className='size-4' />
+                                    isShowPassword ? <Eye className='size-4' /> : <EyeClosed className='size-4' />
                                 }
                             </div>
                         </div>
