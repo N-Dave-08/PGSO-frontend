@@ -9,7 +9,7 @@ interface UserType {
   email: string
 }
 
-export default function Dashboard() {
+export default function page() {
   const [user, setUser] = useState<UserType | null>(null)
   const router = useRouter()
 
@@ -28,8 +28,8 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">Divisions</h1>
-      <p className='text-sm'>Fostering Synergy Across Teams</p>
+      <h1 className="text-lg font-bold">Audits</h1>
+      <p className='text-sm'>under development</p>
     </div>
   )
 }

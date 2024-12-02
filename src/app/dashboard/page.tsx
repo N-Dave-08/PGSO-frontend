@@ -3,9 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
-  const [role, setRole] = useState<any>(null)
+// Define the UserType interface
+interface UserType {
+  id: number
+  email: string
+}
+
+export default function page() {
+  const [user, setUser] = useState<UserType | null>(null)
+  const [role, setRole] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
