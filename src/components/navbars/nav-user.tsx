@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
 import {
     User,
     LogOut,
@@ -26,6 +29,19 @@ import { setupImage } from "@/helpers/setup"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
+    const router = useRouter()
+    const [user, setUser] = useState<any>(null)
+    const [role, setRole] = useState<any>(null)
+
+    useEffect(() => {
+        setRole(localStorage.getItem('role'))
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          setUser(JSON.parse(storedUser))
+        } else {
+          router.push('/')
+        }
+      }, [router])
 
     return (
         <SidebarMenu>
@@ -41,8 +57,10 @@ export function NavUser() {
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">John Doe</span>
-                                <span className="truncate text-xs">johndoe@gmail.com</span>
+                                <span className="truncate font-semibold">
+                                    John Doe ({role})
+                                </span>
+                                <span className="truncate text-xs">{user ? user.email : 'Loading...'}</span>
                             </div>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
@@ -56,7 +74,14 @@ export function NavUser() {
                             <User />
                             Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="focus:text-base-content focus:bg-white/10">
+                        <DropdownMenuItem 
+                        className="focus:text-base-content focus:bg-white/10"
+                        onClick={() => {
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('user')
+                            router.push('/')
+                        }}
+                        >
                             <LogOut />
                             Log out
                         </DropdownMenuItem>

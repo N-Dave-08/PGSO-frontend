@@ -12,37 +12,53 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeClosed, Mail, Lock } from 'lucide-react'
+import {
+    Eye,
+    EyeClosed,
+    Mail,
+    Lock,
+    Loader2
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import axios, { AxiosResponse } from 'axios'
 
-interface LoginResponse { 
-    message: string; 
-    token: string; 
-}
 
 export default function LoginModal() {
     const [open, setOpen] = useState<boolean>(false)
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-    const [message, setMessage] = useState<string>('')
+    const [isLoading, setIsLoading] = useState(false)
     const [isShowPassword, setIsShowPassword] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        e.preventDefault()
+        setIsLoading(true)
+        setError('')
 
         try {
-            const response: AxiosResponse<LoginResponse> = await axios.post('https://server.pgso.bpc-bsis4d.com/public/api/login', {
-                email,
-                password,
+            const response = await fetch('https://server.pgso.bpc-bsis4d.com/public/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
             })
-            setMessage(response.data.message)
-            localStorage.setItem('token', response.data.token)
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed')
+            }
+
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('role', data.role)
+            localStorage.setItem('user', JSON.stringify(data.user))
             router.push('/dashboard')
-        } catch (error) {
-            setMessage('Login failed. Please check your credentials.')
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred')
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -105,7 +121,15 @@ export default function LoginModal() {
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit">Log In</Button>
+                        {
+                            !isLoading ? (<Button type="submit">Log In</Button>)
+                                : (
+                                    <Button disabled>
+                                        <Loader2 className="animate-spin" />
+                                        Please wait
+                                    </Button>
+                                )
+                        }
                     </div>
                 </form>
             </DialogContent>

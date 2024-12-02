@@ -1,58 +1,68 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { getSession } from '@/actions/auth'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import AdminSidebar from '@/components/sidebars/AdminSidebar'
 
-function checkUserRole(role: 'head' | 'admin' | 'staff' | 'personnel'): string {
-    return role
-}
-
-interface LayoutProps {
-    head?: React.ReactNode
-    admin?: React.ReactNode
-    staff?: React.ReactNode
-    personnel?: React.ReactNode
-}
-
 export default function Layout({
-    head,
+    children,
     admin,
+    head,
+    personnel,
     staff,
-    personnel
-}: LayoutProps) {
-    const [role, setRole] = useState<'head' | 'admin' | 'staff' | 'personnel' | null>(null)
+}: {
+    children: React.ReactNode
+    admin: React.ReactNode
+    head: React.ReactNode
+    personnel: React.ReactNode
+    staff: React.ReactNode
+}) {
+    const [user, setUser] = useState<any>(null)
+    const [role, setRole] = useState<any>(null)
+    const router = useRouter()
 
     useEffect(() => {
-        const fetchSession = async () => {
-            const session = await getSession()
-            if (session) {
-                const userRole = checkUserRole(session.role);
-                setRole(
-                    userRole === 'head' ||
-                        userRole === 'admin' ||
-                        userRole === 'staff' ||
-                        userRole === 'personnel' ? userRole : null
-                );
-            }
+        setRole(localStorage.getItem('role'))
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+            setUser(JSON.parse(storedUser))
+        } else {
+            router.push('/')
         }
-        fetchSession()
-    }, [])
+    }, [router])
 
-    const roleComponents = {
-        head: head,
-        admin: admin,
-        staff: staff,
-        personnel: personnel,
-    };
+    if (!user) {
+        return <div className='h-screen flex items-center justify-center'>Loading...</div>
+    }
+
+    const isAuthorized = (allowedRoles: string[]) => {
+        return allowedRoles.includes(role)
+    }
+
+    const renderContent = () => {
+        switch (role) {
+            case 'admin':
+                return isAuthorized(['admin']) ? admin : null
+            case 'head':
+                return isAuthorized(['head', 'admin']) ? head : null
+            case 'personnel':
+                return isAuthorized(['personnel', 'head', 'admin']) ? personnel : null
+            case 'staff':
+                return isAuthorized(['staff', 'personnel', 'head', 'admin']) ? staff : null
+            default:
+                return null
+        }
+    }
 
     return (
         <SidebarProvider>
             <AdminSidebar />
-            <main className='p-4 flex flex-col w-full'>
-                {role ? roleComponents[role] : null}
+            <main className="p-4">
+                {children}
+                {renderContent()}
             </main>
         </SidebarProvider>
     )
 }
+
