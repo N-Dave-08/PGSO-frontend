@@ -9,7 +9,7 @@ interface UserType {
   email: string
 }
 
-export default function page() {
+export default function Dashboard() {
   const [user, setUser] = useState<UserType | null>(null)
   const [role, setRole] = useState<string | null>(null)
   const router = useRouter()
