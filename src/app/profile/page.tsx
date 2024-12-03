@@ -14,11 +14,19 @@ export default function Settings() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    } else {
+    const userRole = localStorage.getItem('role')
+
+    if (!storedUser) {
       router.push('/')
+      return
     }
+
+    if (userRole !== 'head') {
+      router.back()
+      return
+    }
+
+    setUser(JSON.parse(storedUser))
   }, [router])
 
   if (!user) {

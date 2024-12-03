@@ -1,12 +1,11 @@
 'use client'
 
 import React from 'react'
-import { StaffTable } from '@/components/tables/staff-table'
 
 export default function page() {
   return (
     <div>
-      <StaffTable />
+      SETTINGS Staff
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-
+import { setupImage } from '@/helpers/setup'
 import {
     LogOut,
 } from "lucide-react"
@@ -57,7 +57,7 @@ export function NavUser() {
                             className="data-[state=open]:bg-white/10 data-[state=open]:text-base-content"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage alt="user" />
+                                <AvatarImage src={`${setupImage}images/morty.png`} alt="user" />
                                 <AvatarFallback className="rounded-lg">JD</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">

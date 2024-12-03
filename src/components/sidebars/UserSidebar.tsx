@@ -30,8 +30,8 @@ export default function UserSidebar() {
   const filteredRoutes = React.useMemo(() => {
     const adminRoutes = ['DASHBOARD', 'USERS', 'REQUESTS', 'CATEGORIES', 'DEPARTMENTS', 'DIVISIONS', 'AUDIT_LOGS', 'SETTINGS']
     const personnelRoutes = ['DASHBOARD', 'PROFILE', 'TASKS', 'CALENDAR', 'FEEDBACK', 'SETTINGS']
-    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS', 'PROFILE']
-    const staffRoutes = ['DASHBOARD', 'REQUESTS', 'PROFILE', 'AUDIT_LOGS', 'SETTINGS']
+    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'SETTINGS', 'PROFILE']
+    const staffRoutes = ['DASHBOARD', 'REQUESTS', 'PROFILE', 'SETTINGS']
     
     return Object.entries(routesData).filter(([key]) => {
       switch (role) {

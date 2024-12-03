@@ -15,11 +15,19 @@ export default function Departments() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    } else {
+    const userRole = localStorage.getItem('role')
+
+    if (!storedUser) {
       router.push('/')
+      return
     }
+
+    if (userRole !== 'admin' && userRole !== 'head') {
+      router.back()
+      return
+    }
+
+    setUser(JSON.parse(storedUser))
   }, [router])
 
   if (!user) {
