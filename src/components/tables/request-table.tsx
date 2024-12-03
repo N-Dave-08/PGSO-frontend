@@ -36,7 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import RequestModal from "@/components/modals/request-modal"
 import {columns} from "@/lib/columns/request-columns"
 import { requestData } from "@/helpers/table-data/request-data"
 
@@ -70,13 +70,14 @@ export function RequestTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Search all columns..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
+        <RequestModal />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" className="ml-auto">

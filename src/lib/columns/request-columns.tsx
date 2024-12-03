@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -84,6 +85,27 @@ export const columns: ColumnDef<Request>[] = [
     accessorKey: "assignTo",
     header: "Assigned To",
     cell: ({ row }) => <div className="capitalize">{row.getValue("assignTo")}</div>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status")
+
+      return status === "pending" ? (
+        <Badge>Pending</Badge>
+      ) : status === "rejected" ? (
+        <Badge variant="destructive">Rejected</Badge>
+      ) : status === "to assign" ? (
+        <Badge variant="primary">To Assign</Badge>
+      ) : status === "in progress" ? (
+        <Badge variant="primary">In Progess</Badge>
+      ) : status === "for feedback" ? (
+        <Badge variant="secondary">For Feedback</Badge>
+      ) : status === "completed" ? (
+        <Badge variant="success">Completed</Badge>
+      ) : ''
+    },
   },
   {
     accessorKey: "requested",
