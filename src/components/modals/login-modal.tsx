@@ -52,6 +52,7 @@ export default function LoginModal() {
             }
 
             localStorage.setItem('token', data.token)
+            window.dispatchEvent(new Event('authChange'))
             localStorage.setItem('role', data.role)
             localStorage.setItem('user', JSON.stringify(data.user))
             router.push('/dashboard')

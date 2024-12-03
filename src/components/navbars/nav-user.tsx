@@ -80,6 +80,7 @@ export function NavUser() {
                         onClick={() => {
                             localStorage.removeItem('token')
                             localStorage.removeItem('user')
+                            window.dispatchEvent(new Event('authChange'))
                             router.push('/')
                         }}
                         >

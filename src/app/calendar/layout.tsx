@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import UserSidebar from '@/components/sidebars/UserSidebar'
 
 
 interface UserType {
@@ -62,13 +60,10 @@ export default function Layout({
     }
 
     return (
-        <SidebarProvider>
-            <UserSidebar />
             <main className="p-4 w-full">
                 {children}
                 {renderContent()}
             </main>
-        </SidebarProvider>
     )
 }
 
