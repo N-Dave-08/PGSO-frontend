@@ -6,7 +6,11 @@ import {
     Network, 
     FileText, 
     Settings,
-    ChartBarStacked
+    ChartBarStacked,
+    User,
+    ListTodo,
+    Calendar,
+    MessageSquare,
 } from 'lucide-react'
 
 interface RouteProps {
@@ -24,6 +28,11 @@ export const routesData: RoutesDataProps = {
         icon: <LayoutDashboard />,
         name: "Dashboard",
         link: "/dashboard"
+    },
+    TASKS: {
+        icon: <ListTodo />,
+        name: "Tasks",
+        link: "/tasks"
     },
     REQUESTS: {
         icon: <ClipboardList />,
@@ -50,12 +59,32 @@ export const routesData: RoutesDataProps = {
         name: "Divisions",
         link: "/divisions"
     },
+    STAFFS: {
+        icon: <Users />,
+        name: "Staffs",
+        link: "/staffs"
+    },
     AUDIT_LOGS: {
         icon: <FileText />,
         name: "Audit Logs",
         link: "/audits"
     },
-    SETINGS: {
+    CALENDAR: {
+        icon: <Calendar />,
+        name: "Calendar",
+        link: "/calendar"
+    },
+    FEEDBACK: {
+        icon: <MessageSquare />,
+        name: "Feedback",
+        link: "/feedback"
+    },
+    PROFILE: {
+        icon: <User />,
+        name: "Profile",
+        link: "/profile"
+    },
+    SETTINGS: {
         icon: <Settings />,
         name: "Settings",
         link: "/settings"

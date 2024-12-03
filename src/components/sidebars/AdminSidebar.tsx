@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Sidebar,
   SidebarHeader,
@@ -20,6 +20,35 @@ import Link from 'next/link'
 export default function AdminSidebar() {
 
   const path = usePathname()
+  const [role, setRole] = useState<string>('')
+
+  useEffect(() => {
+    const role = localStorage.getItem('role')
+    setRole(role || '')
+  }, [])
+
+  const filteredRoutes = React.useMemo(() => {
+    const adminRoutes = ['DASHBOARD', 'USERS', 'REQUESTS', 'CATEGORIES', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS']
+    const personnelRoutes = ['DASHBOARD', 'PROFILE', 'TASKS', 'CALENDAR', 'FEEDBACK', 'SETTINGS']
+    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS']
+    const staffRoutes = ['DASHBOARD', 'REQUESTS', 'PROFILE', 'AUDIT_LOGS', 'SETTINGS']
+    
+    return Object.entries(routesData).filter(([key]) => {
+      switch (role) {
+        case 'personnel':
+          return personnelRoutes.includes(key)
+        case 'head':
+          return headRoutes.includes(key)
+        case 'staff':
+          return staffRoutes.includes(key)
+        case 'admin':
+          return adminRoutes.includes(key)
+        default:
+          return true
+      }
+    })
+  }, [role])
+  
 
   return (
     <Sidebar>
@@ -31,7 +60,7 @@ export default function AdminSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Object.entries(routesData).map(([key, route]) => (
+              {filteredRoutes.map(([key, route]) => (
                 <SidebarMenuItem key={key}>
                   <SidebarMenuButton
                     asChild

@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Define the UserType interface
 interface UserType {
   id: number
   email: string
 }
 
-export default function Audits() {
+export default function Requests() {
   const [user, setUser] = useState<UserType | null>(null)
   const router = useRouter()
 
@@ -27,8 +28,8 @@ export default function Audits() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">Audit Logs</h1>
-      <p className='text-sm'>Tracking Every Action for Security</p>
+      <h1 className="text-lg font-bold">Staffs</h1>
+      <p className='text-sm'>Under developement</p>
     </div>
   )
 }

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-// Define the UserType interface
 interface UserType {
   id: number
   email: string

@@ -51,11 +51,11 @@ export default function Layout({
             case 'admin':
                 return isAuthorized(['admin']) ? admin : null
             case 'head':
-                return isAuthorized(['head', 'admin']) ? head : null
+                return isAuthorized(['head']) ? head : null
             case 'personnel':
-                return isAuthorized(['personnel', 'head', 'admin']) ? personnel : null
+                return isAuthorized(['personnel']) ? personnel : null
             case 'staff':
-                return isAuthorized(['staff', 'personnel', 'head', 'admin']) ? staff : null
+                return isAuthorized(['staff']) ? staff : null
             default:
                 return null
         }

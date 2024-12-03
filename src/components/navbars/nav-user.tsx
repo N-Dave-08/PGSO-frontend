@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import {
-    User,
     LogOut,
 } from "lucide-react"
 
@@ -25,7 +24,6 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { setupImage } from "@/helpers/setup"
 
 interface UserType {
     id: number
@@ -59,8 +57,8 @@ export function NavUser() {
                             className="data-[state=open]:bg-white/10 data-[state=open]:text-base-content"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={`${setupImage}images/morty.png`} alt="user" />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                <AvatarImage alt="user" />
+                                <AvatarFallback className="rounded-lg">JD</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-semibold">
@@ -76,10 +74,6 @@ export function NavUser() {
                         align="end"
                         sideOffset={10}
                     >
-                        <DropdownMenuItem className="focus:text-base-content focus:bg-white/10">
-                            <User />
-                            Profile
-                        </DropdownMenuItem>
                         <DropdownMenuItem 
                         className="focus:text-base-content focus:bg-white/10"
                         onClick={() => {
