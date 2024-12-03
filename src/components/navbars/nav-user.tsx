@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { setupImage } from '@/helpers/setup'
 import {
+    LogOut,
+} from "lucide-react"
+
+import {
     Avatar,
     AvatarFallback,
     AvatarImage,
@@ -37,11 +41,11 @@ export function NavUser() {
         setRole(localStorage.getItem('role'))
         const storedUser = localStorage.getItem('user')
         if (storedUser) {
-            setUser(JSON.parse(storedUser))
+          setUser(JSON.parse(storedUser))
         } else {
-            router.push('/')
+          router.push('/')
         }
-    }, [router])
+      }, [router])
 
     return (
         <SidebarMenu>
@@ -71,8 +75,17 @@ export function NavUser() {
                         align="end"
                         sideOffset={10}
                     >
-                        <DropdownMenuItem>
-                            Something
+                        <DropdownMenuItem 
+                        className="focus:text-base-content focus:bg-white/10"
+                        onClick={() => {
+                            localStorage.removeItem('token')
+                            localStorage.removeItem('user')
+                            window.dispatchEvent(new Event('authChange'))
+                            router.push('/')
+                        }}
+                        >
+                            <LogOut />
+                            Log out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
