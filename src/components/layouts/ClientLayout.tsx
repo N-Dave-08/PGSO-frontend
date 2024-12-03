@@ -10,8 +10,6 @@ interface ClientLayoutProps {
 
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const checkAuth = () => {
