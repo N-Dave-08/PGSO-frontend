@@ -6,7 +6,7 @@ export type Request = {
     category: string
     status: "pending" | "rejected" | "to assign" | "in progress" | "for feedback" | "completed"
     priority: string
-    assignTo: string[]
+    assignTo: string
     requested: string
     dueDate: string
   }
@@ -20,7 +20,7 @@ export type Request = {
       category: "Cleaning",
       status: "pending",
       priority: "High",
-      assignTo: ["Jane Doe"],
+      assignTo: "Jane Doe",
       requested: "2022-01-01T00:00:00",
       dueDate: "2022-01-02T00:00:00",
     },
@@ -32,7 +32,7 @@ export type Request = {
       category: "Electrical",
       status: "to assign",
       priority: "Medium",
-      assignTo: ["John Smith", "Alice Johnson"],
+      assignTo: "John Doe",
       requested: "2022-02-01T00:00:00",
       dueDate: "2022-02-03T00:00:00",
     },
@@ -44,7 +44,7 @@ export type Request = {
       category: "Plumbing",
       status: "for feedback",
       priority: "Low",
-      assignTo: ["Emily Johnson"],
+      assignTo: "Emily Johnson",
       requested: "2022-03-01T00:00:00",
       dueDate: "2022-03-02T00:00:00",
     },
@@ -56,7 +56,7 @@ export type Request = {
       category: "Carpentry",
       status: "completed",
       priority: "High",
-      assignTo: ["Jim Smith"],
+      assignTo: "Jim Smith",
       requested: "2022-04-01T00:00:00",
       dueDate: "2022-04-03T00:00:00",
     },
@@ -68,7 +68,7 @@ export type Request = {
       category: "Cleaning",
       status: "rejected",
       priority: "Medium",
-      assignTo: ["Sarah Lee"],
+      assignTo: "Sarah Lee",
       requested: "2022-05-01T00:00:00",
       dueDate: "2022-05-02T00:00:00",
     },
@@ -80,7 +80,7 @@ export type Request = {
       category: "Electrical",
       status: "pending",
       priority: "Low",
-      assignTo: ["Michael Brown"],
+      assignTo: "Michael Brown",
       requested: "2022-06-01T00:00:00",
       dueDate: "2022-06-03T00:00:00",
     },
@@ -92,7 +92,7 @@ export type Request = {
       category: "HVAC",
       status: "in progress",
       priority: "High",
-      assignTo: ["Robert Chen"],
+      assignTo: "Robert Chen",
       requested: "2022-07-01T00:00:00",
       dueDate: "2022-07-03T00:00:00",
     },

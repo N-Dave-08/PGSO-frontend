@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare, User } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Request } from "@/helpers/table-data/request-data"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 
 export const columns: ColumnDef<Request>[] = [
   {
@@ -83,8 +84,25 @@ export const columns: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "assignTo",
-    header: "Assigned To",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("assignTo")}</div>,
+    header: "Staffs",
+    cell: ({ row }) => {
+      const divisions = row.getValue("assignTo") as string[]
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost">
+                <User />
+                {divisions.length}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            {divisions.map((staff, index) => (
+              <div key={index}>{staff}</div>
+            ))}
+          </PopoverContent>
+        </Popover>
+      )
+    },
   },
   {
     accessorKey: "status",

@@ -7,13 +7,21 @@ export default function Completion({ formData, updateFormData, onNext, onPreviou
     updateFormData({ serviceCompleted: checked })
   }
 
+  const requestorDetails = [
+    { label: 'Name', value: formData.requestor.name },
+    { label: 'Department', value: formData.requestor.department },
+    { label: 'Division', value: formData.requestor.division },
+  ]
+
   return (
     <div className="space-y-4">
-      <div>
+      <div className="bg-base-300 p-4 rounded-box">
         <h3 className="font-medium">Requestor Information</h3>
-        <p>Name: {formData.requestor.name}</p>
-        <p>Department: {formData.requestor.department}</p>
-        <p>Division: {formData.requestor.division}</p>
+        {requestorDetails.map(({ label, value }) => (
+          <p key={label} className="font-medium">
+            {label}: <span className="font-light">{value}</span>
+          </p>
+        ))}
       </div>
       <div>
         <h3 className="font-medium">Request Details</h3>
