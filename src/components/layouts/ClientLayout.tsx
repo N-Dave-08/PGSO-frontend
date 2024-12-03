@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import UserSidebar from "@/components/sidebars/UserSidebar";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
+import UserSidebar from "@/components/sidebars/UserSidebar"
 
 interface ClientLayoutProps {
   children: React.ReactNode;
