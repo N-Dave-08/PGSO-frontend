@@ -30,4 +30,10 @@ export type Category = {
       description: "This category includes all carpentry repair related tasks and activities.",
       dateCreated: "2022-04-01T00:00:00",
     },
+    {
+      id: "5",
+      name: "Painting",
+      description: "This category includes all painting and surface finishing related tasks and activities.",
+      dateCreated: "2022-06-01T00:00:00",
+    },
   ]

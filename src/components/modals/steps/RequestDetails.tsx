@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { categoryData } from "@/helpers/table-data/category-data"
 
 export default function RequestDetails({ formData, updateFormData, onNext }) {
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,7 +19,7 @@ export default function RequestDetails({ formData, updateFormData, onNext }) {
           id="title"
           value={formData.title}
           onChange={(e) => updateFormData({ title: e.target.value })}
-          placeholder="Repair Air Condition"
+          placeholder="Request"
           required
         />
       </div>
@@ -28,7 +29,7 @@ export default function RequestDetails({ formData, updateFormData, onNext }) {
           id="description"
           value={formData.description}
           onChange={(e) => updateFormData({ description: e.target.value })}
-          placeholder="The air condition unit in room 201 is not cooling properly"
+          placeholder="Write your description here"
           required
         />
       </div>
@@ -42,9 +43,11 @@ export default function RequestDetails({ formData, updateFormData, onNext }) {
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="repair">Repair</SelectItem>
-            <SelectItem value="maintenance">Maintenance</SelectItem>
-            <SelectItem value="installation">Installation</SelectItem>
+          {categoryData.map((category) => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -70,7 +73,7 @@ export default function RequestDetails({ formData, updateFormData, onNext }) {
           id="fiscalYear"
           value={formData.fiscalYear}
           onChange={(e) => updateFormData({ fiscalYear: e.target.value })}
-          placeholder="2024"
+          placeholder="ex: 2024"
           required
         />
       </div>
@@ -80,7 +83,7 @@ export default function RequestDetails({ formData, updateFormData, onNext }) {
           id="location"
           value={formData.location}
           onChange={(e) => updateFormData({ location: e.target.value })}
-          placeholder="2nd floor, Administrative Building, Capitol Complex"
+          placeholder="ex: 2nd floor, Administrative Building, Capitol Complex"
           required
         />
       </div>
