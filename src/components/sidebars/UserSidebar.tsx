@@ -30,30 +30,34 @@ export default function UserSidebar() {
   const [error, setError] = useState('')
 
   const handleLogout = async () => {
-    setIsLoading(true); setError('');
+    setIsLoading(true) 
+    setError('')
     try {
-      const response = await fetch('https://server.pgso.bpc-bsis4d.com/public/api/logout', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
+      
       if (!response.ok) {
-        throw new Error('Logout failed');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Logout failed');
       }
+      
       localStorage.removeItem('token');
       localStorage.removeItem('role');
       localStorage.removeItem('user');
       window.dispatchEvent(new Event('authChange'));
       router.push('/');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (err: any) {
+      setError(err.message);
       console.error('Logout error:', err);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     const role = localStorage.getItem('role')
