@@ -33,31 +33,28 @@ export default function UserSidebar() {
     setIsLoading(true) 
     setError('')
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+      const response = await fetch('https://server.pgso.bpc-bsis4d.com/public/api/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Logout failed');
+        throw new Error('Logout failed')
       }
-      
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      localStorage.removeItem('user');
-      window.dispatchEvent(new Event('authChange'));
-      router.push('/');
-    } catch (err: any) {
-      setError(err.message);
-      console.error('Logout error:', err);
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
+      localStorage.removeItem('user')
+      window.dispatchEvent(new Event('authChange'))
+      router.push('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Logout error:', err)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     const role = localStorage.getItem('role')
