@@ -49,6 +49,7 @@ export default function UserSidebar() {
       router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Logout error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -81,13 +82,17 @@ export default function UserSidebar() {
     })
   }, [role])
 
-
   return (
     <Sidebar>
       <SidebarHeader>
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
+        {error && (
+          <div className="px-4 py-2 text-red-500 text-sm">
+            {error}
+          </div>
+        )}
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
