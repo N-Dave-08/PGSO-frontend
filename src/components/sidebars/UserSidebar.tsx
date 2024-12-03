@@ -17,7 +17,7 @@ import { routesData } from '@/helpers/routes'
 import { NavUser } from '@/components/navbars/nav-user'
 import Link from 'next/link'
 
-export default function AdminSidebar() {
+export default function UserSidebar() {
 
   const path = usePathname()
   const [role, setRole] = useState<string>('')
@@ -28,9 +28,9 @@ export default function AdminSidebar() {
   }, [])
 
   const filteredRoutes = React.useMemo(() => {
-    const adminRoutes = ['DASHBOARD', 'USERS', 'REQUESTS', 'CATEGORIES', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS']
+    const adminRoutes = ['DASHBOARD', 'USERS', 'REQUESTS', 'CATEGORIES', 'DEPARTMENTS', 'DIVISIONS', 'AUDIT_LOGS', 'SETTINGS']
     const personnelRoutes = ['DASHBOARD', 'PROFILE', 'TASKS', 'CALENDAR', 'FEEDBACK', 'SETTINGS']
-    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS']
+    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'AUDIT_LOGS', 'SETTINGS', 'PROFILE']
     const staffRoutes = ['DASHBOARD', 'REQUESTS', 'PROFILE', 'AUDIT_LOGS', 'SETTINGS']
     
     return Object.entries(routesData).filter(([key]) => {

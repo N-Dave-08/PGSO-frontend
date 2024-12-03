@@ -61,8 +61,9 @@ export function NavUser() {
                                 <AvatarFallback className="rounded-lg">JD</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">
-                                    John Doe ({role})
+                                <span className="flex gap-1 truncate">
+                                    <p className='font-semibold truncate'>John Doe</p>
+                                    <p className='opacity-50 font-light text-xs'>({role})</p>
                                 </span>
                                 <span className="truncate text-xs">{user ? user.email : 'Loading...'}</span>
                             </div>

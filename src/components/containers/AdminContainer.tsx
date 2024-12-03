@@ -1,6 +1,6 @@
 import React from 'react'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import AdminSidebar from '@/components/sidebars/AdminSidebar'
+import UserSidebar from '@/components/sidebars/UserSidebar'
 
 interface AdminContainerProps { 
     children: React.ReactNode; 
@@ -9,7 +9,7 @@ interface AdminContainerProps {
 export default function AdminContainer({ children }: AdminContainerProps) {
     return (
         <SidebarProvider>
-            <AdminSidebar />
+            <UserSidebar />
             <main className='p-4 flex flex-col w-full'>
                 {children}
             </main>
