@@ -1,48 +1,61 @@
-import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
+interface RequestFormData {
+    title: string
+    description: string
+    location: string
+}
 
-export default function RequestDetails({ formData, updateFormData, onNext }) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onNext()
-  }
+interface RequestDetailsProps {
+    formData: RequestFormData
+    updateFormData: (data: Partial<RequestFormData>) => void
+    onNext: () => void
+}
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => updateFormData({ title: e.target.value })}
-          required
-        />
-      </div>
+export default function RequestDetails({ formData, updateFormData, onNext }: RequestDetailsProps) {
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        onNext()
+    }
 
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => updateFormData({ description: e.target.value })}
-          required
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="supportingFile">Supporting File</Label>
-        <Input
-          id="supportingFile"
-          type="file"
-          onChange={(e) => updateFormData({ supportingFile: e.target.files[0] })}
-        />
-      </div>
-
-      <Button type="submit">Next</Button>
-    </form>
-  )
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => updateFormData({ title: e.target.value })}
+                    placeholder="Enter request title"
+                    required
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => updateFormData({ description: e.target.value })}
+                    placeholder="Enter request description"
+                    required
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => updateFormData({ location: e.target.value })}
+                    placeholder="Enter location"
+                    required
+                />
+            </div>
+            <div className="flex justify-end">
+                <Button type="submit">Next</Button>
+            </div>
+        </form>
+    )
 }

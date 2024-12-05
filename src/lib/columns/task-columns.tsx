@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare, Users } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Trash, Users } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { UpdateTask } from "@/components/modals/update-task"
