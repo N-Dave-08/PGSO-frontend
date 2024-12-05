@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { getCategories } from "@/lib/api/categories"
 
-export default function Review({ formData, onNext, onPrevious }) {
+export default function Review({ formData, onNext, updateFormData }) {
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const [role, setRole] = useState<string>('')
 
@@ -9,6 +14,22 @@ export default function Review({ formData, onNext, onPrevious }) {
     const role = localStorage.getItem('role')
     setRole(role)
   }, [])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        const categoriesData = response.categories || [];
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const requestorDetails = [
     { label: 'Name', value: formData.requestor.name },
@@ -43,8 +64,36 @@ export default function Review({ formData, onNext, onPrevious }) {
           </p>
         ))}
       </div>
+      {
+        role === 'head' && (
+          <div>
+            <Label htmlFor="category">Category</Label>
+            <Select
+              value={formData.category}
+              onValueChange={(value) => updateFormData({ category: value })}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {loading ? (
+                  <SelectItem value="loading">Loading categories...</SelectItem>
+                ) : (
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.category_name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        )
+      }
+
       <div className="flex justify-between">
-        <Button onClick={onPrevious}>Previous</Button>
+        {/* <Button onClick={onPrevious}>Previous</Button> */}
         {
           role === 'head' && (
             <div className="flex gap-3">

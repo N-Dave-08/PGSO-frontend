@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -13,7 +13,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Plus } from 'lucide-react'
-import { createDivision } from '@/lib/api/division'
+import { createDivision } from '@/lib/api/divisions'
+import { getCategories } from '@/lib/api/categories'
 import {
     Select,
     SelectContent,
@@ -21,26 +22,57 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface CreateDivisionProps {
     onDivisionCreated: () => void;
 }
-
-const categories = [
-    { id: 1, name: 'Category 1' },
-    { id: 2, name: 'Category 2' },
-    { id: 3, name: 'Category 3' },
-    { id: 4, name: 'Category 4' },
-]
 
 export default function CreateDivision({ onDivisionCreated }: CreateDivisionProps) {
     const [open, setOpen] = useState<boolean>(false)
     const [divisionName, setDivisionName] = useState<string>('')
     const [officeLocation, setOfficeLocation] = useState<string>('')
     const [categoryId, setCategoryId] = useState<string>('')
-    const [staffCount, setStaffCount] = useState<string>('')
+    const [selectedStaff, setSelectedStaff] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [categories, setCategories] = useState<any[]>([])
+    const [loadingCategories, setLoadingCategories] = useState(true)
+
+    const staffMembers = [
+        { id: '1', name: 'John Doe' },
+        { id: '2', name: 'Jane Smith' },
+        { id: '3', name: 'Michael Johnson' },
+        { id: '4', name: 'Sarah Williams' },
+        { id: '5', name: 'Robert Brown' },
+        { id: '6', name: 'Emily Davis' },
+        { id: '7', name: 'William Wilson' },
+        { id: '8', name: 'Jessica Taylor' }
+    ]
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await getCategories();
+                setCategories(response.categories || []);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+                setError('Failed to load categories');
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    const handleStaffChange = (staffId: string) => {
+        setSelectedStaff(current => 
+            current.includes(staffId)
+                ? current.filter(id => id !== staffId)
+                : [...current, staffId]
+        )
+    }
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -52,14 +84,14 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
                 division_name: divisionName,
                 office_location: officeLocation,
                 category_id: parseInt(categoryId, 10),
-                staff: parseInt(staffCount, 10) || 0
+                staff: selectedStaff.map(id => staffMembers.find(s => s.id === id)?.name || '')
             })
 
             setOpen(false)
             setDivisionName('')
             setOfficeLocation('')
             setCategoryId('')
-            setStaffCount('')
+            setSelectedStaff([])
             onDivisionCreated()
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred')
@@ -115,27 +147,39 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
                                 <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
                             <SelectContent>
-                                {categories.map((category) => (
-                                    <SelectItem
-                                        key={category.id}
-                                        value={category.id.toString()}
-                                    >
-                                        {category.name}
-                                    </SelectItem>
-                                ))}
+                                {loadingCategories ? (
+                                    <SelectItem value="">Loading categories...</SelectItem>
+                                ) : categories.length > 0 ? (
+                                    categories.map((category) => (
+                                        <SelectItem key={category.id} value={category.id.toString()}>
+                                            {category.category_name}
+                                        </SelectItem>
+                                    ))
+                                ) : (
+                                    <SelectItem value="">No categories available</SelectItem>
+                                )}
                             </SelectContent>
                         </Select>
                     </div>
-                    <div>
-                        <Label htmlFor="staffCount">Staff Count</Label>
-                        <Input
-                            id="staffCount"
-                            value={staffCount}
-                            onChange={(e) => setStaffCount(e.target.value)}
-                            placeholder="Enter staff count"
-                            required
-                            type="number"
-                        />
+                    <div className="space-y-2">
+                        <Label>Add Staff Members</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {staffMembers.map((staff) => (
+                                <div key={staff.id} className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id={`staff-${staff.id}`}
+                                        checked={selectedStaff.includes(staff.id)}
+                                        onCheckedChange={() => handleStaffChange(staff.id)}
+                                    />
+                                    <label
+                                        htmlFor={`staff-${staff.id}`}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        {staff.name}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     {error && (
                         <div className="text-red-500 text-sm">{error}</div>

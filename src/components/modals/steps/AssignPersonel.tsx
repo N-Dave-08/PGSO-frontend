@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,11 +20,12 @@ interface AssignPersonnelProps {
   };
   updateFormData: (newData: Partial<AssignPersonnelProps['formData']>) => void;
   onNext: () => void;
-  onPrevious: () => void;
+  // onPrevious: () => void;
 }
 
-export default function AssignPersonnel({ formData, updateFormData, onNext, onPrevious }: AssignPersonnelProps) {
+export default function AssignPersonnel({ formData, updateFormData, onNext }: AssignPersonnelProps) {
   const [newPersonnel, setNewPersonnel] = useState('')
+  const [role, setRole] = useState<string>('')
 
   const addPersonnel = () => {
     if (newPersonnel.trim()) {
@@ -34,6 +35,11 @@ export default function AssignPersonnel({ formData, updateFormData, onNext, onPr
       setNewPersonnel('')
     }
   }
+
+  useEffect(() => {
+    const role = localStorage.getItem('role')
+    setRole(role)
+  }, [])
 
   const requestorDetails = [
     { label: 'Name', value: formData.requestor.name },
@@ -63,25 +69,31 @@ export default function AssignPersonnel({ formData, updateFormData, onNext, onPr
       <div>
         <h3 className="font-medium">Request Details</h3>
         <div>
-        {requestDetails.map(({ label, value }) => (
-          <p key={label} className="font-medium">
-            {label}: <span className="font-light">{value}</span>
-          </p>
-        ))}
-      </div>
-      </div>
-      <div>
-        <Label htmlFor="newPersonnel">Add Service Personnel</Label>
-        <div className="flex gap-2">
-          <Input
-            id="newPersonnel"
-            value={newPersonnel}
-            onChange={(e) => setNewPersonnel(e.target.value)}
-            placeholder="Enter personnel name"
-          />
-          <Button onClick={addPersonnel}>Add</Button>
+          {requestDetails.map(({ label, value }) => (
+            <p key={label} className="font-medium">
+              {label}: <span className="font-light">{value}</span>
+            </p>
+          ))}
         </div>
       </div>
+
+      {
+        role === 'admin' && (
+          <div>
+            <Label htmlFor="newPersonnel">Add Service Personnel</Label>
+            <div className="flex gap-2">
+              <Input
+                id="newPersonnel"
+                value={newPersonnel}
+                onChange={(e) => setNewPersonnel(e.target.value)}
+                placeholder="Enter personnel name"
+              />
+              <Button onClick={addPersonnel}>Add</Button>
+            </div>
+          </div>
+        )
+      }
+
       {formData.assignedPersonnel.length > 0 && (
         <div>
           <h3 className="font-medium">Assigned Personnel</h3>
@@ -93,8 +105,12 @@ export default function AssignPersonnel({ formData, updateFormData, onNext, onPr
         </div>
       )}
       <div className="flex justify-between">
-        <Button onClick={onPrevious}>Previous</Button>
-        <Button onClick={onNext}>Submit</Button>
+        {/* <Button onClick={onPrevious}>Previous</Button> */}
+        {
+          role === 'admin' && (
+            <Button onClick={onNext}>Submit</Button>
+          )
+        }
       </div>
     </div>
   )

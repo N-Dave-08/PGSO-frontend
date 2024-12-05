@@ -3,7 +3,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { StarRating } from "@/components/StarRating"
 
-export default function Feedback({ formData, updateFormData, onPrevious, onComplete }) {
+export default function Feedback({ formData, updateFormData, onComplete }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onComplete()
@@ -61,7 +61,7 @@ export default function Feedback({ formData, updateFormData, onPrevious, onCompl
         />
       </div>
       <div className="flex justify-between">
-        <Button type="button" onClick={onPrevious}>Previous</Button>
+        {/* <Button type="button" onClick={onPrevious}>Previous</Button> */}
         <Button type="submit">Complete</Button>
       </div>
     </form>

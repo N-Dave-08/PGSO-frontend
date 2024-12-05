@@ -85,7 +85,7 @@ export const columns: ColumnDef<Request>[] = [
   },
   {
     accessorKey: "assignTo",
-    header: "Staffs",
+    header: "Personnels Assigned",
     cell: ({ row }) => {
       const divisions = row.getValue("assignTo") as string[]
       return (
@@ -114,11 +114,11 @@ export const columns: ColumnDef<Request>[] = [
       return status === "pending" ? (
         <RequestModal TriggerName="Pending" StepNum={1} />
       ) : status === "rejected" ? (
-        <RequestModal TriggerName="To Assign" StepNum={2} />
+        <RequestModal TriggerName="Rejected" />
       ) : status === "to assign" ? (
-        <RequestModal TriggerName="In Progress" StepNum={3} />
+        <RequestModal TriggerName="To Assign" StepNum={2} />
       ) : status === "in progress" ? (
-        <Badge variant="primary">In Progess</Badge>
+        <RequestModal TriggerName="In Progress" StepNum={3} />
       ) : status === "for feedback" ? (
         <RequestModal TriggerName="For Feedback" StepNum={4} />
       ) : status === "completed" ? (
@@ -141,24 +141,6 @@ export const columns: ColumnDef<Request>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue("requested"))
-      return <div>{date.toLocaleString()}</div>
-    },
-  },
-  {
-    accessorKey: "dueDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Due Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("dueDate"))
       return <div>{date.toLocaleString()}</div>
     },
   },

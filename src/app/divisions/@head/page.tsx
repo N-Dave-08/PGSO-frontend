@@ -47,10 +47,7 @@ export default function Page() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-bold tracking-tight">Divisions</h2>
-        <CreateDivision onDivisionCreated={fetchDivisions} />
-      </div>
+      <CreateDivision onDivisionCreated={fetchDivisions} />
       <DivisionTable data={divisions} />
     </div>
   )

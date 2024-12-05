@@ -42,9 +42,9 @@ export default function RequestModal({TriggerName, StepNum}: RequestModalProps) 
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1))
   }
 
-  const handlePrevious = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }
+  // const handlePrevious = () => {
+  //   setCurrentStep((prev) => Math.max(prev - 1, 0))
+  // }
 
   const updateFormData = (newData: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...newData }))
@@ -55,13 +55,13 @@ export default function RequestModal({TriggerName, StepNum}: RequestModalProps) 
       case 0:
         return <RequestDetails formData={formData} updateFormData={updateFormData} onNext={handleNext} />
       case 1:
-        return <Review formData={formData} onNext={handleNext} onPrevious={handlePrevious} />
+        return <Review formData={formData} updateFormData={updateFormData} onNext={handleNext} />
       case 2:
-        return <AssignPersonnel formData={formData} updateFormData={updateFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        return <AssignPersonnel formData={formData} updateFormData={updateFormData} onNext={handleNext} />
       case 3:
-        return <Completion formData={formData} updateFormData={updateFormData} onNext={handleNext} onPrevious={handlePrevious} />
+        return <Completion formData={formData} updateFormData={updateFormData} onNext={handleNext}/>
       case 4:
-        return <Feedback formData={formData} updateFormData={updateFormData} onPrevious={handlePrevious} onComplete={() => setIsOpen(false)} />
+        return <Feedback formData={formData} updateFormData={updateFormData} onComplete={() => setIsOpen(false)} />
       default:
         return null
     }

@@ -1,8 +1,17 @@
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-export default function Completion({ formData, updateFormData, onNext, onPrevious }) {
+export default function Completion({ formData, updateFormData, onNext }) {
+
+  const [role, setRole] = useState<string>('')
+
+  useEffect(() => {
+    const role = localStorage.getItem('role')
+    setRole(role)
+  }, [])
+
   const handleComplete = () => {
     updateFormData({
       status: 'completed',
@@ -47,28 +56,34 @@ export default function Completion({ formData, updateFormData, onNext, onPreviou
           ))}
         </ul>
       </div>
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="complete"
-          checked={formData.serviceCompleted}
-          onCheckedChange={(checked) => updateFormData({ serviceCompleted: checked })}
-        />
-        <Label
-          htmlFor="complete"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          I confirm that this task has been completed
-        </Label>
-      </div>
-      <div className="flex justify-between pt-4">
-        <Button onClick={onPrevious}>Previous</Button>
-        <Button 
-          onClick={handleComplete}
-          disabled={!formData.serviceCompleted}
-        >
-          Mark as Complete
-        </Button>
-      </div>
+      {
+        role === 'personnel' && (
+          <>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="complete"
+                checked={formData.serviceCompleted}
+                onCheckedChange={(checked) => updateFormData({ serviceCompleted: checked })}
+              />
+              <Label
+                htmlFor="complete"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I confirm that this task has been completed
+              </Label>
+            </div>
+            <div className="flex justify-between pt-4">
+              {/* <Button onClick={onPrevious}>Previous</Button> */}
+              <Button
+                onClick={handleComplete}
+                disabled={!formData.serviceCompleted}
+              >
+                Mark as Complete
+              </Button>
+            </div>
+          </>
+        )
+      }
     </div>
   )
 }

@@ -38,7 +38,6 @@ export default function CreateDepartment({ onDepartmentCreated }: CreateDepartme
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>('')
-    const router = useRouter()
 
     useEffect(() => {
         const fetchDivisions = async () => {
