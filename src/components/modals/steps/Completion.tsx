@@ -54,6 +54,8 @@ export default function Completion({ formData, updateFormData, onNext }) {
           {formData.assignedPersonnel.map((person, index) => (
             <li key={index}>{person}</li>
           ))}
+          <li>John Doe</li>
+          <li>John Doe</li>
         </ul>
       </div>
       {

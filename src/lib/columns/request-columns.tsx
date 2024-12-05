@@ -117,8 +117,8 @@ export const columns: ColumnDef<Request>[] = [
         <RequestModal TriggerName="Rejected" />
       ) : status === "to assign" ? (
         <RequestModal TriggerName="To Assign" StepNum={2} />
-      ) : status === "in progress" ? (
-        <RequestModal TriggerName="In Progress" StepNum={3} />
+      ) : status === "waiting" ? (
+        <RequestModal TriggerName="Waiting For Completion" StepNum={3} />
       ) : status === "for feedback" ? (
         <RequestModal TriggerName="For Feedback" StepNum={4} />
       ) : status === "completed" ? (

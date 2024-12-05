@@ -4,7 +4,7 @@ export type Request = {
     requestedBy: string
     role: "head" | "PGSO Staff"
     category: string
-    status: "pending" | "rejected" | "to assign" | "in progress" | "for feedback" | "completed"
+    status: "pending" | "rejected" | "to assign" | "waiting" | "for feedback" | "completed"
     priority: string
     assignTo: string[]
     requested: string
@@ -90,7 +90,7 @@ export type Request = {
       requestedBy: "David Wilson",
       role: "head",
       category: "HVAC",
-      status: "in progress",
+      status: "waiting",
       priority: "High",
       assignTo: ["Robert Chen"],
       requested: "2022-07-01T00:00:00",
