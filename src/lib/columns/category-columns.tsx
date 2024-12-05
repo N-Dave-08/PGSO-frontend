@@ -10,7 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Category } from "@/helpers/table-data/category-data"
+
+export type Category = {
+  id: number
+  name: string
+  description: string
+}
+
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -56,24 +62,6 @@ export const columns: ColumnDef<Category>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
   },
   {
-    accessorKey: "dateCreated",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
-      return <div>{date.toLocaleString()}</div>
-    },
-  },
-  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -91,7 +79,7 @@ export const columns: ColumnDef<Category>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(category.id)}
+              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
             >
               Copy category ID
             </DropdownMenuItem>

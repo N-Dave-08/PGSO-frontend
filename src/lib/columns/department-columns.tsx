@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, PenSquare, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -10,17 +10,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Department } from "@/helpers/table-data/department-data"
+
+export type Division = {
+  id: number
+  division_name: string
+}
+
+export type Department = {
+  id: number
+  name: string
+  acronym: string
+  divisions: Division[]
+}
 
 export const columns: ColumnDef<Department>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() ? true : false)
-        }
+        checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -37,66 +45,53 @@ export const columns: ColumnDef<Department>[] = [
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Department Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "acronym",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Acronym
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("acronym")}</div>,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Acronym
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="uppercase">{row.getValue("acronym")}</div>,
   },
   {
     accessorKey: "divisions",
-    header: "Division",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Divisions
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const divisions = row.getValue("divisions") as string[]
-      return <div className="capitalize">{divisions.join(", ")}</div>
-    },
-  },
-  {
-    accessorKey: "dateCreated",
-    header: ({ column }) => {
+      const divisions = row.getValue("divisions") as Division[]
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="capitalize">
+          {divisions.map(div => div.division_name).join(", ")}
+        </div>
       )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
-      return <div>{date.toLocaleString()}</div>
     },
   },
   {
     id: "actions",
-    enableHiding: false,
     cell: ({ row }) => {
-      const department = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -109,17 +104,17 @@ export const columns: ColumnDef<Department>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(department.id)}
+              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
             >
               Copy Department ID
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <PenSquare />
-              Edit
+              <PenSquare className="mr-2 h-4 w-4" />
+              Edit Department
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash />
-              Delete
+            <DropdownMenuItem className="text-red-600">
+              <Trash className="mr-2 h-4 w-4" />
+              Delete Department
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -127,4 +122,3 @@ export const columns: ColumnDef<Department>[] = [
     },
   },
 ]
-

@@ -10,18 +10,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Division } from "@/helpers/table-data/division-data"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+
+export type Division = {
+  id: number
+  name: string
+  officeLocation: string
+  staff: number | null
+  dateCreated: string
+}
 
 export const columns: ColumnDef<Division>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() ? true : false)
-        }
+        checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -38,69 +41,60 @@ export const columns: ColumnDef<Division>[] = [
   },
   {
     accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Division Name
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "officeLocation",
-    header: "Office Location",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("officeLocation")}</div>
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Office Location
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
   },
   {
     accessorKey: "staff",
-    header: "Staffs",
-    cell: ({ row }) => {
-      const divisions = row.getValue("staff") as string[]
-      return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost">
-            <div className="capitalize cursor-pointer">{divisions.length} Staffs</div>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            {divisions.map((staff, index) => (
-              <div key={index}>{staff}</div>
-            ))}
-          </PopoverContent>
-        </Popover>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Staff Count
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => row.getValue("staff") || "N/A",
   },
   {
     accessorKey: "dateCreated",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Date Created
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
-      return <div>{date.toLocaleString()}</div>
+      const date = row.getValue("dateCreated")
+      return date ? new Date(date as string).toLocaleDateString() : "N/A"
     },
   },
   {
     id: "actions",
-    enableHiding: false,
     cell: ({ row }) => {
-      const department = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -113,9 +107,9 @@ export const columns: ColumnDef<Division>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(department.id)}
+               onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
             >
-              Copy Department ID
+              Copy Division ID
             </DropdownMenuItem>
             <DropdownMenuItem>
               <PenSquare />
@@ -131,4 +125,3 @@ export const columns: ColumnDef<Division>[] = [
     },
   },
 ]
-

@@ -38,9 +38,12 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/division-columns"
-import { divisionData } from "@/helpers/table-data/division-data"
 
-export function DivisionTable() {
+interface DivisionTableProps {
+  data: any[]
+}
+
+export function DivisionTable({ data }: DivisionTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -48,7 +51,7 @@ export function DivisionTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: divisionData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

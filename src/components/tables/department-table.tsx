@@ -38,9 +38,12 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/department-columns"
-import { departmentData } from "@/helpers/table-data/department-data"
 
-export function DepartmentTable() {
+interface DepartmentTableProps {
+  data: any[]
+}
+
+export function DepartmentTable({data}: DepartmentTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -48,7 +51,7 @@ export function DepartmentTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: departmentData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

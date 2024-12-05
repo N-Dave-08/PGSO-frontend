@@ -3,8 +3,13 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
 export default function Completion({ formData, updateFormData, onNext, onPrevious }) {
-  const handleServiceCompletion = (checked: boolean) => {
-    updateFormData({ serviceCompleted: checked })
+  const handleComplete = () => {
+    updateFormData({
+      status: 'completed',
+      serviceCompleted: true,
+      completionDate: new Date().toISOString()
+    })
+    onNext()
   }
 
   const requestorDetails = [
@@ -23,14 +28,16 @@ export default function Completion({ formData, updateFormData, onNext, onPreviou
           </p>
         ))}
       </div>
-      <div>
-        <h3 className="font-medium">Request Details</h3>
-        <p>Title: {formData.title}</p>
-        <p>Description: {formData.description}</p>
-        <p>Category: {formData.category}</p>
-        <p>Priority Level: {formData.priorityLevel}</p>
-        <p>Fiscal Year: {formData.fiscalYear}</p>
-        <p>Location: {formData.location}</p>
+      <div className="bg-base-300 p-4 rounded-box">
+        <h3 className="font-medium">Task Details</h3>
+        <div className="space-y-2">
+          <p><span className="font-medium">Title:</span> {formData.title}</p>
+          <p><span className="font-medium">Description:</span> {formData.description}</p>
+          <p><span className="font-medium">Category:</span> {formData.category}</p>
+          <p><span className="font-medium">Priority Level:</span> {formData.priorityLevel}</p>
+          <p><span className="font-medium">Location:</span> {formData.location}</p>
+          <p><span className="font-medium">Assigned Date:</span> {formData.approvalDate ? new Date(formData.approvalDate).toLocaleDateString() : 'Not assigned'}</p>
+        </div>
       </div>
       <div>
         <h3 className="font-medium">Assigned Personnel</h3>
@@ -42,17 +49,26 @@ export default function Completion({ formData, updateFormData, onNext, onPreviou
       </div>
       <div className="flex items-center space-x-2">
         <Checkbox
-          id="serviceCompleted"
+          id="complete"
           checked={formData.serviceCompleted}
-          onCheckedChange={handleServiceCompletion}
+          onCheckedChange={(checked) => updateFormData({ serviceCompleted: checked })}
         />
-        <Label htmlFor="serviceCompleted">Service Completed</Label>
+        <Label
+          htmlFor="complete"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          I confirm that this task has been completed
+        </Label>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between pt-4">
         <Button onClick={onPrevious}>Previous</Button>
-        <Button onClick={onNext} disabled={!formData.serviceCompleted}>Next</Button>
+        <Button 
+          onClick={handleComplete}
+          disabled={!formData.serviceCompleted}
+        >
+          Mark as Complete
+        </Button>
       </div>
     </div>
   )
 }
-

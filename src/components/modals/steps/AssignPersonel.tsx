@@ -3,7 +3,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function AssignPersonnel({ formData, updateFormData, onNext, onPrevious }) {
+interface AssignPersonnelProps {
+  formData: {
+    requestor: {
+      name: string;
+      department: string;
+      division: string;
+    };
+    assignedPersonnel: string[];
+    title: string;
+    description: string;
+    category: string;
+    priorityLevel: string;
+    fiscalYear: string;
+    location: string;
+  };
+  updateFormData: (newData: Partial<AssignPersonnelProps['formData']>) => void;
+  onNext: () => void;
+  onPrevious: () => void;
+}
+
+export default function AssignPersonnel({ formData, updateFormData, onNext, onPrevious }: AssignPersonnelProps) {
   const [newPersonnel, setNewPersonnel] = useState('')
 
   const addPersonnel = () => {
@@ -79,4 +99,3 @@ export default function AssignPersonnel({ formData, updateFormData, onNext, onPr
     </div>
   )
 }
-

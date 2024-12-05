@@ -12,16 +12,21 @@ import Feedback from '@/components/modals/steps/Feedback'
 
 const steps = ['Request Details', 'Review', 'Assign Personnel', 'Completion', 'Feedback']
 
-export default function RequestModal() {
+interface RequestModalProps {
+  TriggerName: string
+  StepNum?: number
+}
+
+export default function RequestModal({TriggerName, StepNum}: RequestModalProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(StepNum || 0)
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    priorityLevel: '',
-    fiscalYear: '',
-    location: '',
+    title: 'Outlet Broken',
+    description: 'The outlet is defective',
+    category: 'Electrical',
+    priorityLevel: 'Low',
+    fiscalYear: '2024',
+    location: 'asd',
     supportingFile: null,
     requestor: {
       name: 'John Doe',
@@ -64,7 +69,7 @@ export default function RequestModal() {
 
   return (
     <>
-      <Button variant='secondary' onClick={() => setIsOpen(true)}>Request Service</Button>
+      <Button variant='secondary' onClick={() => setIsOpen(true)}>{TriggerName}</Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTitle></DialogTitle>
         <DialogContent className="h-[90%] p-0 gap-0">

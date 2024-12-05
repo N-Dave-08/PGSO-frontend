@@ -38,9 +38,12 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/category-columns"
-import { categoryData } from "@/helpers/table-data/category-data"
 
-export function CategoryTable() {
+interface CategoryTableProps {
+  data: any[]
+}
+
+export function CategoryTable({data}: CategoryTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -48,7 +51,7 @@ export function CategoryTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: categoryData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -67,6 +70,7 @@ export function CategoryTable() {
       globalFilter,
     },
   })
+  
 
   return (
     <div className="w-full">

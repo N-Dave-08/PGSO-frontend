@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Request } from "@/helpers/table-data/request-data"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import RequestModal from "@/components/modals/request-modal"
 
 export const columns: ColumnDef<Request>[] = [
   {
@@ -111,15 +112,15 @@ export const columns: ColumnDef<Request>[] = [
       const status = row.getValue("status")
 
       return status === "pending" ? (
-        <Badge>Pending</Badge>
+        <RequestModal TriggerName="Pending" StepNum={1} />
       ) : status === "rejected" ? (
-        <Badge variant="destructive">Rejected</Badge>
+        <RequestModal TriggerName="To Assign" StepNum={2} />
       ) : status === "to assign" ? (
-        <Badge variant="primary">To Assign</Badge>
+        <RequestModal TriggerName="In Progress" StepNum={3} />
       ) : status === "in progress" ? (
         <Badge variant="primary">In Progess</Badge>
       ) : status === "for feedback" ? (
-        <Badge variant="secondary">For Feedback</Badge>
+        <RequestModal TriggerName="For Feedback" StepNum={4} />
       ) : status === "completed" ? (
         <Badge variant="success">Completed</Badge>
       ) : ''

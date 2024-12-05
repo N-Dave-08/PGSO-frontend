@@ -77,7 +77,6 @@ export function RequestTable() {
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
-        <RequestModal />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" className="ml-auto">
