@@ -161,6 +161,11 @@ export const columns: ColumnDef<Division>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
+            >
+              Copy Department ID
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <PenSquare className="mr-2 h-4 w-4" />
               Edit
