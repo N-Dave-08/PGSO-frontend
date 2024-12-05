@@ -31,7 +31,7 @@ export type Division = {
   dateCreated: string
 }
 
-export const columns: ColumnDef<Division, any>[] = [
+export const columns: ColumnDef<Division>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -150,8 +150,6 @@ export const columns: ColumnDef<Division, any>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const division = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
