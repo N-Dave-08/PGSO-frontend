@@ -29,24 +29,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { columns } from "@/lib/columns/division-columns"
-
-interface Division {
-  id: number
-  name: string
-  description: string
-  officeLocation: string
-  staff: number | null
-  dateCreated: string
-}
+import { Division } from "@/lib/columns/division-columns"
 
 interface DivisionTableProps {
   data: Division[]

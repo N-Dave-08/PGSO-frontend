@@ -31,7 +31,7 @@ export type Division = {
   dateCreated: string
 }
 
-export const columns: ColumnDef<Division>[] = [
+export const columns: ColumnDef<Division, any>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -53,101 +53,105 @@ export const columns: ColumnDef<Division>[] = [
   },
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Division Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "officeLocation",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Office Location
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Office Location
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "staff",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Staff Count
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Staff
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const staff = row.getValue("staff") as Division["staff"]
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
-            <Button variant="ghost">
-              {staff ? staff.length : "N/A"} Staff
-            </Button>
+            <Button variant="link">{staff.length} members</Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-80">
             <div className="space-y-1">
-              <h4 className="text-sm font-semibold">Staff Members</h4>
-              {staff && staff.length > 0 ? (
-                <ul className="text-sm">
-                  {staff.map((member) => (
-                    <li key={member.id}>{member.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">No staff members</p>
-              )}
+              {staff.map((member) => (
+                <div key={member.id} className="text-sm">
+                  {member.name}
+                </div>
+              ))}
             </div>
           </HoverCardContent>
         </HoverCard>
       )
-    }
+    },
   },
   {
     accessorKey: "category",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Category
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Category
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const category = row.getValue("category") as Division["category"]
-      return category ? category.category_name : "N/A"
+      return category.category_name
     },
   },
   {
     accessorKey: "dateCreated",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Date Created
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Date Created
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
-      const date = row.getValue("dateCreated")
-      return date ? new Date(date as string).toLocaleDateString() : "N/A"
+      return new Date(row.getValue("dateCreated")).toLocaleDateString()
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
+      const division = row.original
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -159,17 +163,12 @@ export const columns: ColumnDef<Division>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-               onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
-            >
-              Copy Division ID
-            </DropdownMenuItem>
             <DropdownMenuItem>
-              <PenSquare />
+              <PenSquare className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Trash />
+              <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
