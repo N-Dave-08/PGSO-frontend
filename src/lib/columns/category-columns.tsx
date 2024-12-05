@@ -64,7 +64,7 @@ export const columns: ColumnDef<Category>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -78,9 +78,8 @@ export const columns: ColumnDef<Category>[] = [
             <DropdownMenuItem>
               <PenSquare className="mr-2 h-4 w-4" />
               Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">
+            </DropdownMenuItem> 
+            <DropdownMenuItem>
               <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
