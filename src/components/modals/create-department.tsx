@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2, Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { Checkbox } from "@/components/ui/checkbox"
 import { getDivisions } from '@/lib/api/divisions'
 

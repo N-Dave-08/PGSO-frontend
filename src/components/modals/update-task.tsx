@@ -29,18 +29,16 @@ interface UpdateTaskProps {
 
 export function UpdateTask({ task }: UpdateTaskProps) {
     const [open, setOpen] = useState(false)
-    const [title, setTitle] = useState(task.title)
     const [status, setStatus] = useState(task.status)
-    const [assignedTo, setAssignedTo] = useState<string[]>(task.assignedTo)
+    const [supportingFile, setSupportingFile] = useState(task.supportingFile || '')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // TODO: Implement the API call to update the task
         const updatedTask = {
             ...task,
-            title,
             status,
-            assignedTo,
+            supportingFile
         }
         console.log('Updating task:', updatedTask)
         setOpen(false)
@@ -67,11 +65,11 @@ export function UpdateTask({ task }: UpdateTaskProps) {
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="title" className="text-right">
+                            <Label className="text-right">
                                 Title
                             </Label>
                             <div className="col-span-3 text-sm text-gray-500">
-                                {title}
+                                {task.title}
                             </div>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -97,8 +95,9 @@ export function UpdateTask({ task }: UpdateTaskProps) {
                                 Supporting File
                             </Label>
                             <Input
-                                placeholder='supportile file here'
-                                value={'supporting file here'}
+                                value={supportingFile}
+                                onChange={(e) => setSupportingFile(e.target.value)}
+                                placeholder="Enter file name"
                                 className="col-span-3"
                             />
                         </div>

@@ -24,6 +24,16 @@ import {
 } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 
+interface Category {
+    id: string
+    category_name: string
+}
+
+interface Staff {
+    id: string
+    name: string
+}
+
 interface CreateDivisionProps {
     onDivisionCreated: () => void;
 }
@@ -36,10 +46,10 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
     const [selectedStaff, setSelectedStaff] = useState<string[]>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const [categories, setCategories] = useState<any[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
     const [loadingCategories, setLoadingCategories] = useState(true)
 
-    const staffMembers = [
+    const staffMembers: Staff[] = [
         { id: '1', name: 'John Doe' },
         { id: '2', name: 'Jane Smith' },
         { id: '3', name: 'Michael Johnson' },
@@ -53,13 +63,14 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await getCategories();
-                setCategories(response.categories || []);
-            } catch (error) {
-                console.error('Failed to fetch categories:', error);
-                setError('Failed to load categories');
+                setLoadingCategories(true)
+                const data = await getCategories()
+                setCategories(data)
+            } catch (err) {
+                console.error('Error fetching categories:', err)
+                setError('Failed to load categories')
             } finally {
-                setLoadingCategories(false);
+                setLoadingCategories(false)
             }
         };
 
@@ -149,15 +160,14 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
                             <SelectContent>
                                 {loadingCategories ? (
                                     <SelectItem value="">Loading categories...</SelectItem>
-                                ) : categories.length > 0 ? (
-                                    categories.map((category) => (
-                                        <SelectItem key={category.id} value={category.id.toString()}>
-                                            {category.category_name}
-                                        </SelectItem>
-                                    ))
-                                ) : (
-                                    <SelectItem value="">No categories available</SelectItem>
-                                )}
+                                ) : categories.map((category) => (
+                                    <SelectItem 
+                                        key={category.id} 
+                                        value={category.id}
+                                    >
+                                        {category.category_name}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>

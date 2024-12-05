@@ -5,6 +5,7 @@ export type Task = {
     assignedTo: string[]
     dateRequested: string
     location: string
+    supportingFile?: string
     requestor: {
         name: string
         department: string
@@ -20,6 +21,7 @@ export const taskData: Task[] = [
         assignedTo: ["John Doe", "Sarah Wilson"],
         dateRequested: "2024-02-15T09:30:00",
         location: "Main Office - 3rd Floor",
+        supportingFile: "purchase_request.pdf",
         requestor: {
             name: "John Michael",
             department: "Sample Department",
