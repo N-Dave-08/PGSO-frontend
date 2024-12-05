@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { CategoryTable } from '@/components/tables/category-table'
 import { getCategories } from '@/lib/api/categories'
 
-export default function page() {
+export default function Page() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
 

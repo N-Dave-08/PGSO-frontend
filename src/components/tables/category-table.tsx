@@ -39,11 +39,17 @@ import {
 
 import { columns } from "@/lib/columns/category-columns"
 
-interface CategoryTableProps {
-  data: any[]
+interface Category {
+  id: number
+  name: string
+  description: string
 }
 
-export function CategoryTable({data}: CategoryTableProps) {
+interface CategoryTableProps {
+  data: Category[]
+}
+
+export function CategoryTable({ data }: CategoryTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

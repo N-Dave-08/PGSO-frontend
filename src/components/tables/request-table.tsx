@@ -36,8 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import RequestModal from "@/components/modals/request-modal"
-import {columns} from "@/lib/columns/request-columns"
+
+import { columns } from "@/lib/columns/request-columns"
 import { requestData } from "@/helpers/table-data/request-data"
 
 export function RequestTable() {
@@ -196,4 +196,3 @@ export function RequestTable() {
     </div>
   )
 }
-

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { getDepartments } from '@/lib/api/department'
 import { DepartmentTable } from '@/components/tables/department-table'
 
-export default function page() {
+export default function Page() {
   const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
 

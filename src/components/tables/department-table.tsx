@@ -39,11 +39,23 @@ import {
 
 import { columns } from "@/lib/columns/department-columns"
 
-interface DepartmentTableProps {
-  data: any[]
+interface Division {
+  id: number
+  division_name: string
 }
 
-export function DepartmentTable({data}: DepartmentTableProps) {
+interface Department {
+  id: number
+  name: string
+  acronym: string
+  divisions: Division[]
+}
+
+interface DepartmentTableProps {
+  data: Department[]
+}
+
+export function DepartmentTable({ data }: DepartmentTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -199,4 +211,3 @@ export function DepartmentTable({data}: DepartmentTableProps) {
     </div>
   )
 }
-

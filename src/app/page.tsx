@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Hero from "@/components/sections/Hero";
 import Navbar from "@/components/navbars/Navbar";

@@ -65,8 +65,6 @@ export const columns: ColumnDef<Category>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const category = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -77,18 +75,13 @@ export const columns: ColumnDef<Category>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
-            >
-              Copy category ID
-            </DropdownMenuItem>
             <DropdownMenuItem>
-              <PenSquare />
+              <PenSquare className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash />
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-red-600">
+              <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

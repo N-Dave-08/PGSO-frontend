@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { DivisionTable } from '@/components/tables/division-table'
 import { getDivisions } from '@/lib/api/divisions'
 
-export default function page() {
+export default function Page() {
   const [divisions, setDivisions] = useState([])
   const [loading, setLoading] = useState(true)
 

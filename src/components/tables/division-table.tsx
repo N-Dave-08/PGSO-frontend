@@ -39,8 +39,17 @@ import {
 
 import { columns } from "@/lib/columns/division-columns"
 
+interface Division {
+  id: number
+  name: string
+  description: string
+  officeLocation: string
+  staff: number | null
+  dateCreated: string
+}
+
 interface DivisionTableProps {
-  data: any[]
+  data: Division[]
 }
 
 export function DivisionTable({ data }: DivisionTableProps) {
@@ -199,4 +208,3 @@ export function DivisionTable({ data }: DivisionTableProps) {
     </div>
   )
 }
-
