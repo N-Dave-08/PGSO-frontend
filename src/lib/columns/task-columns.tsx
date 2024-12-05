@@ -55,6 +55,11 @@ export const columns: ColumnDef<Task>[] = [
         cell: ({ row }) => <div className="capitalize">{row.getValue("title")}</div>,
       },
     {
+        accessorKey: "description",
+        header: "Description",
+        cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    },
+    {
         accessorKey: "assignedTo",
         header: ({ column }) => {
             return (

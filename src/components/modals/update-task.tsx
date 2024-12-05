@@ -73,6 +73,14 @@ export function UpdateTask({ task }: UpdateTaskProps) {
                             </div>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">
+                                Description
+                            </Label>
+                            <div className="col-span-3 text-sm text-gray-500">
+                                {task.description}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="status" className="text-right">
                                 Status
                             </Label>

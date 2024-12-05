@@ -1,6 +1,7 @@
 export type Task = {
     taskId: string
     title: string
+    description: string
     status: "Not Started" | "In Progress" | "Completed"
     assignedTo: string[]
     dateRequested: string
@@ -16,7 +17,8 @@ export type Task = {
 export const taskData: Task[] = [
     {
         taskId: "TASK-001",
-        title: "Review Purchase Request for IT Equipment",
+        title: "Broken Outlet",
+        description: "The outlet is defective.",
         status: "In Progress",
         assignedTo: ["John Doe", "Sarah Wilson"],
         dateRequested: "2024-02-15T09:30:00",
@@ -30,7 +32,8 @@ export const taskData: Task[] = [
     },
     {
         taskId: "TASK-002",
-        title: "Process Office Supplies Request",
+        title: "Outlet is Broken",
+        description: "Power outlet not functioning, requires immediate inspection and possible replacement.",
         status: "Not Started",
         assignedTo: ["John Doe"],
         dateRequested: "2024-02-16T11:20:00",
@@ -43,7 +46,8 @@ export const taskData: Task[] = [
     },
     {
         taskId: "TASK-003",
-        title: "Evaluate Vendor Proposals",
+        title: "Broken Outlet",
+        description: "Conference room outlet stopped working during meeting preparations. Needs urgent attention.",
         status: "Completed",
         assignedTo: ["John Doe", "Robert Brown", "Lisa Anderson"],
         dateRequested: "2024-02-14T13:45:00",
