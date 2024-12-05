@@ -10,12 +10,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export type Division = {
   id: number
   name: string
   officeLocation: string
-  staff: number | null
+  staff: {
+    id: number
+    name: string
+  }[]
+  category: {
+    id: number
+    category_name: string
+  }
   dateCreated: string
 }
 
@@ -74,7 +86,48 @@ export const columns: ColumnDef<Division>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => row.getValue("staff") || "N/A",
+    cell: ({ row }) => {
+      const staff = row.getValue("staff") as Division["staff"]
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button variant="ghost">
+              {staff ? staff.length : "N/A"} Staff
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="space-y-1">
+              <h4 className="text-sm font-semibold">Staff Members</h4>
+              {staff && staff.length > 0 ? (
+                <ul className="text-sm">
+                  {staff.map((member) => (
+                    <li key={member.id}>{member.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No staff members</p>
+              )}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      )
+    }
+  },
+  {
+    accessorKey: "category",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Category
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const category = row.getValue("category") as Division["category"]
+      return category ? category.category_name : "N/A"
+    },
   },
   {
     accessorKey: "dateCreated",
