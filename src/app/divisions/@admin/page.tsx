@@ -12,13 +12,7 @@ export default function Page() {
   const fetchDivisions = async () => {
     try {
       const response = await getDivisions();
-      console.log('Raw API Response:', response);
-      
-      // Extract the divisions array from the response
       const divisionsData = response.divisions || [];
-      console.log('Divisions array:', divisionsData);
-      
-      // Map the API data to match our table structure
       const formattedData = divisionsData.map(division => ({
         id: division.id,
         name: division.division_name,
@@ -27,8 +21,7 @@ export default function Page() {
         category: division.category,
         dateCreated: division.created_at || new Date().toISOString()
       }));
-      
-      console.log('Formatted data:', formattedData);
+
       setDivisions(formattedData);
     } catch (error) {
       console.error('Failed to fetch divisions:', error);
