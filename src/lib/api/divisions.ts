@@ -25,7 +25,7 @@ export const createDivision = async (data: CreateDivisionData) => {
             }
         );
         return response.data;
-    } catch (error: any) {
+    } catch (error) {
         // Detailed error logging
         console.error('Error details:', {
             message: error.message,
