@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState(null);
 
   const login = (token: string) => {
     localStorage.setItem('token', token);
