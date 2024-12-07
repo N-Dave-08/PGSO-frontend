@@ -65,7 +65,7 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
             try {
                 setLoadingCategories(true)
                 const data = await getCategories()
-                setCategories(data)
+                setCategories(data.categories || [])
             } catch (err) {
                 console.error('Error fetching categories:', err)
                 setError('Failed to load categories')
@@ -75,10 +75,11 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
         };
 
         fetchCategories();
+
     }, []);
 
     const handleStaffChange = (staffId: string) => {
-        setSelectedStaff(current => 
+        setSelectedStaff(current =>
             current.includes(staffId)
                 ? current.filter(id => id !== staffId)
                 : [...current, staffId]
@@ -160,14 +161,17 @@ export default function CreateDivision({ onDivisionCreated }: CreateDivisionProp
                             <SelectContent>
                                 {loadingCategories ? (
                                     <SelectItem value="">Loading categories...</SelectItem>
-                                ) : categories.map((category) => (
-                                    <SelectItem 
-                                        key={category.id} 
-                                        value={category.id}
+                                ) : categories.length === 0 ? (
+                                    <SelectItem value="empty">No Categories</SelectItem>
+                                ) : (categories.map((category) => (
+                                    <SelectItem
+                                        key={category.id}
+                                        value={category.id.toString()}
                                     >
                                         {category.category_name}
                                     </SelectItem>
-                                ))}
+                                )))
+                                }
                             </SelectContent>
                         </Select>
                     </div>

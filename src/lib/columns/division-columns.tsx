@@ -97,15 +97,21 @@ export const columns: ColumnDef<Division>[] = [
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
-            <Button variant="link">{staff.length} members</Button>
+            <Button variant="ghost">{staff.length} members</Button>
           </HoverCardTrigger>
           <HoverCardContent className="w-80">
             <div className="space-y-1">
-              {staff.map((member) => (
-                <div key={member.id} className="text-sm">
-                  {member.name}
+              {staff.length === 0 ? (
+                <div className="">
+                  No members
                 </div>
-              ))}
+              ) : (
+                staff.map((member) => (
+                  <div key={member.id} className="text-sm">
+                    {member.name}
+                  </div>
+                ))
+              )}
             </div>
           </HoverCardContent>
         </HoverCard>

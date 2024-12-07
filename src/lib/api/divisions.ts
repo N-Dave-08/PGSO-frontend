@@ -10,6 +10,10 @@ export interface CreateDivisionData {
 export const createDivision = async (data: CreateDivisionData) => {
     try {
         const token = localStorage.getItem('token');
+         if (!token) {
+            throw new Error('Authentication token not found');
+        }
+        console.log('Creating division with data:', data);
         const response = await axios.post(
             'https://server.pgso.bpc-bsis4d.com/public/api/division/create',
             data,
@@ -21,9 +25,18 @@ export const createDivision = async (data: CreateDivisionData) => {
             }
         );
         return response.data;
-    } catch (error) {
-        console.error('Error creating division:', error);
-        throw error;
+    } catch (error: any) {
+        // Detailed error logging
+        console.error('Error details:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status,
+            data: data // What we tried to send
+        });
+        
+        // Throw a more informative error
+        const errorMessage = error.response?.data?.message || error.message;
+        throw new Error(`Division creation failed: ${errorMessage}`);
     }
 }
 
