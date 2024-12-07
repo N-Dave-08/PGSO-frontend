@@ -24,16 +24,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Prepare standalone build
-        run: |
-          cp -r .next/static .next/standalone/.next/
-          cp -r public .next/standalone/
-
-      - name: Upload to Artifacts
+      - name: Upload to Hostinger
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: .next/standalone
+          path: out
 
   deploy:
     needs: build
@@ -47,20 +42,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          path: build
-
-      - name: Create .htaccess
-        run: |
-          echo "<IfModule mod_rewrite.c>
-            RewriteEngine On
-            RewriteBase /dev/
-            RewriteRule ^index\.html$ - [L]
-            RewriteCond %{REQUEST_FILENAME} !-f
-            RewriteCond %{REQUEST_FILENAME} !-d
-            RewriteCond %{REQUEST_FILENAME} !-l
-            RewriteRule . /dev/index.html [L]
-          </IfModule>" > build/.htaccess
+          path: out
 
       - name: Upload to Hostinger
         run: |
-          lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev build/ /public_html/dev/ --exclude-glob default.php --ignore-time --parallel=10"
+          lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev out/ /public_html/dev/ --ignore-time --parallel=10"
+
