@@ -26,15 +26,12 @@ export const createDivision = async (data: CreateDivisionData) => {
         );
         return response.data;
     } catch (error) {
-        // Detailed error logging
         console.error('Error details:', {
             message: error.message,
             response: error.response?.data,
             status: error.response?.status,
-            data: data // What we tried to send
+            data: data
         });
-        
-        // Throw a more informative error
         const errorMessage = error.response?.data?.message || error.message;
         throw new Error(`Division creation failed: ${errorMessage}`);
     }
@@ -43,6 +40,7 @@ export const createDivision = async (data: CreateDivisionData) => {
 export const getDivisions = async () => {
   try {
     const response = await axios.post('https://server.pgso.bpc-bsis4d.com/public/api/divisions');
+    console.log("DIVISION DATA", response)
     return response.data;
   } catch (error) {
     console.error('Error fetching divisions:', error);
