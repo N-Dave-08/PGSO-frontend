@@ -24,11 +24,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Export static files
+        run: npm run export
+
       - name: Upload to Hostinger
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: out
+          path: .next/standalone
 
   deploy:
     needs: build
@@ -42,7 +45,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nextjs-build
-          path: out
+          path: .next/standalone
 
       - name: Upload to Hostinger
         run: |
