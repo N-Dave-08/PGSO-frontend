@@ -134,7 +134,7 @@ export const columns: ColumnDef<Division>[] = [
     cell: ({ row }) => {
       const category = row.getValue("category") as Division["category"]
       console.log("CATEGORY", category)
-      return category?.category_name
+      return category.category_name
     },
   },
   {
