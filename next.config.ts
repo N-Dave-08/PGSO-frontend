@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath: process.env.BASE_PATH ? process.env.BASE_PATH : "",
+  output: "standalone",
+  basePath: "/dev",
   assetPrefix: process.env.URL ? process.env.URL : undefined,
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
