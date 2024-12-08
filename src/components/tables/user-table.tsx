@@ -39,9 +39,22 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/user-columns"
-import { userData } from "@/helpers/table-data/user-data"
 
-export function UserTable() {
+interface User {
+  id: number
+  name: string
+  email: string
+  role: string
+  department: string
+  division: string
+  status: string
+}
+
+interface UserTableProps {
+  data: User[]
+}
+
+export function UserTable({data}: UserTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -49,7 +62,7 @@ export function UserTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: userData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

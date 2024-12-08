@@ -10,7 +10,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User } from "@/helpers/table-data/user-data"
+
+export type User = {
+  id: number
+  name: string
+  email: string
+  role: string
+  department: string
+  division: string
+  status: string
+
+}
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -81,55 +91,9 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("division")}</div>,
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className={row.getValue("status") === "Active" ? "text-green-600" : "text-red-600"}>
-        {row.getValue("status")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "dateCreated",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
-      return <div>{date.toLocaleString()}</div>
-    },
-  },
-  {
-    accessorKey: "lastLogin",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Last Login
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("lastLogin"))
-      return <div>{date.toLocaleString()}</div>
-    },
-  },
-  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original
 
       return (
         <DropdownMenu>
@@ -143,7 +107,7 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
+              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
             >
               Copy user ID
             </DropdownMenuItem>

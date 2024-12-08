@@ -12,11 +12,8 @@ export default function Page() {
     const fetchDepartments = async () => {
       try {
         const response = await getDepartments();
-        console.log('Raw API Response:', response);
-        
         // Extract the departments array from the response
         const departmentsData = response.departments || [];
-        console.log('Department array:', departmentsData);
         
         // Map the API data to match our table structure
         const formattedData = departmentsData.map(department => ({
@@ -25,8 +22,6 @@ export default function Page() {
           divisions: department.divisions || [],
           id: department.id
         }));
-        
-        console.log('Formatted data:', formattedData);
         setDepartments(formattedData);
       } catch (error) {
         console.error('Failed to fetch departments:', error);
