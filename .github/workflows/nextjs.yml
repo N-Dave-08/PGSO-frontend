@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: dist
+          path: out
 
   deploy:
     needs: build
