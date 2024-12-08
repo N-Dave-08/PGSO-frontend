@@ -4,22 +4,28 @@ import React, { useEffect, useState } from 'react'
 import { CategoryTable } from '@/components/tables/category-table'
 import { getCategories } from '@/lib/api/categories'
 
+interface ApiCategory {
+  id: number;
+  category_name: string;
+  description: string | null;
+}
+
+interface TableCategory {
+  id: number;
+  name: string;
+  description: string;
+}
+
 export default function Page() {
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState<TableCategory[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await getCategories();
-        console.log('Raw API Response:', response);
-        
-        // Extract the categories array from the response
         const categoriesData = response.categories || [];
-        console.log('Categories array:', categoriesData);
-        
-        // Map the API data to match our table structure
-        const formattedData = categoriesData.map(category => ({
+        const formattedData = categoriesData.map((category: ApiCategory): TableCategory => ({
           id: category.id,
           name: category.category_name,
           description: category.description || 'No description',

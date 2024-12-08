@@ -32,9 +32,7 @@ export default function page() {
     const fetchUsers = async () => {
       try {
         const response = await getUsers()
-
         const usersData = response.user || []
-
         const formattedData = usersData.map((user: ApiUser): TableUser => ({
           id: user.id,
           name: `${user.first_name} ${user.last_name}`,

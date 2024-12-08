@@ -4,19 +4,36 @@ import React, { useEffect, useState } from 'react'
 import { getDepartments } from '@/lib/api/department'
 import { DepartmentTable } from '@/components/tables/department-table'
 
+interface Division {
+  id: number;
+  division_name: string;
+  department_id: number;
+}
+
+interface ApiDepartment {
+  id: number;
+  department_name: string;
+  acronym: string;
+  divisions: Division[];
+}
+
+interface TableDepartment {
+  id: number;
+  name: string;
+  acronym: string;
+  divisions: Division[];
+}
+
 export default function Page() {
-  const [departments, setDepartments] = useState([])
+  const [departments, setDepartments] = useState<TableDepartment[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const response = await getDepartments();
-        // Extract the departments array from the response
         const departmentsData = response.departments || [];
-        
-        // Map the API data to match our table structure
-        const formattedData = departmentsData.map(department => ({
+        const formattedData = departmentsData.map((department: ApiDepartment): TableDepartment => ({
           name: department.department_name,
           acronym: department.acronym,
           divisions: department.divisions || [],

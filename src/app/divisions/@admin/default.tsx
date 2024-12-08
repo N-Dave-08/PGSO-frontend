@@ -1,5 +1,6 @@
 export default function Default() {
-    return null
-  }
-  
-  
+  return (
+    <div>Loading...</div>
+  )
+}
+

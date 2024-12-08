@@ -5,21 +5,44 @@ import { DivisionTable } from '@/components/tables/division-table'
 import { getDivisions } from '@/lib/api/divisions'
 import CreateDivision from '@/components/modals/create-division'
 
+interface Staff {
+  id: number;
+  name: string;
+  position: string;
+}
+
+interface Category {
+  id: number;
+  category_name: string;
+}
+
+interface ApiDivision {
+  id: number;
+  division_name: string;
+  office_location: string;
+  staff: Staff[];
+  category: Category;
+  created_at: string;
+}
+
+interface TableDivision {
+  id: number;
+  name: string;
+  officeLocation: string;
+  staff: Staff[];
+  category: Category;
+  dateCreated: string;
+}
+
 export default function Page() {
-  const [divisions, setDivisions] = useState([])
+  const [divisions, setDivisions] = useState<TableDivision[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchDivisions = async () => {
     try {
       const response = await getDivisions();
-      console.log('Raw API Response:', response);
-      
-      // Extract the divisions array from the response
       const divisionsData = response.divisions || [];
-      console.log('Divisions array:', divisionsData);
-      
-      // Map the API data to match our table structure
-      const formattedData = divisionsData.map(division => ({
+      const formattedData = divisionsData.map((division: ApiDivision): TableDivision => ({
         id: division.id,
         name: division.division_name,
         officeLocation: division.office_location,
@@ -27,8 +50,7 @@ export default function Page() {
         category: division.category,
         dateCreated: division.created_at || new Date().toISOString()
       }));
-      
-      console.log('Formatted data:', formattedData);
+
       setDivisions(formattedData);
     } catch (error) {
       console.error('Failed to fetch divisions:', error);
