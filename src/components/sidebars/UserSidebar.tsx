@@ -64,7 +64,7 @@ export default function UserSidebar() {
                 <SidebarMenuItem key={key}>
                   <SidebarMenuButton
                     asChild
-                    isActive={path === route.link}
+                    isActive={path === `${route.link}/`}
                     className='text-base-content/70'
                   >
                     <Link href={route.link}>
