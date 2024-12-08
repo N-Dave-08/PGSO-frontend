@@ -39,7 +39,7 @@ export const createDivision = async (data: CreateDivisionData) => {
 
 export const getDivisions = async () => {
   try {
-    const response = await axios.get('https://server.pgso.bpc-bsis4d.com/public/api/divisions');
+    const response = await axios.post('https://server.pgso.bpc-bsis4d.com/public/api/divisions');
     return response.data;
   } catch (error) {
     console.error('Error fetching divisions:', error);
