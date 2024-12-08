@@ -24,7 +24,7 @@ interface TableUser {
   status: string;
 }
 
-export default function page() {
+export default function Page() {
   const [users, setUsers] = useState<TableUser[]>([])
   const [loading, setLoading] = useState(true)
 
