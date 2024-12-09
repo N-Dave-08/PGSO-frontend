@@ -105,27 +105,27 @@ export const columns: ColumnDef<Request>[] = [
       )
     },
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status")
+  // {
+  //   accessorKey: "status",
+  //   header: "Status",
+  //   cell: ({ row }) => {
+  //     const status = row.getValue("status")
 
-      return status === "pending" ? (
-        <RequestModal TriggerName="Pending" StepNum={1} />
-      ) : status === "rejected" ? (
-        <RequestModal TriggerName="Rejected" />
-      ) : status === "to assign" ? (
-        <RequestModal TriggerName="To Assign" StepNum={2} />
-      ) : status === "waiting" ? (
-        <RequestModal TriggerName="Waiting For Completion" StepNum={3} />
-      ) : status === "for feedback" ? (
-        <RequestModal TriggerName="For Feedback" StepNum={4} />
-      ) : status === "completed" ? (
-        <Badge variant="success">Completed</Badge>
-      ) : ''
-    },
-  },
+  //     return status === "pending" ? (
+  //       <RequestModal TriggerName="Pending" StepNum={1} />
+  //     ) : status === "rejected" ? (
+  //       <RequestModal TriggerName="Rejected" />
+  //     ) : status === "to assign" ? (
+  //       <RequestModal TriggerName="To Assign" StepNum={2} />
+  //     ) : status === "waiting" ? (
+  //       <RequestModal TriggerName="Waiting For Completion" StepNum={3} />
+  //     ) : status === "for feedback" ? (
+  //       <RequestModal TriggerName="For Feedback" StepNum={4} />
+  //     ) : status === "completed" ? (
+  //       <Badge variant="success">Completed</Badge>
+  //     ) : ''
+  //   },
+  // },
   {
     accessorKey: "requested",
     header: ({ column }) => {
