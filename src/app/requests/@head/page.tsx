@@ -79,7 +79,7 @@ interface TableRequest {
 //           "date_requested": "2024-12-09 00:14:45"
 //       },
 
-export default function page() {
+export default function Page() {
   const [requests, setRequests] = useState<TableRequest[]>([])
   const [loading, setLoading] = useState(true)
 
