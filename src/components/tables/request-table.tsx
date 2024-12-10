@@ -38,9 +38,13 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/request-columns"
-import { requestData } from "@/helpers/table-data/request-data"
+import { Request } from "@/lib/columns/request-columns"
 
-export function RequestTable() {
+interface RequestTableProps {
+  data: Request[]
+}
+
+export function RequestTable({data}: RequestTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -48,7 +52,7 @@ export function RequestTable() {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
   const table = useReactTable({
-    data: requestData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

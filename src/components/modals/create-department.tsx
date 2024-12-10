@@ -53,7 +53,7 @@ export default function CreateDepartment({ onDepartmentCreated }: CreateDepartme
         }
     }, [open])
 
-    const filteredDivisions = divisions.filter(division => 
+    const filteredDivisions = divisions.filter(division =>
         division.division_name.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
@@ -80,7 +80,7 @@ export default function CreateDepartment({ onDepartmentCreated }: CreateDepartme
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     department_name: departmentName,
                     acronym,
                     division_id: selectedDivisions

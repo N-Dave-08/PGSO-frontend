@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Trash, PenSquare, User } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -11,9 +10,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Request } from "@/helpers/table-data/request-data"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import RequestModal from "@/components/modals/request-modal"
+// import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+
+export type Request = {
+  id: number
+  request_title: string
+  control_no: string
+  description: string
+  location_name: string
+  category_id: number
+  category_name: string
+  feedback: string
+  status: string
+  file_url?: string
+  date_requested: string
+}
 
 export const columns: ColumnDef<Request>[] = [
   {
@@ -39,7 +50,7 @@ export const columns: ColumnDef<Request>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "controlNum",
+    accessorKey: "control_no",
     header: ({ column }) => {
       return (
         <Button
@@ -51,105 +62,53 @@ export const columns: ColumnDef<Request>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("controlNum")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue("control_no")}</div>,
   },
   {
-    accessorKey: "requestedBy",
+    accessorKey: "request_title",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Requested By
+          Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("requestedBy")}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue("request_title")}</div>,
   },
   {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
   },
   {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("category")}</div>,
+    accessorKey: "date_requested",
+    header: "Date Requested",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("date_requested")}</div>,
   },
   {
-    accessorKey: "priority",
-    header: "Priority",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("priority")}</div>,
+    accessorKey: "file_url",
+    header: "File URL",
+    cell: ({ row }) => <div>{row.getValue("file_url")}</div>,
   },
   {
-    accessorKey: "assignTo",
-    header: "Personnels Assigned",
-    cell: ({ row }) => {
-      const divisions = row.getValue("assignTo") as string[]
-      return (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost">
-                <User />
-                {divisions.length}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            {divisions.map((staff, index) => (
-              <div key={index}>{staff}</div>
-            ))}
-          </PopoverContent>
-        </Popover>
-      )
-    },
+    accessorKey: "location_name",
+    header: "Location",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("location_name")}</div>,
   },
-  // {
-  //   accessorKey: "status",
-  //   header: "Status",
-  //   cell: ({ row }) => {
-  //     const status = row.getValue("status")
-
-  //     return status === "pending" ? (
-  //       <RequestModal TriggerName="Pending" StepNum={1} />
-  //     ) : status === "rejected" ? (
-  //       <RequestModal TriggerName="Rejected" />
-  //     ) : status === "to assign" ? (
-  //       <RequestModal TriggerName="To Assign" StepNum={2} />
-  //     ) : status === "waiting" ? (
-  //       <RequestModal TriggerName="Waiting For Completion" StepNum={3} />
-  //     ) : status === "for feedback" ? (
-  //       <RequestModal TriggerName="For Feedback" StepNum={4} />
-  //     ) : status === "completed" ? (
-  //       <Badge variant="success">Completed</Badge>
-  //     ) : ''
-  //   },
-  // },
   {
-    accessorKey: "requested",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Requested
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("requested"))
-      return <div>{date.toLocaleString()}</div>
-    },
+    accessorKey: "status",
+    header: "status",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const department = row.original
-
+      
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -162,7 +121,7 @@ export const columns: ColumnDef<Request>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(department.id)}
+              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
             >
               Copy Department ID
             </DropdownMenuItem>
