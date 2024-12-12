@@ -41,6 +41,7 @@ export default function Layout({
     }
 
     const isAuthorized = (allowedRoles: string[]) => {
+        if (!role) return false;
         return allowedRoles.includes(role)
     }
 
@@ -66,4 +67,3 @@ export default function Layout({
             </main>
     )
 }
-

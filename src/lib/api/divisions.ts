@@ -26,14 +26,19 @@ export const createDivision = async (data: CreateDivisionData) => {
         );
         return response.data;
     } catch (error) {
-        console.error('Error details:', {
-            message: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-            data: data
-        });
-        const errorMessage = error.response?.data?.message || error.message;
-        throw new Error(`Division creation failed: ${errorMessage}`);
+        if (axios.isAxiosError(error)) {
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status,
+                data: data
+            });
+            const errorMessage = error.response?.data?.message || error.message;
+            throw new Error(`Division creation failed: ${errorMessage}`);
+        }
+        // Handle non-axios errors
+        const err = error as Error;
+        throw new Error(`Division creation failed: ${err.message}`);
     }
 }
 
@@ -42,7 +47,12 @@ export const getDivisions = async () => {
     const response = await axios.post('https://server.pgso.bpc-bsis4d.com/public/api/divisions');
     return response.data;
   } catch (error) {
-    console.error('Error fetching divisions:', error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+        console.error('Error fetching divisions:', error);
+        throw error;
+    }
+    // Handle non-axios errors
+    const err = error as Error;
+    throw new Error(`Failed to fetch divisions: ${err.message}`);
   }
 }
