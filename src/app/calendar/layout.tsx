@@ -9,47 +9,61 @@ interface UserType {
 }
 
 interface LayoutProps {
-    children: React.ReactNode
+    children: React.ReactNode;
+    admin?: React.ReactNode;
+    head?: React.ReactNode;
+    personnel?: React.ReactNode;
+    staff?: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
-    const [user, setUser] = useState<UserType | null>(null)
-    const [role, setRole] = useState<string | null>(null)
-    const router = useRouter()
+export default function Layout({
+    children,
+    admin,
+    head,
+    personnel,
+    staff,
+}: LayoutProps) {
+    const [user, setUser] = useState<UserType | null>(null);
+    const [role, setRole] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
-        setRole(localStorage.getItem('role'))
-        const storedUser = localStorage.getItem('user')
+        setRole(localStorage.getItem('role'));
+        const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser))
+            setUser(JSON.parse(storedUser));
         } else {
-            router.push('/')
+            router.push('/');
         }
-    }, [router])
+    }, [router]);
 
     if (!user) {
-        return <div className='h-screen flex items-center justify-center'>Loading...</div>
+        return (
+            <div className="h-screen flex items-center justify-center">
+                Loading...
+            </div>
+        );
     }
 
     const renderContent = () => {
         switch (role) {
             case 'admin':
-                return <div>Admin Content</div>
+                return admin || <div>Admin Content</div>;
             case 'head':
-                return <div>Head Content</div>
+                return head || <div>Head Content</div>;
             case 'personnel':
-                return <div>Personnel Content</div>
+                return personnel || <div>Personnel Content</div>;
             case 'staff':
-                return <div>Staff Content</div>
+                return staff || <div>Staff Content</div>;
             default:
-                return <div>Unauthorized</div>
+                return <div>Unauthorized</div>;
         }
-    }
+    };
 
     return (
         <main className="p-4 w-full">
             {children}
             {renderContent()}
         </main>
-    )
+    );
 }
