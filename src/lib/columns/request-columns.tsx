@@ -1,7 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare, Eye } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { RequestDetailsModal } from "@/components/modals/request-details"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,20 +11,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-// import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { format } from "date-fns"
 
 export type Request = {
   id: number
-  request_title: string
   control_no: string
+  request_title: string
   description: string
-  location_name: string
-  category_id: number
-  category_name: string
-  feedback: string
+  file_path: string | null
+  file_url: string | null
+  file_completion: string | null
+  file_completion_url: string | null
+  category_id: number | null
+  category_name: string | null
+  personnel: {
+    id: number
+    name: string
+  }[]
+  feedback: string | null
+  rating: number | null
   status: string
-  file_url?: string
   date_requested: string
+  date_completed: string | null
+  requested_by: RequestedBy
+}
+
+export type RequestedBy = {
+  id: number
+  first_name: string
+  last_name: string
+  division: string
+  office_location: string
+  department: string
 }
 
 export const columns: ColumnDef<Request>[] = [
@@ -87,28 +111,119 @@ export const columns: ColumnDef<Request>[] = [
   {
     accessorKey: "date_requested",
     header: "Date Requested",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("date_requested")}</div>,
+    cell: ({ row }) => {
+      const date = row.getValue("date_requested")
+      if (!date) return <div className="text-muted-foreground">-</div>
+      return <div>{format(new Date(date as string), "MMM d, yyyy h:mm a")}</div>
+    },
   },
   {
-    accessorKey: "file_url",
-    header: "File URL",
-    cell: ({ row }) => <div>{row.getValue("file_url")}</div>,
+    accessorKey: "requested_by",
+    header: "Requested By",
+    cell: ({ row }) => {
+      const requester = row.getValue("requested_by");
+
+      if (requester && typeof requester === 'object' && 'first_name' in requester && 'last_name' in requester) {
+        const typedRequester = requester as RequestedBy;
+        return (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <div className="cursor-pointer">
+                <div className="capitalize">{`${typedRequester.first_name} ${typedRequester.last_name}`}</div>
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-fit">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">Additional Information</p>
+                {typedRequester.division && (
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Division:</span> {typedRequester.division}
+                  </div>
+                )}
+                {typedRequester.department && (
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Department:</span> {typedRequester.department}
+                  </div>
+                )}
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        );
+      }
+
+      return <div className="text-muted-foreground">-</div>;
+    },
   },
   {
-    accessorKey: "location_name",
+    accessorKey: "requested_by_location",
     header: "Location",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("location_name")}</div>,
+    cell: ({ row }) => {
+      const requester = row.getValue("requested_by") as RequestedBy;
+      return requester?.office_location
+        ? <div>{requester.office_location}</div>
+        : <div className="text-muted-foreground">-</div>;
+    },
   },
   {
     accessorKey: "status",
-    header: "status",
+    header: "Status",
     cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
+  },
+  {
+    accessorKey: "rating",
+    header: "Rating",
+    cell: ({ row }) => {
+      const rating = row.getValue("rating") as number | null;
+      return rating !== null ? (
+        <div>{rating}/5</div>
+      ) : (
+        <div className="text-muted-foreground">-</div>
+      );
+    },
+  },
+  {
+    accessorKey: "personnel",
+    header: "Assigned Personnel",
+    cell: ({ row }) => {
+      const personnel = row.getValue("personnel") as { id: number; name: string }[];
+      return personnel && personnel.length > 0 ? (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="cursor-pointer">
+              <div>{personnel.length} assigned</div>
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-fit">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">Assigned Personnel</p>
+              {personnel.map((person) => (
+                <div key={person.id} className="text-sm">
+                  {person.name}
+                </div>
+              ))}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      ) : (
+        <div className="text-muted-foreground">No personnel assigned</div>
+      );
+    },
+  },
+  {
+    accessorKey: "date_completed",
+    header: "Date Completed",
+    cell: ({ row }) => {
+      const date = row.getValue("date_completed") as string | null;
+      if (!date) return <div className="text-muted-foreground">Pending</div>
+      return <div>{format(new Date(date), "MMM d, yyyy h:mm a")}</div>
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      
+      const request = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -121,16 +236,25 @@ export const columns: ColumnDef<Request>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
+              onClick={() => navigator.clipboard.writeText(request.id.toString())}
             >
-              Copy Department ID
+              Copy Request ID
             </DropdownMenuItem>
+            <RequestDetailsModal
+              request={request}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </DropdownMenuItem>
+              }
+            />
             <DropdownMenuItem>
-              <PenSquare />
+              <PenSquare className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Trash />
+              <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -139,4 +263,3 @@ export const columns: ColumnDef<Request>[] = [
     },
   },
 ]
-

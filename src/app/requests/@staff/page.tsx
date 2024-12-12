@@ -6,78 +6,58 @@ import { getRequests } from '@/lib/api/requests'
 
 interface ApiRequest {
   id: number
-  request_title: string
   control_no: string
+  request_title: string
   description: string
-  location_name: string
-  category_id: number
-  category_name: string
-  feedback: string
+  file_path: string | null
+  file_url: string | null
+  file_completion: string | null
+  file_completion_url: string | null
+  category_id: number | null
+  category_name: string | null
+  personnel: {
+    id: number
+    name: string
+  }[]
+  feedback: string | null
+  rating: number | null
   status: string
-  file_url?: string
   date_requested: string
+  date_completed: string | null
+  requested_by: RequestedBy
 }
 
 interface TableRequest {
   id: number
-  request_title: string
   control_no: string
+  request_title: string
   description: string
-  location_name: string
-  category_id: number
-  category_name: string
-  feedback: string
+  file_path: string | null
+  file_url: string | null
+  file_completion: string | null
+  file_completion_url: string | null
+  category_id: number | null
+  category_name: string | null
+  personnel: {
+    id: number
+    name: string
+  }[]
+  feedback: string | null
+  rating: number | null
   status: string
-  file_url?: string
   date_requested: string
+  date_completed: string | null
+  requested_by: RequestedBy
 }
 
-// {
-//   "isSuccess": true,
-//   "message": "Requests retrieved successfully.",
-//   "requests": [
-//       {
-//           "id": 1,
-//           "control_no": "2024-001",
-//           "request_title": "Aircon sira",
-//           "description": "ayaw lumamig",
-//           "location_name": "2nd floor ng CIT building",
-//           "category_id": null,
-//           "category_name": null,
-//           "feedback": null,
-//           "status": "For Review",
-//           "file_url": "http://127.0.0.1:8000/requests/Request-2024-001-20241209001414.jpg",
-//           "requested_by": {
-//               "id": 7,
-//               "first_name": "Warren Delas",
-//               "last_name": "Cruz",
-//               "division": "sample sample",
-//               "office_location": "sample",
-//               "department": "Office of the Governor"
-//           },
-//           "date_requested": "2024-12-09 00:14:14"
-//       },
-//       {
-//           "id": 2,
-//           "control_no": "2024-002",
-//           "request_title": "Aircon sira",
-//           "description": "ayaw lumamig",
-//           "location_name": "2nd floor ng CIT building",
-//           "category_id": null,
-//           "category_name": null,
-//           "feedback": null,
-//           "status": "Pending",
-//           "file_url": "http://127.0.0.1:8000/requests/Request-2024-002-20241209001445.jpg",
-//           "requested_by": {
-//               "id": 7,
-//               "first_name": "Warren Delas",
-//               "last_name": "Cruz",
-//               "division": "sample sample",
-//               "office_location": "sample",
-//               "department": "Office of the Governor"
-//           },
-//           "date_requested": "2024-12-09 00:14:45"
-//       },
+interface RequestedBy {
+  id: number
+  first_name: string
+  last_name: string
+  division: string
+  office_location: string
+  department: string
+}
 
 export default function Page() {
   const [requests, setRequests] = useState<TableRequest[]>([])
@@ -87,20 +67,34 @@ export default function Page() {
     try {
       const response = await getRequests();
       const requestData = response.requests || [];
-      const formattedData = requestData.map((request: ApiRequest): TableRequest => ({
-        id: request.id,
-        request_title: request.request_title,
-        control_no: request.control_no,
-        description: request.description,
-        location_name: request.location_name,
-        category_id: request.category_id,
-        category_name: request.category_name,
-        feedback: request.feedback,
-        status: request.status,
-        file_url: request.file_url,
-        date_requested: request.date_requested,
-      }));
 
+      const formattedData = requestData.map((request: ApiRequest): TableRequest => {
+        // console.log('Individual Request:', JSON.stringify(request, null, 2));
+        // console.log('Requested By:', request.requested_by);
+        // console.log("REQUESTERRRR", request.requested_by_name)
+
+        return {
+          id: request.id,
+          control_no: request.control_no,
+          request_title: request.request_title,
+          description: request.description,
+          file_path: request.file_path,
+          file_url: request.file_url,
+          file_completion: request.file_completion,
+          file_completion_url: request.file_completion_url,
+          category_id: request.category_id,
+          category_name: request.category_name,
+          personnel: request.personnel || [],
+          feedback: request.feedback,
+          rating: request.rating,
+          status: request.status,
+          date_requested: request.date_requested,
+          date_completed: request.date_completed,
+          requested_by: request.requested_by
+        }
+      });
+
+      console.log('Formatted Data:', formattedData);
       setRequests(formattedData);
     } catch (error) {
       console.error('Failed to fetch requests:', error);
@@ -116,7 +110,7 @@ export default function Page() {
   if (loading) {
     return <div>Loading...</div>;
   }
-
+  console.log("REQUEST DATA", requests)
   return (
     <div>
       <RequestTable data={requests} />
