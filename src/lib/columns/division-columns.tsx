@@ -24,10 +24,7 @@ export type Division = {
     id: number
     name: string
   }[]
-  category: {
-    id: number
-    category_name: string
-  }
+  category: string
   dateCreated: string
 }
 
