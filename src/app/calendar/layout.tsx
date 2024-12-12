@@ -1,29 +1,18 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-
-interface LayoutProps {
-    children: React.ReactNode
-    admin: React.ReactNode
-    head: React.ReactNode
-    personnel: React.ReactNode
-    staff: React.ReactNode
-}
 
 interface UserType {
     id: number
     email: string
 }
 
-export default function Layout({
-    children,
-    admin,
-    head,
-    personnel,
-    staff,
-}: LayoutProps) {
+interface LayoutProps {
+    children: React.ReactNode
+}
+
+export default function Layout({ children }: LayoutProps) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
@@ -42,30 +31,25 @@ export default function Layout({
         return <div className='h-screen flex items-center justify-center'>Loading...</div>
     }
 
-    const isAuthorized = (allowedRoles: string[]) => {
-        if (!role) return false;
-        return allowedRoles.includes(role)
-    }
-
     const renderContent = () => {
         switch (role) {
             case 'admin':
-                return isAuthorized(['admin']) ? admin : null
+                return <div>Admin Content</div>
             case 'head':
-                return isAuthorized(['head']) ? head : null
+                return <div>Head Content</div>
             case 'personnel':
-                return isAuthorized(['personnel']) ? personnel : null
+                return <div>Personnel Content</div>
             case 'staff':
-                return isAuthorized(['staff']) ? staff : null
+                return <div>Staff Content</div>
             default:
-                return null
+                return <div>Unauthorized</div>
         }
     }
 
     return (
-            <main className="p-4 w-full">
-                {children}
-                {renderContent()}
-            </main>
+        <main className="p-4 w-full">
+            {children}
+            {renderContent()}
+        </main>
     )
 }
