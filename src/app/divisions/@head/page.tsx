@@ -11,17 +11,12 @@ interface Staff {
   position: string;
 }
 
-interface Category {
-  id: number;
-  category_name: string;
-}
-
 interface ApiDivision {
   id: number;
   division_name: string;
   office_location: string;
   staff: Staff[];
-  category: Category;
+  category: string;
   created_at: string;
 }
 
@@ -30,7 +25,7 @@ interface TableDivision {
   name: string;
   officeLocation: string;
   staff: Staff[];
-  category: Category;
+  category: string;
   dateCreated: string;
 }
 
