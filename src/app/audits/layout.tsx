@@ -10,10 +10,10 @@ interface UserType {
 
 export default function Layout({
     children,
-    admin,
+    admin
 }: {
-    children?: React.ReactNode
-    admin?: React.ReactNode
+    children: React.ReactNode
+    admin: React.ReactNode
 }) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
@@ -33,24 +33,17 @@ export default function Layout({
         return <div className='h-screen flex items-center justify-center'>Loading...</div>
     }
 
-    const isAuthorized = (allowedRoles: string[]) => {
-        if (!role) return false;
-        return allowedRoles.includes(role)
-    }
-
     const renderContent = () => {
-        switch (role) {
-            case 'admin':
-                return isAuthorized(['admin']) ? admin : null
-            default:
-                return null
+        if (role === 'admin') {
+            return admin;
         }
+        return null;
     }
 
     return (
-            <main className="p-4 w-full">
-                {children}
-                {renderContent()}
-            </main>
+        <main className="p-4 w-full">
+            {children}
+            {renderContent()}
+        </main>
     )
 }

@@ -10,16 +10,10 @@ interface UserType {
 
 export default function Layout({
     children,
-    admin,
-    head,
-    personnel,
-    staff,
+    personnel
 }: {
-    children?: React.ReactNode
-    admin?: React.ReactNode
-    head?: React.ReactNode
-    personnel?: React.ReactNode
-    staff?: React.ReactNode
+    children: React.ReactNode
+    personnel: React.ReactNode
 }) {
     const [user, setUser] = useState<UserType | null>(null);
     const [role, setRole] = useState<string | null>(null);
@@ -36,26 +30,14 @@ export default function Layout({
     }, [router]);
 
     if (!user) {
-        return (
-            <div className="h-screen flex items-center justify-center">
-                Loading...
-            </div>
-        );
+        return <div className='h-screen flex items-center justify-center'>Loading...</div>;
     }
 
     const renderContent = () => {
-        switch (role) {
-            case 'admin':
-                return admin || <div>Admin Content</div>;
-            case 'head':
-                return head || <div>Head Content</div>;
-            case 'personnel':
-                return personnel || <div>Personnel Content</div>;
-            case 'staff':
-                return staff || <div>Staff Content</div>;
-            default:
-                return <div>Unauthorized</div>;
+        if (role === 'personnel' || role === 'staff') {
+            return personnel;
         }
+        return null;
     };
 
     return (
