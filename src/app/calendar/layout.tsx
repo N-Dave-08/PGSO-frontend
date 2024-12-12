@@ -3,15 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-
-interface LayoutProps {
-    children: React.ReactNode
-    admin: React.ReactNode
-    head: React.ReactNode
-    personnel: React.ReactNode
-    staff: React.ReactNode
-}
-
 interface UserType {
     id: number
     email: string
@@ -23,7 +14,13 @@ export default function Layout({
     head,
     personnel,
     staff,
-}: LayoutProps) {
+}: {
+    children?: React.ReactNode
+    admin?: React.ReactNode
+    head?: React.ReactNode
+    personnel?: React.ReactNode
+    staff?: React.ReactNode
+}) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
