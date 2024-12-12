@@ -10,10 +10,10 @@ interface UserType {
 
 interface LayoutProps {
     children: React.ReactNode;
-    admin?: React.ReactNode;
-    head?: React.ReactNode;
-    personnel?: React.ReactNode;
-    staff?: React.ReactNode;
+    admin: React.ReactNode;
+    head: React.ReactNode;
+    personnel: React.ReactNode;
+    staff: React.ReactNode;
 }
 
 export default function Layout({
