@@ -3,6 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+
+interface LayoutProps {
+    children: React.ReactNode
+    admin: React.ReactNode
+    head: React.ReactNode
+    personnel: React.ReactNode
+    staff: React.ReactNode
+}
+
 interface UserType {
     id: number
     email: string
@@ -14,13 +23,7 @@ export default function Layout({
     head,
     personnel,
     staff,
-}: {
-    children?: React.ReactNode
-    admin?: React.ReactNode
-    head?: React.ReactNode
-    personnel?: React.ReactNode
-    staff?: React.ReactNode
-}) {
+}: LayoutProps) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
@@ -40,7 +43,7 @@ export default function Layout({
     }
 
     const isAuthorized = (allowedRoles: string[]) => {
-        if (!role) return false
+        if (!role) return false;
         return allowedRoles.includes(role)
     }
 
