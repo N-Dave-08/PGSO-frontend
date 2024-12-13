@@ -11,10 +11,7 @@ interface UserType {
 
 export default function Layout({
     children,
-    admin,
-    head,
     personnel,
-    staff,
 }: {
     children?: React.ReactNode
     admin?: React.ReactNode
@@ -45,19 +42,12 @@ export default function Layout({
         return allowedRoles.includes(role)
     }
 
+    
     const renderContent = () => {
-        switch (role) {
-            case 'admin':
-                return isAuthorized(['admin']) ? admin : null
-            case 'head':
-                return isAuthorized(['head']) ? head : null
-            case 'personnel':
-                return isAuthorized(['personnel']) ? personnel : null
-            case 'staff':
-                return isAuthorized(['staff']) ? staff : null
-            default:
-                return null
+        if (role === 'personnel') {
+            return personnel;
         }
+        return null;
     }
 
     return (
