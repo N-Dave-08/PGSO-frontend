@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import ClientLayout from "@/components/layouts/ClientLayout"
+import { Toaster } from "@/components/ui/toaster";
 
 
 const inter = Inter({
@@ -28,6 +29,7 @@ export default function RootLayout({
           <ClientLayout>
             {children}
           </ClientLayout>
+          <Toaster />
         </SidebarProvider>
       </body>
     </html>

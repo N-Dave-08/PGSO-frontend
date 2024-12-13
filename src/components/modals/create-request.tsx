@@ -62,29 +62,22 @@ export default function CreateRequest({ onRequestCreated }: CreateRequestProps) 
 
             const response = await createRequest(formData);
 
-            if (response.isSuccess) {
-                toast({
-                    title: "Success",
-                    description: response.message,
-                });
+            // Show success toast regardless of isSuccess property
+            toast({
+                title: "Success",
+                description: response.message || "Request created successfully",
+            });
 
-                // Reset form
-                setTitle('');
-                setDescription('');
-                setFile(null);
-                setOpen(false);
-                
-                // Refresh the requests list
-                onRequestCreated?.();
-            } else {
-                setError(response.message || 'Failed to create request');
-            }
+            // Reset form
+            setTitle('');
+            setDescription('');
+            setFile(null);
+            setOpen(false);
+            
+            // Refresh the requests list
+            onRequestCreated?.();
         } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('An unexpected error occurred');
-            }
+            setError(err instanceof Error ? err.message : 'An unexpected error occurred');
             toast({
                 title: "Error",
                 description: err instanceof Error ? err.message : 'Failed to create request',

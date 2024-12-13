@@ -42,9 +42,10 @@ import { Request } from "@/lib/columns/request-columns"
 
 interface RequestTableProps {
   data: Request[]
+  onRequestUpdate?: () => void
 }
 
-export function RequestTable({data}: RequestTableProps) {
+export function RequestTable({data, onRequestUpdate}: RequestTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
@@ -56,7 +57,7 @@ export function RequestTable({data}: RequestTableProps) {
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns({ onRequestUpdate }),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

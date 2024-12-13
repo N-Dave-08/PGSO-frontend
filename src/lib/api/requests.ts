@@ -33,6 +33,11 @@ export interface CreateRequestResponse {
     request: Request;
 }
 
+export interface AssessRequestData {
+  category_id: number;
+  personnel_ids: number[];
+}
+
 export const getRequests = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -46,8 +51,19 @@ export const getRequests = async () => {
         },
       }
     );
-    return response.data;
+    
+    // Return empty array if no data
+    return {
+      requests: response.data?.requests || [],
+      message: response.data?.message || 'No requests found'
+    };
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return {
+        requests: [],
+        message: 'No requests found'
+      };
+    }
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       throw new Error('Unauthorized access. Please login again.');
     }
@@ -137,4 +153,29 @@ export const updateRequestStatus = async (requestId: number, status: 'Approved' 
         }
         throw error;
     }
+};
+
+export const assessRequest = async (requestId: number, data: AssessRequestData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      `https://server.pgso.bpc-bsis4d.com/public/api/request/assess/${requestId}`,
+      data,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return {
+      isSuccess: true,
+      message: response.data.message
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data?.message || 'Failed to assess request');
+    }
+    throw error;
+  }
 };

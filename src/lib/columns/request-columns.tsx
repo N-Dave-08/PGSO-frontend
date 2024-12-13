@@ -16,6 +16,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
+// Initialize dayjs plugins
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 import { format } from "date-fns"
 
 export type Request = {
@@ -50,7 +58,11 @@ export type RequestedBy = {
   department: string
 }
 
-export const columns: ColumnDef<Request>[] = [
+interface RequestColumnProps {
+  onRequestUpdate?: () => void;
+}
+
+export const columns = ({ onRequestUpdate }: RequestColumnProps): ColumnDef<Request>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -108,13 +120,13 @@ export const columns: ColumnDef<Request>[] = [
     header: "Description",
     cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
   },
-  {
+  { 
     accessorKey: "date_requested",
     header: "Date Requested",
     cell: ({ row }) => {
-      const date = row.getValue("date_requested")
+      const date = row.getValue("date_requested") as string | undefined
       if (!date) return <div className="text-muted-foreground">-</div>
-      return <div>{format(new Date(date as string), "MMM d, yyyy h:mm a")}</div>
+      return <div>{dayjs(date).tz("Asia/Manila").format("MMM D, YYYY")}</div>
     },
   },
   {
@@ -185,7 +197,7 @@ export const columns: ColumnDef<Request>[] = [
     accessorKey: "personnel",
     header: "Assigned Personnel",
     cell: ({ row }) => {
-      const personnel = row.getValue("personnel") as { id: number; first_name: string; last_name: string; }[];
+      const personnel = row.getValue("personnel") as { id: number; name: string; }[];
       return personnel && personnel.length > 0 ? (
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -198,8 +210,7 @@ export const columns: ColumnDef<Request>[] = [
               <p className="text-sm font-semibold">Assigned Personnel</p>
               {personnel.map((person) => (
                 <div key={person.id} className="text-sm">
-                  {person.first_name}
-                  {person.last_name}
+                  {person.name}
                 </div>
               ))}
             </div>
@@ -214,9 +225,9 @@ export const columns: ColumnDef<Request>[] = [
     accessorKey: "date_completed",
     header: "Date Completed",
     cell: ({ row }) => {
-      const date = row.getValue("date_completed") as string | null;
-      if (!date) return <div className="text-muted-foreground">Pending</div>
-      return <div>{format(new Date(date), "MMM d, yyyy h:mm a")}</div>
+      const date = row.getValue("date_completed") as string | undefined
+      if (!date) return <div className="text-muted-foreground">-</div>
+      return <div>{dayjs(date).tz("Asia/Manila").format("MMM D, YYYY")}</div>
     },
   },
   {
@@ -249,6 +260,7 @@ export const columns: ColumnDef<Request>[] = [
                   View Details
                 </DropdownMenuItem>
               }
+              onRequestUpdate={onRequestUpdate}
             />
             <DropdownMenuItem>
               <PenSquare className="mr-2 h-4 w-4" />

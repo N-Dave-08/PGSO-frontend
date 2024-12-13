@@ -118,7 +118,7 @@ export default function Page() {
         <h1 className="text-2xl font-bold">Requests</h1>
         <CreateRequest onRequestCreated={fetchRequests} />
       </div>
-      <RequestTable data={requests} />
+      <RequestTable data={requests} onRequestUpdate={fetchRequests}/>
     </div>
   )
 }

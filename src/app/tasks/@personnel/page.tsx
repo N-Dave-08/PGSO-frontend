@@ -113,7 +113,7 @@ export default function Page() {
   console.log("REQUEST DATA", requests)
   return (
     <div>
-      <RequestTable data={requests} />
+      <RequestTable data={requests} onRequestUpdate={fetchRequests}/>
     </div>
   )
 }
