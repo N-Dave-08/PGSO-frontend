@@ -53,7 +53,13 @@ export const createCategory = async (data: CreateCategoryData): Promise<CreateCa
 
 export const getCategories = async () => {
   try {
-    const response = await axios.post('/api/categories');
+    const response = await axios.post('/api/categories', {}, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
