@@ -53,8 +53,7 @@ export const createCategory = async (data: CreateCategoryData): Promise<CreateCa
 
 export const getCategories = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-    const response = await axios.post(`${baseUrl}/categories`);
+    const response = await axios.post('/api/categories');
     return response.data;
   } catch (error) {
     console.error('Error fetching categories:', error);
