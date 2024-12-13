@@ -10,7 +10,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { updateRequestStatus, assessRequest } from "@/lib/api/requests"
+import { updateRequestStatus, assessRequest, type RequestStatusResponse } from "@/lib/api/requests"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
@@ -88,6 +88,8 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
   const [hoverRating, setHoverRating] = useState<number>(0)
   const [feedback, setFeedback] = useState<string>("")
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false)
+  const [rejectionNote, setRejectionNote] = useState(localStorage.getItem('rejectionNote') || "")
+  const [showRejectionDialog, setShowRejectionDialog] = useState(false)
 
   useEffect(() => {
     setUserRole(localStorage.getItem('role'))
@@ -114,8 +116,20 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
   }, [])
 
   const handleStatusUpdate = async (status: 'Approved' | 'Rejected') => {
+    if (status === 'Rejected' && !rejectionNote.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a reason for rejection",
+        variant: "destructive",
+      })
+      return
+    }
+
     try {
       setLoading(true)
+      if (status === 'Rejected') {
+        localStorage.setItem('rejectionNote', rejectionNote)
+      }
       const response = await updateRequestStatus(request.id, status)
 
       if (response.isSuccess) {
@@ -123,8 +137,22 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
           title: "Success",
           description: response.message,
         })
+        
+        // Update local request state if available
+        if (response.request) {
+          request.status = response.request.status
+          if (status === 'Rejected') {
+            request.date_completed = response.request.date_rejected ?? null
+          }
+        }
+        
         onRequestUpdate?.()
         setOpen(false)
+        setRejectionNote("")
+        if (status === 'Rejected') {
+          localStorage.removeItem('rejectionNote')
+        }
+        setShowRejectionDialog(false)
       }
     } catch (error) {
       toast({
@@ -542,20 +570,52 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
             )
           }
           {userRole === 'head' && request.status === 'Pending' && (
-            <div className="flex gap-2">
-              <Button
-                variant={'ghost'}
-                onClick={() => handleStatusUpdate('Rejected')}
-                disabled={loading}
-              >
-                {loading ? 'Processing...' : 'Reject'}
-              </Button>
+            <div className="flex gap-4">
               <Button
                 onClick={() => handleStatusUpdate('Approved')}
                 disabled={loading}
               >
-                {loading ? 'Processing...' : 'Accept'}
+                {loading ? "Processing..." : "Approve"}
               </Button>
+              <div>
+                {!showRejectionDialog ? (
+                  <Button
+                    variant="destructive"
+                    onClick={() => setShowRejectionDialog(true)}
+                    disabled={loading}
+                  >
+                    Reject
+                  </Button>
+                ) : (
+                  <div className="space-y-2">
+                    <textarea
+                      className="w-full min-h-[100px] p-2 border rounded-md"
+                      placeholder="Please provide a reason for rejection..."
+                      value={rejectionNote}
+                      onChange={(e) => setRejectionNote(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleStatusUpdate('Rejected')}
+                        disabled={loading}
+                      >
+                        {loading ? "Processing..." : "Confirm Rejection"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowRejectionDialog(false)
+                          setRejectionNote("")
+                        }}
+                        disabled={loading}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
           {

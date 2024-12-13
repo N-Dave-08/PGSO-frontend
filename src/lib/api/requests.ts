@@ -38,6 +38,25 @@ export interface AssessRequestData {
   personnel_ids: number[];
 }
 
+export interface RequestStatusResponse {
+  isSuccess: boolean;
+  message: string;
+  request?: {
+    id: number;
+    control_no: string;
+    status: string;
+    note: string;
+    requested_by: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      division: string;
+      office_location: string;
+    };
+    date_rejected?: string;
+  };
+}
+
 export const getRequests = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -118,7 +137,7 @@ export const createRequest = async (data: CreateRequestData): Promise<CreateRequ
     }
 };
 
-export const updateRequestStatus = async (requestId: number, status: 'Approved' | 'Rejected'): Promise<{ isSuccess: boolean; message: string }> => {
+export const updateRequestStatus = async (requestId: number, status: 'Approved' | 'Rejected'): Promise<RequestStatusResponse> => {
     try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -131,7 +150,7 @@ export const updateRequestStatus = async (requestId: number, status: 'Approved' 
 
         const response = await axios.post(
             endpoint,
-            {},
+            status === 'Rejected' ? { note: localStorage.getItem('rejectionNote') } : {},
             {
                 headers: {
                     'Accept': 'application/json',
