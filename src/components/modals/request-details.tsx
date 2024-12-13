@@ -43,6 +43,7 @@ interface RequestDetailsModalProps {
     file_completion_url: string | null
     category_id: number | null
     category_name: string | null
+    note: string | null
     personnel: {
       id: number
       name: string
@@ -412,6 +413,12 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
               <span className="font-medium">Status:</span>
               <span className="col-span-3 capitalize">{request.status}</span>
             </div>
+            {request.status === "Returned" && (
+              <div className="grid grid-cols-4 items-center gap-4">
+              <span className="font-medium">Reason:</span>
+              <span className="col-span-3 capitalize">{request.note}</span>
+            </div>
+            )}
             <div className="grid grid-cols-4 items-center gap-4">
               <span className="font-medium">Date Requested:</span>
               <span className="col-span-3">{dayjs(request.date_requested).tz("Asia/Manila").format("MMM D, YYYY")}</span>
