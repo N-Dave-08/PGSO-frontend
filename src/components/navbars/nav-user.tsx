@@ -28,6 +28,7 @@ import {
 interface UserType {
     id: number
     email: string
+    name: string
 }
 
 export function NavUser() {
@@ -62,7 +63,7 @@ export function NavUser() {
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="flex gap-1 truncate">
-                                    <p className='font-semibold truncate'>John Doe</p>
+                                    <p className='font-semibold truncate'>{user ? user.name : 'Loading...'}</p>
                                     <p className='opacity-50 font-light text-xs'>({role})</p>
                                 </span>
                                 <span className="truncate text-xs">{user ? user.email : 'Loading...'}</span>

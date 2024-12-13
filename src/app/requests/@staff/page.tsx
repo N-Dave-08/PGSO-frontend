@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { RequestTable } from '@/components/tables/request-table'
 import { getRequests } from '@/lib/api/requests'
+import CreateRequest from '@/components/modals/create-request'
 
 interface ApiRequest {
   id: number
@@ -113,6 +114,10 @@ export default function Page() {
   console.log("REQUEST DATA", requests)
   return (
     <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Requests</h1>
+        <CreateRequest onRequestCreated={fetchRequests} />
+      </div>
       <RequestTable data={requests} />
     </div>
   )
