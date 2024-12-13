@@ -185,7 +185,7 @@ export const columns: ColumnDef<Request>[] = [
     accessorKey: "personnel",
     header: "Assigned Personnel",
     cell: ({ row }) => {
-      const personnel = row.getValue("personnel") as { id: number; name: string }[];
+      const personnel = row.getValue("personnel") as { id: number; first_name: string; last_name: string; }[];
       return personnel && personnel.length > 0 ? (
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -198,7 +198,8 @@ export const columns: ColumnDef<Request>[] = [
               <p className="text-sm font-semibold">Assigned Personnel</p>
               {personnel.map((person) => (
                 <div key={person.id} className="text-sm">
-                  {person.name}
+                  {person.first_name}
+                  {person.last_name}
                 </div>
               ))}
             </div>

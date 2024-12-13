@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://server.pgso.bpc-bsis4d.com/public/api/:path*'
+      }
+    ]
+  }
 };
 
 export default nextConfig;

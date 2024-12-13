@@ -16,7 +16,6 @@ interface ApiDivision {
   division_name: string;
   office_location: string;
   staff: Staff[];
-  category: string;
   created_at: string;
 }
 
@@ -25,7 +24,6 @@ interface TableDivision {
   name: string;
   officeLocation: string;
   staff: Staff[];
-  category: string;
   dateCreated: string;
 }
 
@@ -42,7 +40,6 @@ export default function Page() {
         name: division.division_name,
         officeLocation: division.office_location,
         staff: division.staff || [],
-        category: division.category,
         dateCreated: division.created_at || new Date().toISOString()
       }));
 

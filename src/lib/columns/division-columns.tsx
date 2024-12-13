@@ -24,7 +24,6 @@ export type Division = {
     id: number
     name: string
   }[]
-  category: string
   dateCreated: string
 }
 
@@ -113,25 +112,6 @@ export const columns: ColumnDef<Division>[] = [
           </HoverCardContent>
         </HoverCard>
       )
-    },
-  },
-  {
-    accessorKey: "category",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Category
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const category = row.getValue("category") as Division["category"]
-      console.log("CATEGORY", category)
-      return category || 'Uncategorized'
     },
   },
   {

@@ -38,12 +38,7 @@ import {
 } from "@/components/ui/select"
 
 import { columns } from "@/lib/columns/category-columns"
-
-interface Category {
-  id: number
-  name: string
-  description: string
-}
+import { Category } from "@/lib/columns/category-columns"
 
 interface CategoryTableProps {
   data: Category[]

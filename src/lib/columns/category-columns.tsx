@@ -14,6 +14,11 @@ export type Category = {
   id: number
   name: string
   description: string
+  personnel: {
+    id: number
+    first_name: string
+    last_name: string
+  }[]
 }
 
 
@@ -59,6 +64,20 @@ export const columns: ColumnDef<Category>[] = [
     accessorKey: "description",
     header: "Desription",
     cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
+  },
+  {
+    accessorKey: "personnel",
+    header: "Personnel",
+    cell: ({ row }) => {
+      const personnel = row.getValue("personnel") as Category["personnel"];
+      return (
+        <div>
+          {personnel
+            .map((person) => `${person.first_name} ${person.last_name}`)
+            .join(", ")}
+        </div>
+      );
+    },
   },
   {
     id: "actions",
