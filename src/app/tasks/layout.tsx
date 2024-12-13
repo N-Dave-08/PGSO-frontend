@@ -13,11 +13,8 @@ export default function Layout({
     children,
     personnel,
 }: {
-    children?: React.ReactNode
-    admin?: React.ReactNode
-    head?: React.ReactNode
-    personnel?: React.ReactNode
-    staff?: React.ReactNode
+    children: React.ReactNode
+    personnel: React.ReactNode
 }) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
@@ -36,13 +33,7 @@ export default function Layout({
     if (!user) {
         return <div className='h-screen flex items-center justify-center'>Loading...</div>
     }
-
-    const isAuthorized = (allowedRoles: string[]) => {
-        if (!role) return false;
-        return allowedRoles.includes(role)
-    }
-
-    
+ 
     const renderContent = () => {
         if (role === 'personnel') {
             return personnel;
