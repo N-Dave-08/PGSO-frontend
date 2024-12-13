@@ -24,8 +24,6 @@ import timezone from "dayjs/plugin/timezone"
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-import { format } from "date-fns"
-
 export type Request = {
   id: number
   control_no: string

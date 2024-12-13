@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 // Initialize dayjs plugins
 dayjs.extend(utc)
@@ -246,7 +246,6 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
       setIsSubmittingFeedback(true)
       const token = localStorage.getItem('token')
       
-      // Log the request payload for debugging
       console.log('Submitting feedback with:', {
         rating,
         feedback,
@@ -275,11 +274,12 @@ export function RequestDetailsModal({ request, trigger, onRequestUpdate }: Reque
         await onRequestUpdate?.()
         setOpen(false)
       }
-    } catch (error: any) {
-      console.error('Feedback submission error:', error.response?.data || error)
+    } catch (error: unknown) {
+      console.error('Feedback submission error:', error)
+      const axiosError = error as AxiosError<{ message: string }>
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to submit feedback. Please try again.",
+        description: axiosError.response?.data?.message || "Failed to submit feedback. Please try again.",
         variant: "destructive",
       })
     } finally {
