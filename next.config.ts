@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: {
     unoptimized: true,
-  // },
+  },
   // async headers() {
   //   return [
   //     {
