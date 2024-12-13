@@ -12,7 +12,9 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://server.pgso.bpc-bsis4d.com/public/api/:path*'
+        destination: process.env.NEXT_PUBLIC_API_URL 
+          ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
+          : 'https://server.pgso.bpc-bsis4d.com/public/api/:path*'
       }
     ]
   }

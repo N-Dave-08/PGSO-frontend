@@ -65,7 +65,6 @@ export default function Page() {
     try {
       const response = await getUsers()
       const usersData = response.user || []
-      console.log('All users:', usersData)
       setUsers(usersData)
     } catch (error) {
       console.error('Error fetching users:', error)
@@ -83,7 +82,6 @@ export default function Page() {
 
   const formattedPersonnel = users
     .filter(user => {
-      console.log('Checking user:', user.first_name, 'role:', user.role_name)
       return user.role_name === "personnel"
     })
     .map(user => ({
@@ -91,8 +89,6 @@ export default function Page() {
       first_name: user.first_name,
       last_name: user.last_name
     }))
-
-  console.log('Filtered personnel:', formattedPersonnel)
 
   if (loading) {
     return <div>Loading...</div>;
