@@ -1,8 +1,29 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
+@theme {
+	--color-primary: #ff79c7;
+	--color-primary-content: #16050f;
+	--color-secondary: #bd93f9;
+	--color-secondary-content: #0c0816;
+	--color-accent: #ffb86c;
+--color-accent-content: #160c03;
+--color-neutral: #404558;
+--color-neutral-content: #d6d7db;
+--color-info: #8ae9fc;
+--color-info-content: #071317;
+--color-success: #4ffb7b;
+--color-success-content: #021404;
+--color-warning: #f0fb8d;
+--color-warning-content: #141507;
+--color-error: #ff5555;
+--color-error-content: #404558;
+--color-base-100: #282a36;
+--color-base-200: #232531;
+--color-base-300: #20202a;
+--color-base-content: #f7f8f2;
+}
+
+/* :root {
 	--color1: 189, 147, 249;
 	--color2: 36, 146, 171;
 	--color3: 148, 95, 252;
@@ -178,6 +199,29 @@
 @layer base {
   :root {
 		--radius: 0.5rem;
+		--sidebar-background: 0 0% 98%;
+		--sidebar-foreground: 240 5.3% 26.1%;
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 240 4.8% 95.9%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+	}
+  .dark {
+		--sidebar-background: 240 5.9% 10%;
+		--sidebar-foreground: 240 4.8% 95.9%;
+		--sidebar-primary: 224.3 76.3% 48%;
+		--sidebar-primary-foreground: 0 0% 100%;
+		--sidebar-accent: 240 3.7% 15.9%;
+		--sidebar-accent-foreground: 240 4.8% 95.9%;
+		--sidebar-border: 240 3.7% 15.9%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+	}
+} */
+
+@layer base {
+  :root {
 		--sidebar-background: 0 0% 98%;
 		--sidebar-foreground: 240 5.3% 26.1%;
 		--sidebar-primary: 240 5.9% 10%;
