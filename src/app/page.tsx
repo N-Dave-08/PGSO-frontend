@@ -25,10 +25,10 @@ export default function Home() {
     <main className="min-h-screen">
       <Navbar />
       <Hero />
-      <Capabilities />
+      {/* <Capabilities />
       <Process />
       <FAQ />
-      <CTA />
+      <CTA /> */}
       <Footer />
     </main>
   );

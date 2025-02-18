@@ -19,6 +19,7 @@ export interface Request {
     status: string;
     requested_by: RequestedBy;
     date_requested: string;
+    note: string | null;
 }
 
 export interface CreateRequestData {

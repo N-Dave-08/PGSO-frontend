@@ -45,6 +45,8 @@ export type Request = {
   date_requested: string
   date_completed: string | null
   requested_by: RequestedBy
+  note: string | null
+  
 }
 
 export type RequestedBy = {
@@ -177,7 +179,20 @@ export const columns = ({ onRequestUpdate }: RequestColumnProps): ColumnDef<Requ
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
+    cell: ({ row }) => {
+      const requestStatus = row.getValue("status")
+      return requestStatus === "Completed" ? (
+        <div className="bg-success p-1 rounded-lg text-success-content">{requestStatus}</div>
+      ) : requestStatus === "Pending" ? (
+        <div className="bg-neutral p-1 rounded-lg">{requestStatus}</div>
+      ) : requestStatus === "Returned" ? (
+        <div className="bg-warning text-warning-content p-1 rounded-lg">{requestStatus}</div>
+      )  : requestStatus === "For Completion" ? (
+        <div className="bg-info text-info-content p-1 rounded-lg">{requestStatus}</div>
+      ) :  requestStatus === "For Feedback" ? (
+        <div className="bg-info text-black p-1 rounded-lg">{requestStatus}</div>
+      ) : ''
+    },
   },
   {
     accessorKey: "rating",

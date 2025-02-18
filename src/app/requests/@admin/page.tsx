@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { RequestTable } from '@/components/tables/request-table'
+import { RequestCards } from '@/components/cards/request-cards'
 import { getRequests } from '@/lib/api/requests'
 
 interface ApiRequest {
@@ -25,6 +25,7 @@ interface ApiRequest {
   date_requested: string
   date_completed: string | null
   requested_by: RequestedBy
+  note: string | null
 }
 
 interface TableRequest {
@@ -48,6 +49,7 @@ interface TableRequest {
   date_requested: string
   date_completed: string | null
   requested_by: RequestedBy
+  note: string | null
 }
 
 interface RequestedBy {
@@ -90,7 +92,8 @@ export default function Page() {
           status: request.status,
           date_requested: request.date_requested,
           date_completed: request.date_completed,
-          requested_by: request.requested_by
+          requested_by: request.requested_by,
+          note: request.note || null
         }
       });
 
@@ -113,7 +116,7 @@ export default function Page() {
   console.log("REQUEST DATA", requests)
   return (
     <div>
-      <RequestTable data={requests} onRequestUpdate={fetchRequests}/>
+      <RequestCards data={requests} onRequestUpdate={fetchRequests}/>
     </div>
   )
 }
