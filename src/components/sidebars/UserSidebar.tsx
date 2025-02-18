@@ -51,7 +51,7 @@ export default function UserSidebar() {
   
 
   return (
-    <Sidebar>
+    <Sidebar variant={'sidebar'} className='w-[16rem]'>
       <SidebarHeader>
         <NavUser />
       </SidebarHeader>
