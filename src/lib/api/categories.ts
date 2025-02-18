@@ -31,8 +31,8 @@ export const createCategory = async (data: CreateCategoryData): Promise<CreateCa
             throw new Error('Authentication token not found');
         }
         console.log('Creating category with data:', data);
-        const response = await axios.post<CreateCategoryResponse>(
-            '/api/category/create/',
+        const response = await axios.post(
+            'https://server.pgso.bpc-bsis4d.com/public/api/admin/category/create',
             data,
             {
                 headers: {
@@ -44,25 +44,26 @@ export const createCategory = async (data: CreateCategoryData): Promise<CreateCa
         );
         return response.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            throw new Error(error.response?.data?.message || 'Failed to create category');
-        }
+        console.error('Error creating category:', error);
         throw error;
     }
 }
 
 export const getCategories = async () => {
-  try {
-    const response = await axios.post('/api/categories', {}, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    throw error;
-  }
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('Authentication token not found');
+        }
+        const response = await axios.get('https://server.pgso.bpc-bsis4d.com/public/api/admin/category', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw error;
+    }
 }

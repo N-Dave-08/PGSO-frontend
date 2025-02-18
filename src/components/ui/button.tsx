@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "transition-all duration-300 ease-in-out active:scale-95 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-content disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-neutral-300",
+  "transition-all duration-300 ease-in-out active:scale-95 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-content disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-base-300 text-neutral-content shadow hover:bg-base-300/80 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-50/80",
+          "bg-neutral text-neutral-content shadow-sm hover:bg-neutral/80",
         destructive:
-          "bg-accent text-warning-content shadow-sm hover:bg-accent/80 dark:bg-red-900 dark:text-neutral-50 dark:hover:bg-red-900/90",
+          "bg-error text-error-content shadow-sm hover:bg-error/90",
         outline:
-          "border border-neutral b-transparent shadow-sm hover:bg-neutral hover:text-neutral-content dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800 dark:hover:text-neutral-50",
+          "border border-neutral b-transparent shadow-sm hover:bg-neutral hover:text-neutral-content",
         secondary:
-          "bg-secondary text-primary-content shadow-sm hover:bg-secondary/80 dark:bg-neutral-800 dark:text-neutral-50 dark:hover:bg-neutral-800/80",
-        ghost: "hover:bg-white/10 hover:text-neutral-content dark:hover:bg-neutral-800 dark:hover:text-neutral-50",
-        link: "text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-50",
+          "bg-secondary text-secondary-content shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-white/10 hover:text-base-content",
+        link: "text-neutral-900 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -55,4 +55,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
-

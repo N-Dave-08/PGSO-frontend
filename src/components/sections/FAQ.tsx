@@ -23,7 +23,7 @@ export default function FAQ() {
             </div>
             <div className='w-1/3 space-y-5'>
                 <h4 className='text-2xl font-semibold text-center'>Still Have Questions?</h4>
-                <form className='bg-neutral p-5 rounded-box flex flex-col gap-3'>
+                <form className='bg-neutral p-5 rounded-lg flex flex-col gap-3'>
                     <label className="input input-bordered flex items-center gap-2">
                         <Mail className='fill-base-content text-base-100'/>
                         <input type="text" className="grow" placeholder="Email" />

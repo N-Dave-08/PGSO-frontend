@@ -8,7 +8,7 @@ export default function Process() {
         <section className='relative z-10 flex flex-col justify-center items-center h-screen gap-10 px-40'>
             <h4 className='text-2xl font-semibold'>How it Works</h4>
             <div className='flex w-full justify-center'>
-                <ul className='bg-neutral p-8 rounded-box steps steps-vertical'>
+                <ul className='bg-neutral p-8 rounded-lg steps steps-vertical'>
                     {
                         process.map((step, i) => (
                             <li key={i} className='step step-primary'>

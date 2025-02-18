@@ -123,9 +123,9 @@ export default function LoginModal() {
                             Cancel
                         </Button>
                         {
-                            !isLoading ? (<Button type="submit">Log In</Button>)
+                            !isLoading ? (<Button variant='secondary' type="submit">Log In</Button>)
                                 : (
-                                    <Button disabled>
+                                    <Button variant='secondary' disabled>
                                         <Loader2 className="animate-spin" />
                                         Please wait
                                     </Button>
