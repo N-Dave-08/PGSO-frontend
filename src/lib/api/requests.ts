@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from './axios';
 
 export interface RequestedBy {
     id: number;
@@ -60,30 +61,14 @@ export interface RequestStatusResponse {
 
 export const getRequests = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      'https://server.pgso.bpc-bsis4d.com/public/api/request/list',
-      {}, 
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await api.post('/request/list');
     
     // Return empty array if no data
     return {
       requests: response.data?.requests || [],
-      message: response.data?.message || 'No requests found'
+      total: response.data?.total || 0
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return {
-        requests: [],
-        message: 'No requests found'
-      };
-    }
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       throw new Error('Unauthorized access. Please login again.');
     }
@@ -106,17 +91,13 @@ export const createRequest = async (data: CreateRequestData): Promise<CreateRequ
             formData.append('file_path', data.file_path);
         }
 
-        const response = await axios.post<CreateRequestResponse>(
-            'https://server.pgso.bpc-bsis4d.com/public/api/request/create',
-            formData,
-            {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            }
-        );
+        const response = await api.post('/request/create', formData, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
         return response.data;
     } catch (error) {
@@ -146,10 +127,10 @@ export const updateRequestStatus = async (requestId: number, status: 'Approved' 
         }
 
         const endpoint = status === 'Approved' 
-            ? `https://server.pgso.bpc-bsis4d.com/public/api/request/accept/${requestId}`
-            : `https://server.pgso.bpc-bsis4d.com/public/api/request/reject/${requestId}`;
+            ? `/request/accept/${requestId}`
+            : `/request/reject/${requestId}`;
 
-        const response = await axios.post(
+        const response = await api.post(
             endpoint,
             status === 'Rejected' ? { note: localStorage.getItem('rejectionNote') } : {},
             {
@@ -178,16 +159,12 @@ export const updateRequestStatus = async (requestId: number, status: 'Approved' 
 export const assessRequest = async (requestId: number, data: AssessRequestData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `https://server.pgso.bpc-bsis4d.com/public/api/request/assess/${requestId}`,
-      data,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await api.post(`/request/assess/${requestId}`, data, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     return {
       isSuccess: true,
       message: response.data.message
