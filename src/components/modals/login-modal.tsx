@@ -17,13 +17,6 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import api from "@/lib/api/axios";
 import { secureStorage, rateLimit } from "@/lib/utils/encryption";
-import { User } from "@/types";
-// interface UserData {
-//   id: number;
-//   name: string;
-//   role: string;
-//   [key: string]: any; // For any additional properties that might be present
-// }
 
 // Rate limiting constants
 const RATE_LIMIT_KEY = "login_ratelimit";

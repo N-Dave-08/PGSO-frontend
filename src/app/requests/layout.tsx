@@ -3,27 +3,19 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-
 interface UserType {
     id: number
     email: string
 }
 
-interface LayoutProps {
+export default function Layout(props: {
     children?: React.ReactNode
     admin: React.ReactNode
     head: React.ReactNode
     personnel: React.ReactNode
     staff: React.ReactNode
-}
-
-export default function Layout({
-    children,
-    admin,
-    head,
-    personnel,
-    staff,
-}: LayoutProps) {
+}) {
+    const { children, admin, head, personnel, staff } = props
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
