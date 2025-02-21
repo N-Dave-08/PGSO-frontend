@@ -17,6 +17,13 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import api from "@/lib/api/axios";
 import { secureStorage, rateLimit } from "@/lib/utils/encryption";
+import { User } from "@/types";
+// interface UserData {
+//   id: number;
+//   name: string;
+//   role: string;
+//   [key: string]: any; // For any additional properties that might be present
+// }
 
 // Rate limiting constants
 const RATE_LIMIT_KEY = "login_ratelimit";
@@ -112,9 +119,20 @@ export default function LoginModal() {
 
       // Store auth data securely
       const sanitizedUser = sanitizeUserData(data.user, data.role);
+      
+      // Store in both secure storage and localStorage for compatibility
       await secureStorage.set("user", sanitizedUser);
       await secureStorage.set("token", data.token);
       await secureStorage.set("sessionCode", data.sessionCode);
+      
+      // Store in localStorage for dashboard access
+      localStorage.setItem("user", JSON.stringify(sanitizedUser));
+      localStorage.setItem("role", data.role);
+      // Store token directly without encoding since it's already in the correct format
+      localStorage.setItem("token", data.token);
+      if (data.sessionCode) {
+        localStorage.setItem("sessionCode", data.sessionCode);
+      }
 
       // Clear sensitive form data
       setEmail("");
@@ -124,11 +142,13 @@ export default function LoginModal() {
       // Trigger auth change event
       window.dispatchEvent(new Event("authChange"));
 
-      // Redirect based on role
-      if (data.role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/dashboard");
+      // Redirect based on role with error handling
+      try {
+        // Route all users to dashboard initially
+        window.location.href = "/dashboard";
+      } catch (routingError) {
+        console.error("Navigation error:", routingError);
+        setError("Login successful but navigation failed. Please try again.");
       }
     } catch (err) {
       const errorMessage =

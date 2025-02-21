@@ -12,15 +12,12 @@ const BASE_URL = "https://server.pgso.bpc-bsis4d.com/public/api";
 
 // Helper function to get auth headers
 const getAuthHeaders = (contentType = "application/json"): AuthHeaders => {
-  const encryptedToken = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const sessionCode = localStorage.getItem("sessionCode");
 
-  if (!encryptedToken) {
+  if (!token) {
     throw new Error("No authentication token found");
   }
-
-  // Decrypt token
-  const token = atob(encryptedToken);
 
   const headers: AuthHeaders = {
     Authorization: `Bearer ${token}`,
