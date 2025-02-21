@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,23 +9,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
-
-export type Division = {
-  id: number
-  name: string
-  officeLocation: string
-  staff: {
-    id: number
-    name: string
-  }[]
-  dateCreated: string
-}
+} from "@/components/ui/hover-card";
+import { Division } from "@/types";
 
 export const columns: ColumnDef<Division>[] = [
   {
@@ -48,7 +38,7 @@ export const columns: ColumnDef<Division>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "division_name",
     header: ({ column }) => {
       return (
         <Button
@@ -58,11 +48,11 @@ export const columns: ColumnDef<Division>[] = [
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
-    accessorKey: "officeLocation",
+    accessorKey: "office_location",
     header: ({ column }) => {
       return (
         <Button
@@ -72,7 +62,7 @@ export const columns: ColumnDef<Division>[] = [
           Office Location
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
@@ -86,10 +76,10 @@ export const columns: ColumnDef<Division>[] = [
           Staff
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const staff = row.getValue("staff") as Division["staff"]
+      const staff = row.getValue("staff") as Division["staff"];
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -98,9 +88,7 @@ export const columns: ColumnDef<Division>[] = [
           <HoverCardContent className="w-80">
             <div className="space-y-1">
               {staff.length === 0 ? (
-                <div className="">
-                  No members
-                </div>
+                <div className="">No members</div>
               ) : (
                 staff.map((member) => (
                   <div key={member.id} className="text-sm">
@@ -111,11 +99,11 @@ export const columns: ColumnDef<Division>[] = [
             </div>
           </HoverCardContent>
         </HoverCard>
-      )
+      );
     },
   },
   {
-    accessorKey: "dateCreated",
+    accessorKey: "created_at",
     header: ({ column }) => {
       return (
         <Button
@@ -125,10 +113,10 @@ export const columns: ColumnDef<Division>[] = [
           Date Created
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      return new Date(row.getValue("dateCreated")).toLocaleDateString()
+      return new Date(row.getValue("created_at")).toLocaleDateString();
     },
   },
   {
@@ -146,7 +134,9 @@ export const columns: ColumnDef<Division>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(row.original.id.toString())
+              }
             >
               Copy Department ID
             </DropdownMenuItem>
@@ -160,7 +150,7 @@ export const columns: ColumnDef<Division>[] = [
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];

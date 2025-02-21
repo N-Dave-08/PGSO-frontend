@@ -1,26 +1,15 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-export type Category = {
-  id: number
-  name: string
-  description: string
-  personnel: {
-    id: number
-    first_name: string
-    last_name: string
-  }[]
-}
-
+} from "@/components/ui/dropdown-menu";
+import { Category } from "@/types";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -56,14 +45,16 @@ export const columns: ColumnDef<Category>[] = [
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "description",
     header: "Desription",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("description")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("description")}</div>
+    ),
   },
   {
     accessorKey: "personnel",
@@ -96,15 +87,14 @@ export const columns: ColumnDef<Category>[] = [
             <DropdownMenuItem>
               <PenSquare className="mr-2 h-4 w-4" />
               Edit
-            </DropdownMenuItem> 
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <Trash className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
-
+];

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarHeader,
@@ -11,53 +11,74 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from '@/components/ui/sidebar'
-import { usePathname } from 'next/navigation'
-import { routesData } from '@/helpers/routes'
-import { NavUser } from '@/components/navbars/nav-user'
-import Link from 'next/link'
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import { routesData } from "@/helpers/routes";
+import { NavUser } from "@/components/navbars/nav-user";
+import Link from "next/link";
 
 export default function UserSidebar() {
-
-  const path = usePathname()
-  const [role, setRole] = useState<string>('')
+  const path = usePathname();
+  const [role, setRole] = useState<string>("");
 
   useEffect(() => {
-    const role = localStorage.getItem('role')
-    setRole(role || '')
-  }, [])
+    const role = localStorage.getItem("role");
+    setRole(role || "");
+  }, []);
 
   const filteredRoutes = React.useMemo(() => {
-    const adminRoutes = ['DASHBOARD', 'USERS', 'REQUESTS', 'CATEGORIES', 'DEPARTMENTS', 'DIVISIONS', 'AUDIT_LOGS', 'SETTINGS']
-    const personnelRoutes = ['DASHBOARD', 'PROFILE', 'TASKS', 'CALENDAR', 'FEEDBACK', 'SETTINGS']
-    const headRoutes = ['DASHBOARD', 'REQUESTS', 'DEPARTMENTS', 'DIVISIONS', 'STAFFS', 'SETTINGS', 'PROFILE']
-    const staffRoutes = ['DASHBOARD', 'REQUESTS', 'PROFILE', 'SETTINGS']
-    
+    const adminRoutes = [
+      "DASHBOARD",
+      "USERS",
+      "REQUESTS",
+      "CATEGORIES",
+      "DEPARTMENTS",
+      "DIVISIONS",
+      "AUDIT_LOGS",
+      "SETTINGS",
+    ];
+    const personnelRoutes = [
+      "DASHBOARD",
+      "PROFILE",
+      "TASKS",
+      "CALENDAR",
+      "FEEDBACK",
+      "SETTINGS",
+    ];
+    const headRoutes = [
+      "DASHBOARD",
+      "REQUESTS",
+      "DEPARTMENTS",
+      "DIVISIONS",
+      "STAFFS",
+      "SETTINGS",
+      "PROFILE",
+    ];
+    const staffRoutes = ["DASHBOARD", "REQUESTS", "PROFILE", "SETTINGS"];
+
     return Object.entries(routesData).filter(([key]) => {
       switch (role) {
-        case 'personnel':
-          return personnelRoutes.includes(key)
-        case 'head':
-          return headRoutes.includes(key)
-        case 'staff':
-          return staffRoutes.includes(key)
-        case 'admin':
-          return adminRoutes.includes(key)
+        case "personnel":
+          return personnelRoutes.includes(key);
+        case "head":
+          return headRoutes.includes(key);
+        case "staff":
+          return staffRoutes.includes(key);
+        case "admin":
+          return adminRoutes.includes(key);
         default:
-          return true
+          return true;
       }
-    })
-  }, [role])
-  
+    });
+  }, [role]);
 
   return (
-    <Sidebar variant={'sidebar'} className='w-[16rem]'>
+    <Sidebar variant={"sidebar"} className="w-[16rem]">
       <SidebarHeader>
         <NavUser />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {filteredRoutes.map(([key, route]) => (
@@ -65,7 +86,7 @@ export default function UserSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={path === `${route.link}/`}
-                    className='text-base-content/70'
+                    className="text-base-content/70"
                   >
                     <Link href={route.link}>
                       {route.icon}
@@ -79,5 +100,5 @@ export default function UserSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

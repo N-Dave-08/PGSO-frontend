@@ -1,35 +1,30 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-
-interface UserType {
-  id: number
-  email: string
-}
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@/types";
 
 export default function Settings() {
-  const [user, setUser] = useState<UserType | null>(null)
-  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      setUser(JSON.parse(storedUser));
     } else {
-      router.push('/')
+      router.push("/");
     }
-  }, [router])
+  }, [router]);
 
   if (!user) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
     <div>
       <h1 className="text-lg font-bold">Profile</h1>
-      <p className='text-sm'>under development</p>
+      <p className="text-sm">under development</p>
     </div>
-  )
+  );
 }
-

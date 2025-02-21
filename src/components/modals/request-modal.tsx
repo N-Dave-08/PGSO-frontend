@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,28 +7,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState } from "react"
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
-
-
-export function RequestModal() {
+export default function RequestModal() {
   const [formValues, setFormValues] = useState({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     file: null,
-  })
+  });
 
   const clearForm = () => {
     setFormValues({
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       file: null,
-    })
-  }
+    });
+  };
 
   return (
     <Dialog>
@@ -38,9 +36,7 @@ export function RequestModal() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Request Details</DialogTitle>
-          <DialogDescription>
-            Put your request details
-          </DialogDescription>
+          <DialogDescription>Put your request details</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid w-full items-center gap-1.5">
@@ -50,7 +46,9 @@ export function RequestModal() {
             <Input
               id="title"
               value={formValues.title}
-              onChange={(e) => setFormValues({ ...formValues, title: e.target.value })}
+              onChange={(e) =>
+                setFormValues({ ...formValues, title: e.target.value })
+              }
               placeholder="Request Title"
             />
           </div>
@@ -62,8 +60,11 @@ export function RequestModal() {
               id="description"
               placeholder="Type your description here."
               value={formValues.description}
-              onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
-              className="col-span-3" />
+              onChange={(e) =>
+                setFormValues({ ...formValues, description: e.target.value })
+              }
+              className="col-span-3"
+            />
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="file" className="text-left">
@@ -72,7 +73,9 @@ export function RequestModal() {
             <Input
               id="file"
               className="col-span-3"
-              onChange={(e) => setFormValues({ ...formValues, description: e.target.value[0] })}
+              onChange={(e) =>
+                setFormValues({ ...formValues, description: e.target.value[0] })
+              }
               type="file"
               accept="image/*"
             />
@@ -80,11 +83,13 @@ export function RequestModal() {
         </div>
         <DialogFooter>
           <div className="justify-end flex">
-            <Button variant="ghost" onClick={clearForm}>Clear</Button>
+            <Button variant="ghost" onClick={clearForm}>
+              Clear
+            </Button>
             <Button type="submit">Submit</Button>
           </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

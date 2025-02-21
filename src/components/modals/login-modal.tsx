@@ -14,23 +14,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LoginResponse } from "@/types";
+import api from "@/lib/api/axios";
+import { secureStorage, rateLimit } from "@/lib/utils/encryption";
 
 // Rate limiting constants
+const RATE_LIMIT_KEY = "login_ratelimit";
 const MAX_LOGIN_ATTEMPTS = 5;
-const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes in milliseconds
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
 
-interface LoginResponse {
-  isSuccess: boolean;
-  user: {
-    id: number;
-    email: string;
-    name: string;
-  };
-  token: string;
-  sessionCode: string;
-  role: string;
-  message: string;
-}
+// User data sanitization
+const sanitizeUserData = (userData: any) => {
+  const { id, name, role } = userData;
+  return { id, name, role };
+};
 
 export default function LoginModal() {
   const [open, setOpen] = useState<boolean>(false);
@@ -39,212 +36,181 @@ export default function LoginModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [loginAttempts, setLoginAttempts] = useState<number>(0);
-  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     // Check for existing lockout
-    const storedLockout = localStorage.getItem("loginLockout");
-    if (storedLockout) {
-      const lockoutTime = parseInt(storedLockout);
-      if (lockoutTime > Date.now()) {
-        setLockoutUntil(lockoutTime);
-      } else {
-        localStorage.removeItem("loginLockout");
-        setLoginAttempts(0);
+    const checkLockout = async () => {
+      const isLocked = await rateLimit.checkLimit(
+        RATE_LIMIT_KEY,
+        MAX_LOGIN_ATTEMPTS,
+        LOCKOUT_DURATION
+      );
+      if (isLocked) {
+        setError("Too many login attempts. Please try again later.");
       }
-    }
+    };
+    checkLockout();
   }, []);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Check if user is locked out
-    if (lockoutUntil && lockoutUntil > Date.now()) {
-      const minutesLeft = Math.ceil((lockoutUntil - Date.now()) / 60000);
-      setError(
-        `Too many login attempts. Please try again in ${minutesLeft} minutes.`
-      );
+    // Input validation
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Check rate limit
+    const isLocked = await rateLimit.checkLimit(
+      RATE_LIMIT_KEY,
+      MAX_LOGIN_ATTEMPTS,
+      LOCKOUT_DURATION
+    );
+    if (isLocked) {
+      const minutesLeft = Math.ceil(LOCKOUT_DURATION / 60000);
+      setError(`Too many login attempts. Please try again in ${minutesLeft} minutes.`);
       return;
     }
 
     setIsLoading(true);
-    setError("");
+    setError(null);
 
     try {
-      const response = await fetch(
-        "https://server.pgso.bpc-bsis4d.com/public/api/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-            deviceInfo: {
-              userAgent: window.navigator.userAgent,
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              timestamp: new Date().toISOString(),
-            },
-          }),
-        }
-      );
+      const response = await api.post<LoginResponse>("/login", {
+        email,
+        password,
+      });
 
-      const data: LoginResponse = await response.json();
+      const data = response.data;
 
       if (!data.isSuccess) {
-        // Handle failed login attempt
-        const newAttempts = loginAttempts + 1;
-        setLoginAttempts(newAttempts);
-
-        if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
-          const lockoutTime = Date.now() + LOCKOUT_TIME;
-          setLockoutUntil(lockoutTime);
-          localStorage.setItem("loginLockout", lockoutTime.toString());
-          throw new Error(
-            `Too many failed attempts. Please try again in 15 minutes.`
-          );
-        }
-
+        // Record failed attempt
+        await rateLimit.recordAttempt(RATE_LIMIT_KEY);
         throw new Error(data.message || "Login failed");
       }
 
-      // Reset login attempts on successful login
-      setLoginAttempts(0);
-      localStorage.removeItem("loginLockout");
+      // Clear rate limiting on successful login
+      await rateLimit.clearAttempts(RATE_LIMIT_KEY);
 
-      // Store auth data
-      try {
-        // Store token
-        const encryptedToken = btoa(data.token);
-        localStorage.setItem("token", encryptedToken);
+      // Store auth data securely
+      await secureStorage.set("token", data.token);
+      await secureStorage.set("sessionCode", data.sessionCode);
+      await secureStorage.set("user", sanitizeUserData(data.user));
+      await secureStorage.set("role", data.role);
 
-        // Store session code
-        localStorage.setItem("sessionCode", data.sessionCode);
+      // Clear sensitive form data
+      setEmail("");
+      setPassword("");
+      setOpen(false);
 
-        // Store role
-        localStorage.setItem("role", data.role);
+      // Trigger auth change event
+      window.dispatchEvent(new Event("authChange"));
 
-        // Store minimal user data
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name,
-          })
-        );
-
-        // Clear sensitive data from memory
-        setPassword("");
-
-        // Dispatch auth change event
-        window.dispatchEvent(new Event("authChange"));
-
+      // Redirect based on role
+      if (data.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
         router.push("/dashboard");
-        setOpen(false);
-      } catch (error) {
-        console.error("Error storing credentials");
-        throw new Error("Failed to complete login process");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred";
+      setError(errorMessage);
+
+      // Check if max attempts reached after recording
+      const isNowLocked = await rateLimit.checkLimit(
+        RATE_LIMIT_KEY,
+        MAX_LOGIN_ATTEMPTS,
+        LOCKOUT_DURATION
+      );
+      if (isNowLocked) {
+        setError("Too many failed attempts. Please try again in 15 minutes.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePassword = () => {
-    setIsShowPassword(!isShowPassword);
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value.trim());
+    setError(null);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setError(null);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">Log In</Button>
+        <Button variant="outline">Login</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Log In</DialogTitle>
+          <DialogTitle>Login</DialogTitle>
           <DialogDescription>
-            Enter your credentials to access your account.
+            Enter your credentials to access your account
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div className="space-y-2">
+        <form onSubmit={handleLogin} className="grid gap-4 py-4">
+          <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <Mail className="size-4 opacity-40 absolute top-1/2 left-3 -translate-y-1/2" />
               <Input
-                name="email"
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setEmail(e.target.value)
-                }
-                placeholder="Enter your email"
+                onChange={handleEmailChange}
                 className="pl-10"
-                required
-                autoComplete="email"
+                placeholder="Enter your email"
+                disabled={isLoading}
               />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Lock className="size-4 opacity-40 absolute top-1/2 left-3 -translate-y-1/2" />
               <Input
-                name="password"
                 id="password"
-                type={`${isShowPassword ? "text" : "password"}`}
+                type={isShowPassword ? "text" : "password"}
                 value={password}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setPassword(e.target.value)
-                }
+                onChange={handlePasswordChange}
+                className="pl-10 pr-10"
                 placeholder="Enter your password"
-                className="pl-10"
-                required
-                autoComplete="current-password"
+                disabled={isLoading}
               />
-              <div
-                onClick={handlePassword}
-                className="absolute top-1/2 right-3 -translate-y-1/2 hover:cursor-pointer"
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+              <button
+                type="button"
+                onClick={() => setIsShowPassword(!isShowPassword)}
+                className="absolute right-3 top-3 h-4 w-4 text-gray-500"
               >
-                {isShowPassword ? (
-                  <Eye className="size-4" />
-                ) : (
-                  <EyeClosed className="size-4" />
-                )}
-              </div>
+                {isShowPassword ? <EyeClosed /> : <Eye />}
+              </button>
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
           </div>
-          <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            {!isLoading ? (
-              <Button
-                variant="secondary"
-                type="submit"
-                disabled={!!lockoutUntil && lockoutUntil > Date.now()}
-              >
-                Log In
-              </Button>
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
             ) : (
-              <Button variant="secondary" disabled>
-                <Loader2 className="animate-spin" />
-                Please wait
-              </Button>
+              "Login"
             )}
-          </div>
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, PenSquare, Trash } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, PenSquare, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-export type Division = {
-  id: number
-  division_name: string
-}
-
-export type Department = {
-  id: number
-  name: string
-  acronym: string
-  divisions: Division[]
-}
+} from "@/components/ui/dropdown-menu";
+import { Division } from "@/types";
+import { Department } from "@/types";
 
 export const columns: ColumnDef<Department>[] = [
   {
@@ -44,7 +34,7 @@ export const columns: ColumnDef<Department>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "department_name",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -54,7 +44,9 @@ export const columns: ColumnDef<Department>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("department_name")}</div>
+    ),
   },
   {
     accessorKey: "acronym",
@@ -67,7 +59,9 @@ export const columns: ColumnDef<Department>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="uppercase">{row.getValue("acronym")}</div>,
+    cell: ({ row }) => (
+      <div className="uppercase">{row.getValue("acronym")}</div>
+    ),
   },
   {
     accessorKey: "divisions",
@@ -81,12 +75,12 @@ export const columns: ColumnDef<Department>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const divisions = row.getValue("divisions") as Division[]
+      const divisions = row.getValue("divisions") as Division[];
       return (
         <div className="capitalize">
-          {divisions.map(div => div.division_name).join(", ")}
+          {divisions.map((div) => div.division_name).join(", ")}
         </div>
-      )
+      );
     },
   },
   {
@@ -104,7 +98,9 @@ export const columns: ColumnDef<Department>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(row.original.id.toString())
+              }
             >
               Copy Department ID
             </DropdownMenuItem>
@@ -118,7 +114,7 @@ export const columns: ColumnDef<Department>[] = [
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];

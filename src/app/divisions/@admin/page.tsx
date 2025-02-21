@@ -1,51 +1,33 @@
-'use client'
+"use client";
 
-import React, { useEffect, useState } from 'react'
-import { DivisionTable } from '@/components/tables/division-table'
-import { getDivisions } from '@/lib/api/divisions'
-import CreateDivision from '@/components/modals/create-division'
-
-interface Staff {
-  id: number;
-  name: string;
-  position: string;
-}
-
-interface ApiDivision {
-  id: number;
-  division_name: string;
-  office_location: string;
-  staff: Staff[];
-  created_at: string;
-}
-
-interface TableDivision {
-  id: number;
-  name: string;
-  officeLocation: string;
-  staff: Staff[];
-  dateCreated: string;
-}
+import React, { useEffect, useState } from "react";
+import { DivisionTable } from "@/components/tables/division-table";
+import { getDivisions } from "@/lib/api/divisions";
+import CreateDivision from "@/components/modals/create-division";
+import { Division } from "@/types";
 
 export default function Page() {
-  const [divisions, setDivisions] = useState<TableDivision[]>([])
-  const [loading, setLoading] = useState(true)
+  const [divisions, setDivisions] = useState<Division[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchDivisions = async () => {
     try {
       const response = await getDivisions();
       const divisionsData = response.divisions || [];
-      const formattedData = divisionsData.map((division: ApiDivision): TableDivision => ({
-        id: division.id,
-        name: division.division_name,
-        officeLocation: division.office_location,
-        staff: division.staff || [],
-        dateCreated: division.created_at || new Date().toISOString()
-      }));
+      const formattedData = divisionsData.map(
+        (division: Division): Division => ({
+          id: division.id,
+          division_name: division.division_name,
+          office_location: division.office_location,
+          staff: division.staff || [],
+          department_id: division.department_id,
+          created_at: division.created_at || new Date().toISOString(),
+        })
+      );
 
       setDivisions(formattedData);
     } catch (error) {
-      console.error('Failed to fetch divisions:', error);
+      console.error("Failed to fetch divisions:", error);
     } finally {
       setLoading(false);
     }
@@ -64,5 +46,5 @@ export default function Page() {
       <CreateDivision onDivisionCreated={fetchDivisions} />
       <DivisionTable data={divisions} />
     </div>
-  )
+  );
 }
