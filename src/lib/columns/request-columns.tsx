@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Trash, PenSquare, Eye } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { RequestDetailsModal } from "@/components/modals/request-details"
+import RequestDetailsModal from "@/components/modals/request-details"
 import {
   DropdownMenu,
   DropdownMenuContent,
