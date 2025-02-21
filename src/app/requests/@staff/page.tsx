@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { RequestCards } from '@/components/cards/request-cards'
+import RequestCards from '@/components/cards/request-cards'
 import { getRequests } from '@/lib/api/requests'
 import CreateRequest from '@/components/modals/create-request'
 
