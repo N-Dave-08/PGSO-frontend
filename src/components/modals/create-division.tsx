@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
-import { createDivision } from "@/lib/api/divisions";
+import { createDivision, CreateDivisionRequest } from "@/lib/api/divisions";
 import { getCategories } from "@/lib/api/categories";
 import {
   Select,
@@ -26,8 +26,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Category } from "@/types";
 
 interface Staff {
-  id: string;
+  id: number;
   name: string;
+  position: string;
 }
 
 interface CreateDivisionProps {
@@ -48,14 +49,14 @@ export default function CreateDivision({
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   const staffMembers: Staff[] = [
-    { id: "1", name: "John Doe" },
-    { id: "2", name: "Jane Smith" },
-    { id: "3", name: "Michael Johnson" },
-    { id: "4", name: "Sarah Williams" },
-    { id: "5", name: "Robert Brown" },
-    { id: "6", name: "Emily Davis" },
-    { id: "7", name: "William Wilson" },
-    { id: "8", name: "Jessica Taylor" },
+    { id: 1, name: "John Doe", position: "Manager" },
+    { id: 2, name: "Jane Smith", position: "Developer" },
+    { id: 3, name: "Michael Johnson", position: "Designer" },
+    { id: 4, name: "Sarah Williams", position: "Marketing" },
+    { id: 5, name: "Robert Brown", position: "Sales" },
+    { id: 6, name: "Emily Davis", position: "HR" },
+    { id: 7, name: "William Wilson", position: "Finance" },
+    { id: 8, name: "Jessica Taylor", position: "IT" },
   ];
 
   useEffect(() => {
@@ -93,10 +94,16 @@ export default function CreateDivision({
         division_name: divisionName,
         office_location: officeLocation,
         category_id: parseInt(categoryId, 10),
-        staff: selectedStaff.map(
-          (id) => staffMembers.find((s) => s.id === id)?.name || ""
-        ),
-      });
+        department_id: parseInt(categoryId, 10),
+        staff: selectedStaff.map((id) => {
+          const foundStaff = staffMembers.find((s) => s.id === parseInt(id, 10));
+          return {
+            id: parseInt(id, 10),
+            name: foundStaff?.name || "",
+            position: foundStaff?.position || "",
+          };
+        }),
+      } as CreateDivisionRequest);
 
       setOpen(false);
       setDivisionName("");
@@ -178,8 +185,8 @@ export default function CreateDivision({
                 <div key={staff.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`staff-${staff.id}`}
-                    checked={selectedStaff.includes(staff.id)}
-                    onCheckedChange={() => handleStaffChange(staff.id)}
+                    checked={selectedStaff.includes(staff.id.toString())}
+                    onCheckedChange={() => handleStaffChange(staff.id.toString())}
                   />
                   <label
                     htmlFor={`staff-${staff.id}`}

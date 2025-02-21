@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 
 
 interface LayoutProps {
-    children: React.ReactNode
-    admin: React.ReactNode
-    head: React.ReactNode
-    personnel: React.ReactNode
-    staff: React.ReactNode
+    children?: React.ReactNode
+    admin?: React.ReactNode
+    head?: React.ReactNode
+    personnel?: React.ReactNode
+    staff?: React.ReactNode
 }
 
 interface UserType {
