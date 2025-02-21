@@ -9,19 +9,21 @@ interface UserType {
     email: string
 }
 
+interface LayoutProps {
+    children?: React.ReactNode
+    admin: React.ReactNode
+    head: React.ReactNode
+    personnel: React.ReactNode
+    staff: React.ReactNode
+}
+
 export default function Layout({
     children,
     admin,
     head,
     personnel,
     staff,
-}: {
-    children?: React.ReactNode
-    admin?: React.ReactNode
-    head?: React.ReactNode
-    personnel?: React.ReactNode
-    staff?: React.ReactNode
-}) {
+}: LayoutProps) {
     const [user, setUser] = useState<UserType | null>(null)
     const [role, setRole] = useState<string | null>(null)
     const router = useRouter()
@@ -67,4 +69,3 @@ export default function Layout({
             </main>
     )
 }
-

@@ -72,7 +72,7 @@ export async function decryptData(encryptedString: string): Promise<string> {
 
 // Secure storage wrapper
 export const secureStorage = {
-  async set(key: string, value: any) {
+  async set(key: string, value: string | number | boolean | object | null) {
     const encrypted = await encryptData(JSON.stringify(value));
     sessionStorage.setItem(key, encrypted);
   },

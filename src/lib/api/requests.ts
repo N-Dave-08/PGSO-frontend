@@ -163,7 +163,6 @@ export const assessRequest = async (
   data: AssessRequestData
 ) => {
   try {
-    const token = localStorage.getItem("token");
     const response = await api.post(`/request/assess/${requestId}`, data, {
       headers: getAuthHeaders(),
     });

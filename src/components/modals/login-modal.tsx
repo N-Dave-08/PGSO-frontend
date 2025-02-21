@@ -17,6 +17,13 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import api from "@/lib/api/axios";
 import { secureStorage, rateLimit } from "@/lib/utils/encryption";
+import { User } from "@/types";
+// interface UserData {
+//   id: number;
+//   name: string;
+//   role: string;
+//   [key: string]: any; // For any additional properties that might be present
+// }
 
 // Rate limiting constants
 const RATE_LIMIT_KEY = "login_ratelimit";
@@ -24,9 +31,16 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 // User data sanitization
-const sanitizeUserData = (userData: any) => {
-  const { id, name, role } = userData;
-  return { id, name, role };
+const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
+  return {
+    id: userData.id,
+    first_name: userData.name.split(" ")[0] || "",
+    last_name: userData.name.split(" ").slice(1).join(" ") || "",
+    email: userData.email,
+    role_name: role,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 };
 
 export default function LoginModal() {
@@ -77,7 +91,9 @@ export default function LoginModal() {
     );
     if (isLocked) {
       const minutesLeft = Math.ceil(LOCKOUT_DURATION / 60000);
-      setError(`Too many login attempts. Please try again in ${minutesLeft} minutes.`);
+      setError(
+        `Too many login attempts. Please try again in ${minutesLeft} minutes.`
+      );
       return;
     }
 
@@ -102,10 +118,10 @@ export default function LoginModal() {
       await rateLimit.clearAttempts(RATE_LIMIT_KEY);
 
       // Store auth data securely
+      const sanitizedUser = sanitizeUserData(data.user, data.role);
+      await secureStorage.set("user", sanitizedUser);
       await secureStorage.set("token", data.token);
       await secureStorage.set("sessionCode", data.sessionCode);
-      await secureStorage.set("user", sanitizeUserData(data.user));
-      await secureStorage.set("role", data.role);
 
       // Clear sensitive form data
       setEmail("");

@@ -4,7 +4,6 @@ import "./globals.css"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import ClientLayout from "@/components/layouts/ClientLayout"
 import { Toaster } from "@/components/ui/toaster";
-import { headers } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
 
 const inter = Inter({
