@@ -35,7 +35,7 @@ export const columns: ColumnDef<Category>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "category_name",
     header: ({ column }) => {
       return (
         <Button
@@ -47,7 +47,9 @@ export const columns: ColumnDef<Category>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("category_name")}</div>
+    ),
   },
   {
     accessorKey: "description",
