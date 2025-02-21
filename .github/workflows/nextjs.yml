@@ -11,12 +11,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "23.6.1"
 
       - name: Install dependencies
         run: npm install
@@ -35,11 +35,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install lftp 
+      - name: Install lftp
         run: sudo apt-get install -y lftp
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
+      - name: Upload to Hostinger
+        uses: actions/download-artifact@v4
         with:
           name: nextjs-build
           path: out
@@ -47,4 +47,3 @@ jobs:
       - name: Upload to Hostinger
         run: |
           lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev out/ /public_html/dev/ --ignore-time --parallel=10"
-
