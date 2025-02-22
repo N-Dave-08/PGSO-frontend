@@ -59,6 +59,7 @@ export const getCategories = async () => {
     }
     const response = await axios.post(
       "https://server.pgso.bpc-bsis4d.com/public/api/categories",
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,
