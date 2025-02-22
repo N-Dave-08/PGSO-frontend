@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://server.pgso.bpc-bsis4d.com';
-
 export interface CategoryPersonnel {
   id: number;
   name: string;
@@ -36,7 +34,7 @@ export const createCategory = async (
     }
     console.log("Creating category with data:", data);
     const response = await axios.post(
-      `${API_BASE_URL}/public/api/admin/category/create`,
+      "https://server.pgso.bpc-bsis4d.com/public/api/admin/category/create",
       data,
       {
         headers: {
@@ -61,7 +59,7 @@ export const getCategories = async () => {
     }
 
     const response = await axios.post(
-      `${API_BASE_URL}/public/api/categories`,
+      "https://server.pgso.bpc-bsis4d.com/public/api/categories",
       {},
       {
         headers: {
