@@ -28,8 +28,14 @@ export default function Page() {
 
       console.log("Formatted data:", formattedData);
       setCategories(formattedData);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
+    } catch (error: any) {
+      console.error("Failed to fetch categories:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: error.config
+      });
+      // You might want to show an error message to the user here
     } finally {
       setLoading(false);
     }
