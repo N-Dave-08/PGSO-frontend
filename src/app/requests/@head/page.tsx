@@ -41,7 +41,7 @@ export default function Page() {
         };
       });
 
-      console.log("Formatted Data:", formattedData);
+      // console.log("Formatted Data:", formattedData);
       setRequests(formattedData);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
@@ -57,7 +57,7 @@ export default function Page() {
   if (loading) {
     return <div>Loading...</div>;
   }
-  console.log("REQUEST DATA", requests);
+  // console.log("REQUEST DATA", requests);
   return (
     <div>
       <RequestCards requests={requests} onRequestUpdate={fetchRequests} />

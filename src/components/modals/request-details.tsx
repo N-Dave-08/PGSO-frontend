@@ -85,7 +85,7 @@ export default function RequestDetailsModal({
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          "https://server.pgso.bpc-bsis4d.com/public/api/dropdown/categories",
+          process.env.NEXT_PUBLIC_API_BASE_URL + "/dropdown/categories",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -228,7 +228,7 @@ export default function RequestDetailsModal({
 
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `https://server.pgso.bpc-bsis4d.com/public/api/request/completion/${request.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/pro/request/completion/${request.id}`,
         formData,
         {
           headers: {
@@ -281,7 +281,7 @@ export default function RequestDetailsModal({
       });
 
       const response = await axios.post(
-        `https://server.pgso.bpc-bsis4d.com/public/api/request/feedback/${request.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/feedback/${request.id}`,
         {
           feedback: feedback,
           rating: rating,

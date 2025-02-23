@@ -42,7 +42,7 @@ export default function AdminPage() {
         };
       });
 
-      console.log("Formatted Data:", formattedData);
+      // console.log("Formatted Data:", formattedData);
       setRequests(formattedData);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
@@ -62,7 +62,7 @@ export default function AdminPage() {
       </div>
     );
   }
-  console.log("REQUEST DATA", requests);
+  // console.log("REQUEST DATA", requests);
   return (
     <div className="container mx-auto py-10">
       <RequestCards requests={requests} onRequestUpdate={fetchRequests} />

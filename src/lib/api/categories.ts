@@ -34,7 +34,7 @@ export const createCategory = async (
     }
     console.log("Creating category with data:", data);
     const response = await axios.post(
-      "https://server.pgso.bpc-bsis4d.com/public/api/admin/category/create",
+      process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/category/create",
       data,
       {
         headers: {
@@ -59,7 +59,7 @@ export const getCategories = async () => {
     }
 
     const response = await axios.post(
-      "https://server.pgso.bpc-bsis4d.com/public/api/categories",
+      process.env.NEXT_PUBLIC_API_BASE_URL + "/categories",
       {},
       {
         headers: {

@@ -8,8 +8,6 @@ import {
   AuthHeaders,
 } from "@/types";
 
-const BASE_URL = "https://server.pgso.bpc-bsis4d.com/public/api";
-
 // Helper function to get auth headers
 const getAuthHeaders = (contentType = "application/json"): AuthHeaders => {
   const token = localStorage.getItem("token");
@@ -35,8 +33,8 @@ export const getRequests = async () => {
   try {
     const headers = getAuthHeaders();
     const response = await axios.post(
-      `${BASE_URL}/request/list`,
-      {}, // empty body
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/list`,
+      {},
       { headers }
     );
 

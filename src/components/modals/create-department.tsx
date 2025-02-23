@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getDivisions } from "@/lib/api/divisions";
+import { createDepartment } from "@/lib/api/department";
 import { Division } from "@/types";
 
 interface CreateDepartmentProps {
@@ -68,29 +69,7 @@ export default function CreateDepartment({
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        "https://server.pgso.bpc-bsis4d.com/public/api/admin/department/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            department_name: departmentName,
-            acronym,
-            division_id: selectedDivisions,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to create department");
-      }
-
+      await createDepartment(departmentName, acronym, selectedDivisions);
       setOpen(false);
       setDepartmentName("");
       setAcronym("");

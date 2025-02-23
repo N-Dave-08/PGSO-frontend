@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Division } from "@/types";
 
 export interface CreateDivisionRequest {
   division_name: string;
@@ -21,7 +20,7 @@ export const createDivision = async (data: CreateDivisionRequest) => {
     }
     console.log("Creating division with data:", data);
     const response = await axios.post(
-      "https://server.pgso.bpc-bsis4d.com/public/api/division/create",
+      process.env.NEXT_PUBLIC_API_BASE_URL + "/division/create",
       data,
       {
         headers: {
@@ -51,7 +50,7 @@ export const createDivision = async (data: CreateDivisionRequest) => {
 export const getDivisions = async () => {
   try {
     const response = await axios.post(
-      "https://server.pgso.bpc-bsis4d.com/public/api/divisions"
+      process.env.NEXT_PUBLIC_API_BASE_URL + "/divisions"
     );
     return response.data;
   } catch (error) {

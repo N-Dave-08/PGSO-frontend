@@ -26,7 +26,7 @@ export default function Page() {
         })
       );
 
-      console.log("Formatted data:", formattedData);
+      // console.log("Formatted data:", formattedData);
       setCategories(formattedData);
     } catch (error) {
       console.error("Failed to fetch categories:", error);

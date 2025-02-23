@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
-import { generateSessionFingerprint, secureStorage } from "@/lib/utils/encryption";
-
-const BASE_URL = "https://server.pgso.bpc-bsis4d.com/public/api";
+import {
+  generateSessionFingerprint,
+  secureStorage,
+} from "@/lib/utils/encryption";
 
 // Token refresh state
 let isRefreshing = false;
@@ -22,7 +23,7 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 };
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 10000, // 10 seconds
   headers: {
     "Content-Type": "application/json",
@@ -46,7 +47,9 @@ api.interceptors.request.use(
     }
 
     // Add CSRF token if available
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const csrfToken = document
+      .querySelector('meta[name="csrf-token"]')
+      ?.getAttribute("content");
     if (csrfToken) {
       config.headers["X-CSRF-Token"] = csrfToken;
     }
@@ -88,7 +91,7 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config;
-    
+
     if (!originalRequest) {
       return Promise.reject(error);
     }
@@ -112,11 +115,11 @@ api.interceptors.response.use(
 
           // Process queued requests
           processQueue(null, token);
-          
+
           return api(originalRequest);
         } catch (refreshError) {
           processQueue(refreshError as Error);
-          
+
           // Clear auth data
           await secureStorage.remove("token");
           await secureStorage.remove("sessionCode");
@@ -127,7 +130,7 @@ api.interceptors.response.use(
 
           // Redirect to login
           window.location.href = "/";
-          
+
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;
