@@ -50,7 +50,7 @@ export default function LoginModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     // Check for existing lockout

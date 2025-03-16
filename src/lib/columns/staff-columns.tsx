@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +9,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Staff } from "@/helpers/table-data/staff-data"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Staff } from "@/helpers/table-data/staff-data";
 
 export const columns: ColumnDef<Staff>[] = [
   {
@@ -47,14 +47,16 @@ export const columns: ColumnDef<Staff>[] = [
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "phoneNumber",
     header: "Phone Number",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("phoneNumber")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("phoneNumber")}</div>
+    ),
   },
   {
     accessorKey: "email",
@@ -67,31 +69,35 @@ export const columns: ColumnDef<Staff>[] = [
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
     accessorKey: "department",
     header: "Department",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("department")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("department")}</div>
+    ),
   },
   {
     accessorKey: "division",
     header: "Division",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("division")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("division")}</div>
+    ),
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-        const status = row.getValue("status")
+      const status = row.getValue("status");
 
-        return status === "Active" ? (
-          <Badge variant="success">Active</Badge>
-        ) : (
-            <Badge variant="destructive">Inactive</Badge>
-        )
+      return status === "Active" ? (
+        <Badge variant="outline">Active</Badge>
+      ) : (
+        <Badge variant="destructive">Inactive</Badge>
+      );
     },
   },
   {
@@ -105,11 +111,11 @@ export const columns: ColumnDef<Staff>[] = [
           Date Created
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateCreated"))
-      return <div>{date.toLocaleString()}</div>
+      const date = new Date(row.getValue("dateCreated"));
+      return <div>{date.toLocaleString()}</div>;
     },
   },
   {
@@ -123,18 +129,18 @@ export const columns: ColumnDef<Staff>[] = [
           Last Login
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("lastLogin"))
-      return <div>{date.toLocaleString()}</div>
+      const date = new Date(row.getValue("lastLogin"));
+      return <div>{date.toLocaleString()}</div>;
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original
+      const user = row.original;
 
       return (
         <DropdownMenu>
@@ -155,15 +161,14 @@ export const columns: ColumnDef<Staff>[] = [
             <DropdownMenuItem>
               <PenSquare />
               Edit
-              </DropdownMenuItem>
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <Trash />
               Delete
-              </DropdownMenuItem>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
-
+];
