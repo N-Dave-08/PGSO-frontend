@@ -36,31 +36,40 @@ const api = axios.create({
 // Add a request interceptor
 api.interceptors.request.use(
   async (config) => {
-    // Add session fingerprint
-    const fingerprint = await generateSessionFingerprint();
-    config.headers["X-Session-Fingerprint"] = fingerprint;
+    try {
+      // Add session fingerprint
+      const fingerprint = await generateSessionFingerprint();
+      config.headers["X-Session-Fingerprint"] = fingerprint;
 
-    // Add session code if available
-    const sessionCode = await secureStorage.get("sessionCode");
-    if (sessionCode) {
-      config.headers["X-Session-Code"] = sessionCode;
+      // Add session code if available
+      const sessionCode = await secureStorage.get("sessionCode");
+      if (sessionCode) {
+        config.headers["X-Session-Code"] = sessionCode;
+      }
+
+      // Add CSRF token if available
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+      if (csrfToken) {
+        config.headers["X-CSRF-Token"] = csrfToken;
+      }
+
+      // Add authorization token if available
+      const token = await secureStorage.get("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      return config;
+    } catch (error) {
+      // If there's an error accessing secure storage, clear auth data
+      await secureStorage.remove("token");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("user");
+      window.dispatchEvent(new Event("authChange"));
+      return Promise.reject(new Error("Failed to access secure storage"));
     }
-
-    // Add CSRF token if available
-    const csrfToken = document
-      .querySelector('meta[name="csrf-token"]')
-      ?.getAttribute("content");
-    if (csrfToken) {
-      config.headers["X-CSRF-Token"] = csrfToken;
-    }
-
-    // Add authorization token if available
-    const token = await secureStorage.get("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
   },
   (error) => {
     return Promise.reject(error);
@@ -86,9 +95,8 @@ api.interceptors.response.use(
 
         try {
           // Attempt to refresh token
-          const response = await api.post("/refresh-token", {
-            sessionCode: await secureStorage.get("sessionCode"),
-          });
+          const sessionCode = await secureStorage.get("sessionCode");
+          const response = await api.post("/refresh-token", { sessionCode });
 
           const { token } = response.data;
           await secureStorage.set("token", token);
@@ -107,6 +115,7 @@ api.interceptors.response.use(
           await secureStorage.remove("token");
           await secureStorage.remove("sessionCode");
           await secureStorage.remove("user");
+          localStorage.removeItem("role"); // Remove compatibility data
 
           // Dispatch auth change event
           window.dispatchEvent(new Event("authChange"));

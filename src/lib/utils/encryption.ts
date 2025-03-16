@@ -53,8 +53,8 @@ export async function encryptData(data: string): Promise<string> {
 export async function decryptData(encryptedString: string): Promise<string> {
   const key = await getEncryptionKey();
   const decoder = new TextDecoder();
-  const data = Uint8Array.from(atob(encryptedString), c => c.charCodeAt(0));
-  
+  const data = Uint8Array.from(atob(encryptedString), (c) => c.charCodeAt(0));
+
   const iv = data.slice(0, 12);
   const encryptedData = data.slice(12);
 
@@ -72,49 +72,98 @@ export async function decryptData(encryptedString: string): Promise<string> {
 
 // Secure storage wrapper
 export const secureStorage = {
-  async set(key: string, value: string | number | boolean | object | null) {
-    const encrypted = await encryptData(JSON.stringify(value));
-    sessionStorage.setItem(key, encrypted);
+  async set(key: string, value: any) {
+    try {
+      // Ensure we're storing valid JSON
+      const jsonString = JSON.stringify(value);
+      localStorage.setItem(key, jsonString);
+    } catch (error) {
+      console.error("Failed to store data:", error);
+    }
   },
   async get(key: string) {
-    const encrypted = sessionStorage.getItem(key);
-    if (!encrypted) return null;
     try {
-      return JSON.parse(await decryptData(encrypted));
+      const value = localStorage.getItem(key);
+      if (!value) return null;
+
+      // Try to parse, if it fails return null
+      try {
+        return JSON.parse(value);
+      } catch (parseError) {
+        console.error("Failed to parse stored data:", parseError);
+        // If data is corrupted, remove it
+        localStorage.removeItem(key);
+        return null;
+      }
     } catch (error) {
-      console.error('Failed to decrypt data:', error);
+      console.error("Failed to retrieve data:", error);
       return null;
     }
   },
   async remove(key: string) {
-    sessionStorage.removeItem(key);
-  }
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error("Failed to remove data:", error);
+    }
+  },
 };
 
 // Session fingerprinting
 export async function generateSessionFingerprint(): Promise<string> {
-  const fingerprintData = `${navigator.userAgent}${window.screen.height}${window.screen.width}${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
+  const fingerprintData = `${navigator.userAgent}${window.screen.height}${
+    window.screen.width
+  }${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
   const encoder = new TextEncoder();
   const data = encoder.encode(fingerprintData);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // Rate limiting utilities
 export const rateLimit = {
-  async checkLimit(key: string, maxAttempts: number, duration: number): Promise<boolean> {
-    const attempts = await secureStorage.get(key) || [];
-    const now = Date.now();
-    const recentAttempts = attempts.filter((time: number) => (now - time) < duration);
-    return recentAttempts.length >= maxAttempts;
+  async checkLimit(
+    key: string,
+    maxAttempts: number,
+    duration: number
+  ): Promise<boolean> {
+    try {
+      const attempts = (await secureStorage.get(key)) || [];
+      // Validate that attempts is actually an array
+      if (!Array.isArray(attempts)) {
+        await secureStorage.remove(key);
+        return false;
+      }
+      const now = Date.now();
+      const recentAttempts = attempts.filter(
+        (time: number) => now - time < duration
+      );
+      return recentAttempts.length >= maxAttempts;
+    } catch (error) {
+      console.error("Rate limit check failed:", error);
+      return false;
+    }
   },
   async recordAttempt(key: string): Promise<void> {
-    const attempts = await secureStorage.get(key) || [];
-    attempts.push(Date.now());
-    await secureStorage.set(key, attempts);
+    try {
+      const attempts = (await secureStorage.get(key)) || [];
+      // Validate that attempts is actually an array
+      if (!Array.isArray(attempts)) {
+        await secureStorage.set(key, [Date.now()]);
+        return;
+      }
+      attempts.push(Date.now());
+      await secureStorage.set(key, attempts);
+    } catch (error) {
+      console.error("Failed to record attempt:", error);
+    }
   },
   async clearAttempts(key: string): Promise<void> {
-    await secureStorage.remove(key);
-  }
+    try {
+      await secureStorage.remove(key);
+    } catch (error) {
+      console.error("Failed to clear attempts:", error);
+    }
+  },
 };

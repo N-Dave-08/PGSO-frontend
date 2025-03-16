@@ -15,8 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
-import { rateLimit } from "@/lib/utils/encryption";
-import axios from "axios";
+import { rateLimit, secureStorage } from "@/lib/utils/encryption";
+import api from "@/lib/api/axios";
 // import { User } from "@/types";
 // interface UserData {
 //   id: number;
@@ -32,12 +32,13 @@ const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 // User data sanitization
 const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
+  const [firstName, ...lastNameParts] = userData.name.split(" ");
   return {
     id: userData.id,
-    first_name: userData.name.split(" ")[0] || "",
-    last_name: userData.name.split(" ").slice(1).join(" ") || "",
+    first_name: firstName || "",
+    last_name: lastNameParts.join(" ") || "",
     email: userData.email,
-    role_name: role,
+    role,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -101,37 +102,40 @@ export default function LoginModal() {
     setError(null);
 
     try {
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_BASE_URL + "/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await api.post<LoginResponse>("/login", {
+        email,
+        password,
+      });
 
-      const { token, user } = response.data;
+      const { token, user, role, sessionCode } = response.data;
 
       // Clear rate limiting on successful login
       await rateLimit.clearAttempts(RATE_LIMIT_KEY);
 
-      // Store auth data
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      window.dispatchEvent(new Event("authChange"));
+      // Sanitize and store user data securely
+      const sanitizedUser = sanitizeUserData(user, role);
+      await secureStorage.set("user", sanitizedUser);
+      await secureStorage.set("token", token);
+      await secureStorage.set("sessionCode", sessionCode);
 
+      // Keep a minimal version in localStorage for compatibility
+      localStorage.setItem("role", role);
+
+      // Clear sensitive form data
       setEmail("");
       setPassword("");
       setOpen(false);
+
+      // Trigger auth change event
+      window.dispatchEvent(new Event("authChange"));
 
       // Navigate to dashboard
       router.push("/dashboard");
     } catch (error) {
       await rateLimit.recordAttempt(RATE_LIMIT_KEY);
 
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data?.message || "Failed to login. Please try again."
-        );
+      if (error instanceof Error) {
+        setError(error.message || "Failed to login. Please try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
