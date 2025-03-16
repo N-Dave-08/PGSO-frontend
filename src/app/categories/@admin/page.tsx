@@ -69,7 +69,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container py-10">
       <div className="mb-4">
         <CreateCategory
           onCategoryCreated={handleCategoryCreated}

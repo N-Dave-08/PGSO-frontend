@@ -58,9 +58,8 @@ export const getCategories = async () => {
       throw new Error("Authentication token not found");
     }
 
-    const response = await axios.post(
+    const response = await axios.get(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/categories",
-      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,

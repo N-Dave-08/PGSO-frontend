@@ -49,7 +49,7 @@ export const createDivision = async (data: CreateDivisionRequest) => {
 
 export const getDivisions = async () => {
   try {
-    const response = await axios.post(
+    const response = await axios.get(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/divisions"
     );
     return response.data;

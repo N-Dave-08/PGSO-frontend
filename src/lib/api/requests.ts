@@ -32,9 +32,8 @@ const getAuthHeaders = (contentType = "application/json"): AuthHeaders => {
 export const getRequests = async () => {
   try {
     const headers = getAuthHeaders();
-    const response = await axios.post(
+    const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/list`,
-      {},
       { headers }
     );
 

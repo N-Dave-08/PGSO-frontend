@@ -41,9 +41,9 @@ export default function Layout({
   };
 
   return (
-    <main className="p-4 w-full">
+    <>
       {children}
       {renderContent()}
-    </main>
+    </>
   );
 }

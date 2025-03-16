@@ -29,9 +29,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <div className="flex min-h-screen w-full bg-background">
       {isAuthenticated && <UserSidebar />}
-      <main className={`${isAuthenticated ? "ml-[16rem]" : ""} flex-1 overflow-x-hidden`}>
-        {children}
-      </main>
+      <main className="w-full 500 px-4">{children}</main>
     </div>
   );
 }

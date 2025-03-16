@@ -42,7 +42,7 @@ export default function Page() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="py-10">
       <CreateDivision onDivisionCreated={fetchDivisions} />
       <DivisionTable data={divisions} />
     </div>

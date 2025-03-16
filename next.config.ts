@@ -8,14 +8,14 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: "/categories/@admin/:path*",
-        destination: "/categories/admin/:path*",
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/categories/@admin/:path*",
+  //       destination: "/categories/admin/:path*",
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

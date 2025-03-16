@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getDepartments = async () => {
   try {
-    const response = await axios.post(
+    const response = await axios.get(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/department"
     );
     return response.data;
@@ -12,7 +12,11 @@ export const getDepartments = async () => {
   }
 };
 
-export const createDepartment = async (departmentName: string, acronym: string, divisionIds: number[]) => {
+export const createDepartment = async (
+  departmentName: string,
+  acronym: string,
+  divisionIds: number[]
+) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.post(
