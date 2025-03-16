@@ -17,18 +17,6 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import { secureStorage } from "@/lib/utils/encryption";
 import api from "@/lib/api/axios";
-// import { User } from "@/types";
-// interface UserData {
-//   id: number;
-//   name: string;
-//   role: string;
-//   [key: string]: any; // For any additional properties that might be present
-// }
-
-// Rate limiting constants
-const RATE_LIMIT_KEY = "login_ratelimit";
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 // User data sanitization
 const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
@@ -73,15 +61,47 @@ export default function LoginModal() {
     setError(null);
 
     try {
+      console.log("Attempting login with:", { email }); // Log the request
+
       const response = await api.post<LoginResponse>("/login", {
         email,
         password,
       });
 
+      console.log("Raw response:", response); // Log the entire response
+      console.log("Response data:", response.data); // Log the response data
+
+      // Validate response data
+      if (!response.data) {
+        throw new Error("No response data received");
+      }
+
+      if (!response.data.isSuccess) {
+        throw new Error(response.data.message || "Login failed");
+      }
+
       const { token, user, role, sessionCode } = response.data;
+
+      // Validate required fields
+      if (!token || !user || !role || !sessionCode) {
+        console.error("Missing required fields:", {
+          token,
+          user,
+          role,
+          sessionCode,
+        });
+        throw new Error("Invalid response format: missing required fields");
+      }
+
+      // Validate user object
+      if (!user.id || !user.email || !user.name) {
+        console.error("Invalid user object:", user);
+        throw new Error("Invalid user data received");
+      }
 
       // Sanitize and store user data securely
       const sanitizedUser = sanitizeUserData(user, role);
+      console.log("Sanitized user:", sanitizedUser); // Log sanitized data
       await secureStorage.set("user", sanitizedUser);
       await secureStorage.set("token", token);
       await secureStorage.set("sessionCode", sessionCode);

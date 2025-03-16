@@ -23,13 +23,11 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 };
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000, // 10 seconds
   headers: {
     "Content-Type": "application/json",
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block",
+    Accept: "application/json",
   },
 });
 
@@ -45,14 +43,6 @@ api.interceptors.request.use(
       const sessionCode = await secureStorage.get("sessionCode");
       if (sessionCode) {
         config.headers["X-Session-Code"] = sessionCode;
-      }
-
-      // Add CSRF token if available
-      const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        ?.getAttribute("content");
-      if (csrfToken) {
-        config.headers["X-CSRF-Token"] = csrfToken;
       }
 
       // Add authorization token if available
