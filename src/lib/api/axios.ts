@@ -23,12 +23,13 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 };
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   timeout: 10000, // 10 seconds
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: false, // Disable credentials for cross-origin requests
 });
 
 // Add a request interceptor
@@ -50,6 +51,9 @@ api.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+
+      // Remove the Origin header as it's causing CORS issues
+      // config.headers["Origin"] = window.location.origin;
 
       return config;
     } catch (error) {
@@ -92,7 +96,9 @@ api.interceptors.response.use(
           await secureStorage.set("token", token);
 
           // Update token in original request
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+          }
 
           // Process queued requests
           processQueue(null, token);
@@ -101,16 +107,12 @@ api.interceptors.response.use(
         } catch (refreshError) {
           processQueue(refreshError as Error);
 
-          // Clear auth data
+          // Clear auth data and redirect to login
           await secureStorage.remove("token");
           await secureStorage.remove("sessionCode");
           await secureStorage.remove("user");
-          localStorage.removeItem("role"); // Remove compatibility data
-
-          // Dispatch auth change event
+          localStorage.removeItem("role");
           window.dispatchEvent(new Event("authChange"));
-
-          // Redirect to login
           window.location.href = "/";
 
           return Promise.reject(refreshError);
@@ -122,6 +124,18 @@ api.interceptors.response.use(
       // Queue failed requests
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
+      });
+    }
+
+    // Handle CORS errors
+    if (
+      error.message.includes("Network Error") ||
+      error.response?.status === 0
+    ) {
+      console.error("CORS or Network Error:", {
+        url: originalRequest.url,
+        method: originalRequest.method,
+        headers: originalRequest.headers,
       });
     }
 

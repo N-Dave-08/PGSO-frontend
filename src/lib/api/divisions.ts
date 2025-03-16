@@ -1,4 +1,5 @@
 import axios from "axios";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export interface CreateDivisionRequest {
   division_name: string;
@@ -14,7 +15,7 @@ export interface CreateDivisionRequest {
 
 export const createDivision = async (data: CreateDivisionRequest) => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -49,7 +50,7 @@ export const createDivision = async (data: CreateDivisionRequest) => {
 
 export const getDivisions = async () => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -73,8 +74,9 @@ export const getDivisions = async () => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }

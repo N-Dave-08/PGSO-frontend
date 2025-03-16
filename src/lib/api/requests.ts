@@ -7,11 +7,14 @@ import {
   RequestStatusResponse,
   AuthHeaders,
 } from "@/types";
+import { secureStorage } from "@/lib/utils/encryption";
 
 // Helper function to get auth headers
-const getAuthHeaders = (contentType = "application/json"): AuthHeaders => {
-  const token = localStorage.getItem("token");
-  const sessionCode = localStorage.getItem("sessionCode");
+const getAuthHeaders = async (
+  contentType = "application/json"
+): Promise<AuthHeaders> => {
+  const token = await secureStorage.get("token");
+  const sessionCode = await secureStorage.get("sessionCode");
 
   if (!token) {
     throw new Error("No authentication token found");
@@ -31,7 +34,7 @@ const getAuthHeaders = (contentType = "application/json"): AuthHeaders => {
 
 export const getRequests = async () => {
   try {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/list`,
       { headers }
@@ -49,10 +52,10 @@ export const getRequests = async () => {
         error.response?.data?.message?.toLowerCase().includes("invalid session")
       ) {
         // Clear auth data and redirect
-        localStorage.removeItem("token");
-        localStorage.removeItem("sessionCode");
-        localStorage.removeItem("role");
-        localStorage.removeItem("user");
+        await secureStorage.remove("token");
+        await secureStorage.remove("sessionCode");
+        await secureStorage.remove("role");
+        await secureStorage.remove("user");
         window.dispatchEvent(new Event("authChange"));
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
@@ -73,7 +76,7 @@ export const createRequest = async (
   data: CreateRequestData
 ): Promise<CreateRequestResponse> => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -87,7 +90,7 @@ export const createRequest = async (
 
     const response = await api.post("/request/create", formData, {
       headers: {
-        ...getAuthHeaders("multipart/form-data"),
+        ...(await getAuthHeaders("multipart/form-data")),
         Accept: "application/json",
       },
     });
@@ -119,7 +122,7 @@ export const updateRequestStatus = async (
   status: "Approved" | "Rejected"
 ): Promise<RequestStatusResponse> => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -132,9 +135,9 @@ export const updateRequestStatus = async (
     const response = await api.post(
       endpoint,
       status === "Rejected"
-        ? { note: localStorage.getItem("rejectionNote") }
+        ? { note: await secureStorage.get("rejectionNote") }
         : {},
-      { headers: getAuthHeaders() }
+      { headers: await getAuthHeaders() }
     );
 
     return response.data;
@@ -158,7 +161,7 @@ export const assessRequest = async (
 ) => {
   try {
     const response = await api.post(`/request/assess/${requestId}`, data, {
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
     });
     return {
       isSuccess: true,

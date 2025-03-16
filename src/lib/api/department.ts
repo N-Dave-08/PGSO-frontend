@@ -1,4 +1,5 @@
 import axios from "axios";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export const getDepartments = async () => {
   try {
@@ -18,7 +19,11 @@ export const createDepartment = async (
   divisionIds: number[]
 ) => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
     const response = await axios.post(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/department/create",
       {
@@ -34,6 +39,15 @@ export const createDepartment = async (
     );
     return response.data;
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
+      }
+    }
     throw error;
   }
 };

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export interface CategoryPersonnel {
   id: number;
@@ -28,7 +29,7 @@ export const createCategory = async (
   data: CreateCategoryData
 ): Promise<CreateCategoryResponse> => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -48,8 +49,9 @@ export const createCategory = async (
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }
@@ -63,7 +65,7 @@ export const createCategory = async (
 
 export const getCategories = async () => {
   try {
-    const token = localStorage.getItem("token");
+    const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
@@ -87,8 +89,9 @@ export const getCategories = async () => {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }
