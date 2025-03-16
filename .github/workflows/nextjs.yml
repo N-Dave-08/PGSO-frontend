@@ -21,9 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm clean-install
-          npm install lightningcss@latest
-          npm install @tailwindcss/oxide-linux-x64-gnu
+           npm clean-install --legacy-peer-deps
+          npm install lightningcss@latest --legacy-peer-deps
+          npm install @tailwindcss/oxide-linux-x64-gnu --legacy-peer-deps
           npm rebuild lightningcss --platform=linux --arch=x64
           npm rebuild
 
