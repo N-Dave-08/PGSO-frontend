@@ -49,17 +49,39 @@ export const createDivision = async (data: CreateDivisionRequest) => {
 
 export const getDivisions = async () => {
   try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
     const response = await axios.get(
-      process.env.NEXT_PUBLIC_API_BASE_URL + "/divisions"
+      process.env.NEXT_PUBLIC_API_BASE_URL + "/divisions",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
     );
+
+    if (!response.data) {
+      throw new Error("No data received from the API");
+    }
+
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error("Error fetching divisions:", error);
-      throw error;
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
+      }
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch divisions"
+      );
     }
-    // Handle non-axios errors
-    const err = error as Error;
-    throw new Error(`Failed to fetch divisions: ${err.message}`);
+    throw error;
   }
 };

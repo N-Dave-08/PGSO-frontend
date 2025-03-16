@@ -60,15 +60,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Development logging
-    if (process.env.NODE_ENV === "development") {
-      console.log("Starting Request:", {
-        url: config.url,
-        method: config.method,
-        headers: config.headers,
-      });
-    }
-
     return config;
   },
   (error) => {
@@ -79,14 +70,6 @@ api.interceptors.request.use(
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => {
-    // Development logging
-    if (process.env.NODE_ENV === "development") {
-      console.log("Response:", {
-        status: response.status,
-        url: response.config.url,
-        data: response.data,
-      });
-    }
     return response;
   },
   async (error: AxiosError) => {

@@ -15,8 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
-import api from "@/lib/api/axios";
-import { secureStorage, rateLimit } from "@/lib/utils/encryption";
+import { rateLimit } from "@/lib/utils/encryption";
 import axios from "axios";
 // import { User } from "@/types";
 // interface UserData {
@@ -102,74 +101,40 @@ export default function LoginModal() {
     setError(null);
 
     try {
-      console.log(
-        "Attempting login with URL:",
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_API_BASE_URL + "/auth/login",
+        {
+          email,
+          password,
+        }
       );
 
-      const response = await api.post<LoginResponse>("/login", {
-        email,
-        password,
-      });
-
-      console.log("Login response:", {
-        status: response.status,
-        headers: response.headers,
-        data: response.data,
-      });
-
-      const data = response.data;
-
-      if (!data.isSuccess) {
-        await rateLimit.recordAttempt(RATE_LIMIT_KEY);
-        throw new Error(data.message || "Login failed");
-      }
+      const { token, user } = response.data;
 
       // Clear rate limiting on successful login
       await rateLimit.clearAttempts(RATE_LIMIT_KEY);
 
-      // Store auth data securely
-      const sanitizedUser = sanitizeUserData(data.user, data.role);
-
-      // Store in both secure storage and localStorage for compatibility
-      await secureStorage.set("user", sanitizedUser);
-      await secureStorage.set("token", data.token);
-      await secureStorage.set("sessionCode", data.sessionCode);
-
-      localStorage.setItem("user", JSON.stringify(sanitizedUser));
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("token", data.token);
-      if (data.sessionCode) {
-        localStorage.setItem("sessionCode", data.sessionCode);
-      }
+      // Store auth data
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      window.dispatchEvent(new Event("authChange"));
 
       setEmail("");
       setPassword("");
       setOpen(false);
-      window.dispatchEvent(new Event("authChange"));
 
-      try {
-        window.location.href = "/dashboard";
-      } catch (routingError) {
-        console.error("Navigation error:", routingError);
-        setError("Login successful but navigation failed. Please try again.");
-      }
+      // Navigate to dashboard
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Login error details:", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-        message: axios.isAxiosError(error)
-          ? error.response?.data?.message || error.message
-          : "An unexpected error occurred",
-        status: axios.isAxiosError(error) ? error.response?.status : undefined,
-      });
-
-      const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message || "Login failed. Please try again."
-        : "An unexpected error occurred";
-
-      setError(errorMessage);
       await rateLimit.recordAttempt(RATE_LIMIT_KEY);
+
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message || "Failed to login. Please try again."
+        );
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
 
       // Check if max attempts reached after recording
       const isNowLocked = await rateLimit.checkLimit(

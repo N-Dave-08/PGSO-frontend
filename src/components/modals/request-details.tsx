@@ -260,7 +260,7 @@ export default function RequestDetailsModal({
     }
   };
 
-  const handleSubmitFeedback = async () => {
+  const handleFeedbackSubmit = async () => {
     if (rating === 0) {
       toast({
         title: "Error",
@@ -270,48 +270,41 @@ export default function RequestDetailsModal({
       return;
     }
 
+    setIsSubmittingFeedback(true);
+
     try {
-      setIsSubmittingFeedback(true);
-      const token = localStorage.getItem("token");
-
-      console.log("Submitting feedback with:", {
-        rating,
-        feedback,
-        requestId: request.id,
-      });
-
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/feedback/${request.id}`,
+        process.env.NEXT_PUBLIC_API_BASE_URL + "/requests/feedback",
         {
-          feedback: feedback,
-          rating: rating,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          request_id: request.id,
+          feedback,
+          rating,
         }
       );
 
-      if (response.data) {
+      if (response.data.isSuccess) {
         toast({
           title: "Success",
           description: "Feedback submitted successfully",
         });
-        await onRequestUpdate?.();
+        onRequestUpdate?.();
         setOpen(false);
       }
-    } catch (error: unknown) {
-      console.error("Feedback submission error:", error);
-      const axiosError = error as AxiosError<{ message: string }>;
-      toast({
-        title: "Error",
-        description:
-          axiosError.response?.data?.message ||
-          "Failed to submit feedback. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast({
+          title: "Error",
+          description:
+            error.response?.data?.message || "Failed to submit feedback",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmittingFeedback(false);
     }
@@ -655,7 +648,7 @@ export default function RequestDetailsModal({
           )}
           {userRole === "staff" && request.status === "For Feedback" && (
             <Button
-              onClick={handleSubmitFeedback}
+              onClick={handleFeedbackSubmit}
               disabled={isSubmittingFeedback}
             >
               {isSubmittingFeedback ? "Loading..." : "Submit"}

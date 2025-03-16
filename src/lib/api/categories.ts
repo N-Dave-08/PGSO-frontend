@@ -32,7 +32,7 @@ export const createCategory = async (
     if (!token) {
       throw new Error("Authentication token not found");
     }
-    console.log("Creating category with data:", data);
+
     const response = await axios.post(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/category/create",
       data,
@@ -46,7 +46,17 @@ export const createCategory = async (
     );
     return response.data;
   } catch (error) {
-    console.error("Error creating category:", error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
+      }
+      throw new Error(
+        error.response?.data?.message || "Failed to create category"
+      );
+    }
     throw error;
   }
 };
@@ -75,20 +85,16 @@ export const getCategories = async () => {
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching categories:", error);
     if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // Handle 401 Unauthorized
-        if (error.response.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          window.location.href = "/";
-          throw new Error("Session expired. Please login again.");
-        }
-        throw new Error(
-          error.response.data?.message || "Failed to fetch categories"
-        );
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
       }
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch categories"
+      );
     }
     throw error;
   }
