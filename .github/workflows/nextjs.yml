@@ -17,11 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: |
-           npm clean-install --legacy-peer-deps
+          npm clean-install --legacy-peer-deps
           npm install lightningcss@latest --legacy-peer-deps
           npm install @tailwindcss/oxide-linux-x64-gnu --legacy-peer-deps
           npm rebuild lightningcss --platform=linux --arch=x64
