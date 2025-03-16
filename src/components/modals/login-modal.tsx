@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import api from "@/lib/api/axios";
 import { secureStorage, rateLimit } from "@/lib/utils/encryption";
+import axios from "axios";
 // import { User } from "@/types";
 // interface UserData {
 //   id: number;
@@ -101,15 +102,25 @@ export default function LoginModal() {
     setError(null);
 
     try {
+      console.log(
+        "Attempting login with URL:",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/login`
+      );
+
       const response = await api.post<LoginResponse>("/login", {
         email,
         password,
       });
 
+      console.log("Login response:", {
+        status: response.status,
+        headers: response.headers,
+        data: response.data,
+      });
+
       const data = response.data;
 
       if (!data.isSuccess) {
-        // Record failed attempt
         await rateLimit.recordAttempt(RATE_LIMIT_KEY);
         throw new Error(data.message || "Login failed");
       }
@@ -125,35 +136,40 @@ export default function LoginModal() {
       await secureStorage.set("token", data.token);
       await secureStorage.set("sessionCode", data.sessionCode);
 
-      // Store in localStorage for dashboard access
       localStorage.setItem("user", JSON.stringify(sanitizedUser));
       localStorage.setItem("role", data.role);
-      // Store token directly without encoding since it's already in the correct format
       localStorage.setItem("token", data.token);
       if (data.sessionCode) {
         localStorage.setItem("sessionCode", data.sessionCode);
       }
 
-      // Clear sensitive form data
       setEmail("");
       setPassword("");
       setOpen(false);
-
-      // Trigger auth change event
       window.dispatchEvent(new Event("authChange"));
 
-      // Redirect based on role with error handling
       try {
-        // Route all users to dashboard initially
         window.location.href = "/dashboard";
       } catch (routingError) {
         console.error("Navigation error:", routingError);
         setError("Login successful but navigation failed. Please try again.");
       }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred";
+    } catch (error) {
+      console.error("Login error details:", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+        message: axios.isAxiosError(error)
+          ? error.response?.data?.message || error.message
+          : "An unexpected error occurred",
+        status: axios.isAxiosError(error) ? error.response?.status : undefined,
+      });
+
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message || "Login failed. Please try again."
+        : "An unexpected error occurred";
+
       setError(errorMessage);
+      await rateLimit.recordAttempt(RATE_LIMIT_KEY);
 
       // Check if max attempts reached after recording
       const isNowLocked = await rateLimit.checkLimit(
