@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request } from "@/types";
-import { DataTable } from "@/components/ui/data-table";
 
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);
@@ -39,9 +38,6 @@ export default function Page() {
           date_completed: request.date_completed,
           requested_by: request.requested_by,
           note: request.note || null,
-          requested_by_name: `${request.requested_by.first_name} ${request.requested_by.last_name}`,
-          requested_by_division: request.requested_by.division,
-          requested_by_department: request.requested_by.department,
         };
       });
 
@@ -49,7 +45,6 @@ export default function Page() {
       setRequests(formattedData);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
-      return null;
     } finally {
       setLoading(false);
     }
@@ -64,8 +59,8 @@ export default function Page() {
   }
   // console.log("REQUEST DATA", requests);
   return (
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={requests} />
+    <div>
+      <RequestCards requests={requests} onRequestUpdate={fetchRequests} />
     </div>
   );
 }
