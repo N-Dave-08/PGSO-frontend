@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import api from "@/lib/api/axios";
 import { secureStorage, rateLimit } from "@/lib/utils/encryption";
-import { User } from "@/types";
+// import { User } from "@/types";
 // interface UserData {
 //   id: number;
 //   name: string;
@@ -119,12 +119,12 @@ export default function LoginModal() {
 
       // Store auth data securely
       const sanitizedUser = sanitizeUserData(data.user, data.role);
-      
+
       // Store in both secure storage and localStorage for compatibility
       await secureStorage.set("user", sanitizedUser);
       await secureStorage.set("token", data.token);
       await secureStorage.set("sessionCode", data.sessionCode);
-      
+
       // Store in localStorage for dashboard access
       localStorage.setItem("user", JSON.stringify(sanitizedUser));
       localStorage.setItem("role", data.role);

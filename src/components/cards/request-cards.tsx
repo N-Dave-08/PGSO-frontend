@@ -64,7 +64,7 @@ export default function RequestCards({
                           : request.status === "In Progress"
                           ? "secondary"
                           : request.status === "Completed"
-                          ? "success"
+                          ? "outline"
                           : "destructive"
                       }
                     >
