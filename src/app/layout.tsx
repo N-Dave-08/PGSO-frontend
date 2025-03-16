@@ -5,7 +5,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { v4 as uuidv4 } from "uuid";
-import ErrorBoundary from "@/components/error-boundary";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,12 +51,10 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className={inter.className}>
-        <ErrorBoundary>
-          <SidebarProvider>
-            <ClientLayout>{children}</ClientLayout>
-            <Toaster />
-          </SidebarProvider>
-        </ErrorBoundary>
+        <SidebarProvider>
+          <ClientLayout>{children}</ClientLayout>
+          <Toaster />
+        </SidebarProvider>
       </body>
     </html>
   );
