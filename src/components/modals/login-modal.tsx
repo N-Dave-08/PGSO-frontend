@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
-import { rateLimit, secureStorage } from "@/lib/utils/encryption";
+import { secureStorage } from "@/lib/utils/encryption";
 import api from "@/lib/api/axios";
 // import { User } from "@/types";
 // interface UserData {
@@ -53,21 +53,6 @@ export default function LoginModal() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check for existing lockout
-    const checkLockout = async () => {
-      const isLocked = await rateLimit.checkLimit(
-        RATE_LIMIT_KEY,
-        MAX_LOGIN_ATTEMPTS,
-        LOCKOUT_DURATION
-      );
-      if (isLocked) {
-        setError("Too many login attempts. Please try again later.");
-      }
-    };
-    checkLockout();
-  }, []);
-
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -84,20 +69,6 @@ export default function LoginModal() {
       return;
     }
 
-    // Check rate limit
-    const isLocked = await rateLimit.checkLimit(
-      RATE_LIMIT_KEY,
-      MAX_LOGIN_ATTEMPTS,
-      LOCKOUT_DURATION
-    );
-    if (isLocked) {
-      const minutesLeft = Math.ceil(LOCKOUT_DURATION / 60000);
-      setError(
-        `Too many login attempts. Please try again in ${minutesLeft} minutes.`
-      );
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -108,9 +79,6 @@ export default function LoginModal() {
       });
 
       const { token, user, role, sessionCode } = response.data;
-
-      // Clear rate limiting on successful login
-      await rateLimit.clearAttempts(RATE_LIMIT_KEY);
 
       // Sanitize and store user data securely
       const sanitizedUser = sanitizeUserData(user, role);
@@ -132,22 +100,10 @@ export default function LoginModal() {
       // Navigate to dashboard
       router.push("/dashboard");
     } catch (error) {
-      await rateLimit.recordAttempt(RATE_LIMIT_KEY);
-
       if (error instanceof Error) {
         setError(error.message || "Failed to login. Please try again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
-      }
-
-      // Check if max attempts reached after recording
-      const isNowLocked = await rateLimit.checkLimit(
-        RATE_LIMIT_KEY,
-        MAX_LOGIN_ATTEMPTS,
-        LOCKOUT_DURATION
-      );
-      if (isNowLocked) {
-        setError("Too many failed attempts. Please try again in 15 minutes.");
       }
     } finally {
       setIsLoading(false);

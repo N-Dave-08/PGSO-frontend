@@ -4,7 +4,6 @@ import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { Toaster } from "@/components/ui/toaster";
-import { v4 as uuidv4 } from "uuid";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,18 +15,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://server.pgso.bpc-bsis4d.com"),
 };
 
-// Generate CSRF token
-const generateCsrfToken = () => {
-  return uuidv4();
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const csrfToken = generateCsrfToken();
-
   return (
     <html
       lang="en"
@@ -35,20 +27,19 @@ export default function RootLayout({
       className="bg-base-100 text-base-content"
     >
       <head>
-        <meta name="csrf-token" content={csrfToken} />
         <meta
           httpEquiv="Content-Security-Policy"
           content="
-            default-src 'self';
+            default-src 'self' https: data:;
             script-src 'self' 'unsafe-inline' 'unsafe-eval';
-            connect-src 'self' https://server.pgso.bpc-bsis4d.com https://dev.pgso.bpc-bst-cd.com;
+            connect-src 'self' https:;
             img-src 'self' data: https:;
-            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-            font-src 'self' https://fonts.gstatic.com;
+            style-src 'self' 'unsafe-inline' https: data:;
+            font-src 'self' https: data:;
           "
         />
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="referrer" content="no-referrer-when-downgrade" />
       </head>
       <body className={inter.className}>
         <SidebarProvider>
