@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteBase /
+
+# Handle requests for static files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.html [L]
+
+# Enable CORS
+Header set Access-Control-Allow-Origin "*"
+
+# Browser caching for static assets
+<FilesMatch ".(js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2)$">
+Header set Cache-Control "max-age=31536000, public"
+</FilesMatch> 
