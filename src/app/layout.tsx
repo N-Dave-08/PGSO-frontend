@@ -5,6 +5,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { v4 as uuidv4 } from "uuid";
+import ErrorBoundary from "@/components/error-boundary";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -41,7 +42,7 @@ export default function RootLayout({
           content="
             default-src 'self';
             script-src 'self' 'unsafe-inline' 'unsafe-eval';
-            connect-src 'self' https://server.pgso.bpc-bsis4d.com;
+            connect-src 'self' https://server.pgso.bpc-bsis4d.com https://dev.pgso.bpc-bst-cd.com;
             img-src 'self' data: https:;
             style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
             font-src 'self' https://fonts.gstatic.com;
@@ -51,10 +52,12 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className={inter.className}>
-        <SidebarProvider>
-          <ClientLayout>{children}</ClientLayout>
-          <Toaster />
-        </SidebarProvider>
+        <ErrorBoundary>
+          <SidebarProvider>
+            <ClientLayout>{children}</ClientLayout>
+            <Toaster />
+          </SidebarProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

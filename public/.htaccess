@@ -6,16 +6,27 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
 
 # CORS Headers
-Header always set Access-Control-Allow-Origin "https://server.pgso.bpc-bsis4d.com"
+Header always set Access-Control-Allow-Origin "*"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Session-Fingerprint, X-Session-Code, X-CSRF-Token"
 
 # Enable RewriteEngine
 RewriteEngine On
 
-# If a directory or a file exists, use it directly
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# Serve static files directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Handle Next.js static chunks
+RewriteCond %{REQUEST_URI} /_next/static/chunks/
+RewriteRule ^ - [L]
 
 # Otherwise forward it to index.html
 RewriteRule ^ index.html [QSA,L]
+
+# Add proper MIME types for JavaScript files
+AddType application/javascript .js
+AddType application/javascript .mjs
+AddType text/javascript .js
+AddType text/javascript .mjs
