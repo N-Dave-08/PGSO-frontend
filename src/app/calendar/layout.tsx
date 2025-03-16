@@ -32,7 +32,7 @@ export default function Layout({
   if (!user) {
     return (
       <div className="h-screen flex items-center justify-center">
-        Loading...
+        Loading.....
       </div>
     );
   }
