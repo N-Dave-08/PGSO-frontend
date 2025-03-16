@@ -3,26 +3,40 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export default function Requests() {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const userRole = localStorage.getItem("role");
+    const fetchUser = async () => {
+      try {
+        const storedUser = await secureStorage.get("user");
+        const userRole = localStorage.getItem("role");
 
-    if (!storedUser) {
-      router.push("/");
-      return;
-    }
+        if (!storedUser) {
+          router.push("/");
+          return;
+        }
 
-    if (userRole !== "admin" && userRole !== "head" && userRole !== "staff") {
-      router.back();
-      return;
-    }
+        if (
+          userRole !== "admin" &&
+          userRole !== "head" &&
+          userRole !== "staff"
+        ) {
+          router.back();
+          return;
+        }
 
-    setUser(JSON.parse(storedUser));
+        setUser(storedUser);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        router.push("/");
+      }
+    };
+
+    fetchUser();
   }, [router]);
 
   if (!user) {

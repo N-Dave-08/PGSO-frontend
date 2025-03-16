@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request } from "@/types";
+import { Loader } from "@/components/loader";
 
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchRequests = async () => {
     try {
@@ -43,8 +45,10 @@ export default function Page() {
 
       // console.log("Formatted Data:", formattedData);
       setRequests(formattedData);
+      setError(null);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
+      setError("Failed to load requests. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -55,11 +59,30 @@ export default function Page() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-10 text-center">
+        <p className="text-red-500">{error}</p>
+        <button
+          onClick={() => fetchRequests()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   // console.log("REQUEST DATA", requests);
   return (
-    <div>
+    <div className="container mx-auto py-10">
       <RequestCards requests={requests} onRequestUpdate={fetchRequests} />
     </div>
   );

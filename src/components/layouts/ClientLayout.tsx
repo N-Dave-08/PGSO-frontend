@@ -29,7 +29,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <div className="flex min-h-screen w-full bg-background">
       {isAuthenticated && <UserSidebar />}
-      <main className="w-full 500 px-4">{children}</main>
+      <main className="w-full 500 p-4">{children}</main>
     </div>
   );
 }

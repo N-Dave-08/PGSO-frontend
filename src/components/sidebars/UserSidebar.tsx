@@ -10,22 +10,54 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { routesData } from "@/helpers/routes";
-import { NavUser } from "@/components/navbars/nav-user";
+import { setupImage } from "@/helpers/setup";
+import { LogOut } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "@/types";
 import Link from "next/link";
 
 export default function UserSidebar() {
   const path = usePathname();
+  const router = useRouter();
+  const { isMobile } = useSidebar();
   const [role, setRole] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
     setRole(role || "");
-  }, []);
 
-  const filteredRoutes = React.useMemo(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      router.push("/");
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event("authChange"));
+    router.push("/");
+  };
+
+  // Define route categories
+  const routeCategories = {
+    main: ["DASHBOARD", "PROFILE"],
+    management: ["USERS", "STAFFS", "DEPARTMENTS", "DIVISIONS", "CATEGORIES"],
+    operations: ["REQUESTS", "TASKS", "CALENDAR"],
+    feedback: ["FEEDBACK", "AUDIT_LOGS"],
+    settings: ["SETTINGS"],
+  };
+
+  // Define allowed routes by role
+  const allowedRoutesByRole = React.useMemo(() => {
     const adminRoutes = [
       "DASHBOARD",
       "USERS",
@@ -55,32 +87,73 @@ export default function UserSidebar() {
     ];
     const staffRoutes = ["DASHBOARD", "REQUESTS", "PROFILE", "SETTINGS"];
 
-    return Object.entries(routesData).filter(([key]) => {
-      switch (role) {
-        case "personnel":
-          return personnelRoutes.includes(key);
-        case "head":
-          return headRoutes.includes(key);
-        case "staff":
-          return staffRoutes.includes(key);
-        case "admin":
-          return adminRoutes.includes(key);
-        default:
-          return true;
-      }
-    });
+    switch (role) {
+      case "personnel":
+        return personnelRoutes;
+      case "head":
+        return headRoutes;
+      case "staff":
+        return staffRoutes;
+      case "admin":
+        return adminRoutes;
+      default:
+        return [];
+    }
   }, [role]);
+
+  // Group routes by category
+  const groupedRoutes = React.useMemo(() => {
+    const result: Record<
+      string,
+      [string, (typeof routesData)[keyof typeof routesData]][]
+    > = {};
+
+    Object.keys(routeCategories).forEach((category) => {
+      result[category] = Object.entries(routesData)
+        .filter(
+          ([key]) =>
+            routeCategories[category as keyof typeof routeCategories].includes(
+              key
+            ) && allowedRoutesByRole.includes(key)
+        )
+        .sort((a, b) => {
+          // Sort by the order in the category array
+          const categoryArray =
+            routeCategories[category as keyof typeof routeCategories];
+          return categoryArray.indexOf(a[0]) - categoryArray.indexOf(b[0]);
+        });
+    });
+
+    return result;
+  }, [allowedRoutesByRole]);
 
   return (
     <Sidebar variant={"sidebar"} className="w-[16rem]">
-      <SidebarHeader>
-        <NavUser />
+      <SidebarHeader className="border-b border-sidebar-border pb-2">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10 rounded-lg">
+            <AvatarImage src="" alt="user" />
+            <AvatarFallback className="rounded-lg">AA</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="flex gap-1 truncate">
+              <p className="font-semibold truncate">
+                {user ? user.first_name : "Loading..."}
+              </p>
+              <p className="opacity-50 font-light text-xs">({role})</p>
+            </span>
+            <span className="truncate text-xs">
+              {user ? user.email : "Loading..."}
+            </span>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
+        {/* Main Navigation */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredRoutes.map(([key, route]) => (
+              {groupedRoutes.main?.map(([key, route]) => (
                 <SidebarMenuItem key={key}>
                   <SidebarMenuButton
                     asChild
@@ -97,7 +170,131 @@ export default function UserSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Management Section */}
+        {groupedRoutes.management?.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2">
+              <h3 className="text-xs font-semibold text-muted-foreground">
+                Management
+              </h3>
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {groupedRoutes.management.map(([key, route]) => (
+                  <SidebarMenuItem key={key}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={path === `${route.link}/`}
+                      className="text-base-content/70"
+                    >
+                      <Link href={route.link}>
+                        {route.icon}
+                        {route.name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Operations Section */}
+        {groupedRoutes.operations?.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2">
+              <h3 className="text-xs font-semibold text-muted-foreground">
+                Operations
+              </h3>
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {groupedRoutes.operations.map(([key, route]) => (
+                  <SidebarMenuItem key={key}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={path === `${route.link}/`}
+                      className="text-base-content/70"
+                    >
+                      <Link href={route.link}>
+                        {route.icon}
+                        {route.name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Feedback & Logs Section */}
+        {groupedRoutes.feedback?.length > 0 && (
+          <SidebarGroup>
+            <div className="px-3 py-2">
+              <h3 className="text-xs font-semibold text-muted-foreground">
+                Feedback & Logs
+              </h3>
+            </div>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {groupedRoutes.feedback.map(([key, route]) => (
+                  <SidebarMenuItem key={key}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={path === `${route.link}/`}
+                      className="text-base-content/70"
+                    >
+                      <Link href={route.link}>
+                        {route.icon}
+                        {route.name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Settings Section */}
+        {groupedRoutes.settings?.length > 0 && (
+          <SidebarGroup className="mt-auto">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {groupedRoutes.settings.map(([key, route]) => (
+                  <SidebarMenuItem key={key}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={path === `${route.link}/`}
+                      className="text-base-content/70"
+                    >
+                      <Link href={route.link}>
+                        {route.icon}
+                        {route.name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
+      <SidebarFooter className="mt-auto border-t border-sidebar-border pt-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              className="text-red-400 hover:bg-white/5 transition-colors"
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="font-medium">Log out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

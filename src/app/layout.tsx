@@ -4,6 +4,8 @@ import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import ClientLayout from "@/components/layouts/ClientLayout";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -42,10 +44,22 @@ export default function RootLayout({
         <meta name="referrer" content="no-referrer-when-downgrade" />
       </head>
       <body className={inter.className}>
-        <SidebarProvider>
-          <ClientLayout>{children}</ClientLayout>
-          <Toaster />
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <ClientLayout>
+              {children}
+              <div className="fixed bottom-4 right-4">
+                <ModeToggle />
+              </div>
+            </ClientLayout>
+            <Toaster />
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

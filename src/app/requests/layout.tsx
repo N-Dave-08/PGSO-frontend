@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export default function Layout({
   children,
@@ -20,13 +21,23 @@ export default function Layout({
   const router = useRouter();
 
   useEffect(() => {
-    setRole(localStorage.getItem("role"));
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+    const fetchUser = async () => {
+      try {
+        setRole(localStorage.getItem("role"));
+        const storedUser = await secureStorage.get("user");
+
+        if (storedUser) {
+          setUser(storedUser);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        router.push("/");
+      }
+    };
+
+    fetchUser();
   }, [router]);
 
   if (!user) {
@@ -56,7 +67,7 @@ export default function Layout({
   };
 
   return (
-    <main className="p-4 w-full">
+    <main className="w-full">
       {children}
       {renderContent()}
     </main>

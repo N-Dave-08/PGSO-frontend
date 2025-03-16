@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Request } from "@/types";
 import RequestDetailsModal from "@/components/modals/request-details";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface RequestCardsProps {
   requests: Request[];
@@ -77,14 +78,23 @@ export default function RequestCards({
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {request.description}
                   </p>
-                  <div className="mt-4 text-sm">
-                    <p className="text-muted-foreground">
-                      Requested by: {request.requested_by.first_name}{" "}
-                      {request.requested_by.last_name}
-                    </p>
-                    <p className="text-muted-foreground">
-                      Department: {request.requested_by.department}
-                    </p>
+                  <div className="mt-4 text-sm flex items-center gap-3">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage src="" alt="user" />
+                      <AvatarFallback className="rounded-lg">
+                        {request.requested_by.first_name.charAt(0)}
+                        {request.requested_by.last_name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-muted-foreground">
+                        {request.requested_by.first_name}{" "}
+                        {request.requested_by.last_name}
+                      </p>
+                      <p className="text-muted-foreground">
+                        Department: {request.requested_by.department}
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
