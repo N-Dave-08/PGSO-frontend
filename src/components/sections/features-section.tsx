@@ -1,5 +1,5 @@
 import { FileText, Users, Building2 } from "lucide-react";
-import { FeatureCard } from "@/components/cards/FeatureCard";
+import { FeatureCard } from "@/components/cards/feature-card";
 
 export function FeaturesSection() {
   return (

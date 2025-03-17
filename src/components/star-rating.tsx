@@ -1,13 +1,13 @@
-import { useState } from 'react'
-import { Star } from 'lucide-react'
+import { useState } from "react";
+import { Star } from "lucide-react";
 
 interface StarRatingProps {
-  rating: number
-  onRatingChange: (rating: number) => void
+  rating: number;
+  onRatingChange: (rating: number) => void;
 }
 
 export function StarRating({ rating, onRatingChange }: StarRatingProps) {
-  const [hover, setHover] = useState(0)
+  const [hover, setHover] = useState(0);
 
   return (
     <div className="flex gap-2">
@@ -15,7 +15,9 @@ export function StarRating({ rating, onRatingChange }: StarRatingProps) {
         <Star
           key={star}
           className={`size-5 cursor-pointer ${
-            star <= (hover || rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+            star <= (hover || rating)
+              ? "text-yellow-400 fill-yellow-400"
+              : "text-gray-300"
           }`}
           onClick={() => onRatingChange(star)}
           onMouseEnter={() => setHover(star)}
@@ -23,5 +25,5 @@ export function StarRating({ rating, onRatingChange }: StarRatingProps) {
         />
       ))}
     </div>
-  )
+  );
 }

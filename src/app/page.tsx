@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Hero from "@/components/sections/Hero";
-import Navbar from "@/components/navbars/Navbar";
-import Footer from "@/components/sections/Footer";
-import { FeaturesSection } from "@/components/sections/FeaturesSection";
+import Hero from "@/components/sections/hero";
+import Navbar from "@/components/navbars/navbar";
+import Footer from "@/components/sections/footer";
+import { FeaturesSection } from "@/components/sections/features-section";
 
 export default function Home() {
   const router = useRouter();
