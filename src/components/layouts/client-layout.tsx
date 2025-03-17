@@ -12,13 +12,27 @@ interface ClientLayoutProps {
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setLoading(false), 500); // 0.5 second delay
-    return () => clearTimeout(timeout); // Cleanup on unmount
-  }, []);
+    // Reset states when auth changes
+    setLoading(true);
+    setVisible(false);
 
-  if (loading || isAuthenticated === null) {
+    // First delay for loader
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+      // Second delay for fade-in
+      const visibilityTimeout = setTimeout(() => {
+        setVisible(true);
+      }, 300);
+      return () => clearTimeout(visibilityTimeout);
+    }, 500);
+
+    return () => clearTimeout(loadingTimeout);
+  }, [isAuthenticated]);
+
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center w-full">
         <Loader />
@@ -28,10 +42,18 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {isAuthenticated && <UserSidebar />}
-      <main className={`w-full 500 ${isAuthenticated ? "p-4" : ""}`}>
-        {children}
-      </main>
+      <div
+        className={`transition-opacity duration-300 w-full ${
+          visible ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <div className="flex w-full">
+          {isAuthenticated && <UserSidebar />}
+          <main className={`w-full ${isAuthenticated ? "p-6" : ""}`}>
+            {children}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
