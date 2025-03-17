@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
@@ -33,7 +26,6 @@ const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
 };
 
 export default function LoginForm() {
-  const [open, setOpen] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -112,7 +104,6 @@ export default function LoginForm() {
       // Clear sensitive form data
       setEmail("");
       setPassword("");
-      setOpen(false);
 
       // Trigger auth change event
       window.dispatchEvent(new Event("authChange"));

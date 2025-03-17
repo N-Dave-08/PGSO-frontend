@@ -72,7 +72,7 @@ export async function decryptData(encryptedString: string): Promise<string> {
 
 // Secure storage wrapper
 export const secureStorage = {
-  async set(key: string, value: any) {
+  async set(key: string, value: unknown) {
     try {
       // Ensure we're storing valid JSON
       const jsonString = JSON.stringify(value);

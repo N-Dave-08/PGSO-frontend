@@ -11,7 +11,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { routesData } from "@/helpers/routes";
@@ -23,7 +22,6 @@ import Link from "next/link";
 export default function UserSidebar() {
   const path = usePathname();
   const router = useRouter();
-  const { isMobile } = useSidebar();
   const [role, setRole] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
 
@@ -100,6 +98,9 @@ export default function UserSidebar() {
     }
   }, [role]);
 
+  // Group routes by category - use a ref for routeCategories to avoid dependency issues
+  const routeCategoriesRef = React.useRef(routeCategories);
+
   // Group routes by category
   const groupedRoutes = React.useMemo(() => {
     const result: Record<
@@ -107,18 +108,20 @@ export default function UserSidebar() {
       [string, (typeof routesData)[keyof typeof routesData]][]
     > = {};
 
-    Object.keys(routeCategories).forEach((category) => {
+    Object.keys(routeCategoriesRef.current).forEach((category) => {
       result[category] = Object.entries(routesData)
         .filter(
           ([key]) =>
-            routeCategories[category as keyof typeof routeCategories].includes(
-              key
-            ) && allowedRoutesByRole.includes(key)
+            routeCategoriesRef.current[
+              category as keyof typeof routeCategories
+            ].includes(key) && allowedRoutesByRole.includes(key)
         )
         .sort((a, b) => {
           // Sort by the order in the category array
           const categoryArray =
-            routeCategories[category as keyof typeof routeCategories];
+            routeCategoriesRef.current[
+              category as keyof typeof routeCategories
+            ];
           return categoryArray.indexOf(a[0]) - categoryArray.indexOf(b[0]);
         });
     });

@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 
 // Initialize dayjs plugins
 dayjs.extend(utc);
