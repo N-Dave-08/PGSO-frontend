@@ -1,16 +1,35 @@
-import React from 'react'
+import Link from "next/link";
+import React from "react";
 
 export default function Footer() {
-    return (
-        <footer className="bg-base-200 text-base-content text-center space-y-4 p-10">
-            <nav>
-                <h4 className='text-lg'>PGSO Request Management System</h4>
-                <p className='text-lg font-semibold'>CAPSTONE PROJECT</p>
-                <p className='text-lg'>BSIS 4 - D</p>
-            </nav>
-            <aside>
-                <p>Copyright © All right reserved</p>
-            </aside>
-        </footer>
-    )
+  return (
+    <footer className="border-t py-6">
+      <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
+        <p className="text-center text-sm text-muted-foreground md:text-left">
+          &copy; {new Date().getFullYear()} Provincial General Service Office.
+          All rights reserved.
+        </p>
+        <nav className="flex gap-4 sm:gap-6">
+          <Link
+            href="#"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
+            Privacy Policy
+          </Link>
+          <Link
+            href="#"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
+            Terms of Service
+          </Link>
+          <Link
+            href="#"
+            className="text-sm font-medium hover:underline underline-offset-4"
+          >
+            Contact
+          </Link>
+        </nav>
+      </div>
+    </footer>
+  );
 }

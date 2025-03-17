@@ -130,7 +130,7 @@ export default function UserSidebar() {
   return (
     <Sidebar variant={"sidebar"} className="w-[16rem]">
       <SidebarHeader className="border-b border-sidebar-border pb-2">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="h-10 w-10 rounded-lg">
             <AvatarImage src="" alt="user" />
             <AvatarFallback className="rounded-lg">AA</AvatarFallback>
