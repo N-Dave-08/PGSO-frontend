@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import LoginForm from "@/components/forms/login-form";
 
 export default function Hero() {
   return (
