@@ -11,37 +11,23 @@ interface ClientLayoutProps {
 
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const { isAuthenticated } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Reset states when auth changes
-    setLoading(true);
+    // Reset visibility when auth changes
     setVisible(false);
 
-    // First delay for loader
-    const loadingTimeout = setTimeout(() => {
-      setLoading(false);
-      // Second delay for fade-in
-      const visibilityTimeout = setTimeout(() => {
-        setVisible(true);
-      }, 300);
-      return () => clearTimeout(visibilityTimeout);
-    }, 500);
+    // Set visible immediately after component mounts
+    // or when auth state changes
+    const visibilityTimeout = setTimeout(() => {
+      setVisible(true);
+    }, 10); // Minimal delay to ensure state update occurs after render
 
-    return () => clearTimeout(loadingTimeout);
+    return () => clearTimeout(visibilityTimeout);
   }, [isAuthenticated]);
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center w-full">
-        <Loader size="small" />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-screen w-full ">
+    <div className="flex min-h-screen w-full">
       <div
         className={`transition-opacity duration-300 w-full ${
           visible ? "opacity-100" : "opacity-0"
