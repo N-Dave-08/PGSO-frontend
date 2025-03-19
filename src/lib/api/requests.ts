@@ -1,93 +1,64 @@
-import axios from "axios";
-import api from "./axios";
+import api, { getAuthHeaders, handleApiError } from "./axios";
 import {
   CreateRequestData,
   CreateRequestResponse,
   AssessRequestData,
   RequestStatusResponse,
-  AuthHeaders,
+  RequestsResponse
 } from "@/types";
-import { secureStorage } from "@/lib/utils/encryption";
 
-// Helper function to get auth headers
-const getAuthHeaders = async (
-  contentType = "application/json"
-): Promise<AuthHeaders> => {
-  const token = await secureStorage.get("token");
-  const sessionCode = await secureStorage.get("sessionCode");
-
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-
-  const headers: AuthHeaders = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": contentType,
-  };
-
-  if (sessionCode) {
-    headers["X-Session-Code"] = sessionCode;
-  }
-
-  return headers;
-};
-
-export const getRequests = async () => {
+/**
+ * Fetches the list of requests
+ */
+export const getRequests = async (page?: number, perPage?: number): Promise<RequestsResponse> => {
   try {
     const headers = await getAuthHeaders();
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/list`,
-      { headers }
-    );
+    const params: Record<string, any> = {};
+    
+    if (page) params.page = page;
+    if (perPage) params.per_page = perPage;
 
-    // Return empty array if no data
+    const response = await api.get("/request/list", { 
+      headers,
+      params 
+    });
+
+    // Return data with defaults if empty
     return {
       requests: response.data?.requests || [],
-      total: response.data?.total || 0,
+      pagination: response.data?.pagination || {
+        total: response.data?.total || 0,
+        per_page: perPage || 10,
+        current_page: page || 1,
+        last_page: Math.ceil((response.data?.total || 0) / (perPage || 10))
+      },
+      isSuccess: response.data?.isSuccess,
+      message: response.data?.message
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (
-        error.response?.status === 401 ||
-        error.response?.data?.message?.toLowerCase().includes("invalid session")
-      ) {
-        // Clear auth data and redirect
-        await secureStorage.remove("token");
-        await secureStorage.remove("sessionCode");
-        await secureStorage.remove("role");
-        await secureStorage.remove("user");
-        window.dispatchEvent(new Event("authChange"));
-        window.location.href = "/";
-        throw new Error("Session expired. Please login again.");
-      }
-
-      // Handle other specific error cases
-      if (error.response?.status === 500) {
-        console.error("Server Error:", error.response.data);
-        throw new Error("Internal server error. Please try again later.");
-      }
-    }
-    console.error("Error fetching requests:", error);
-    throw error;
+    throw handleApiError(error);
   }
 };
 
+/**
+ * Creates a new request
+ */
 export const createRequest = async (
   data: CreateRequestData
 ): Promise<CreateRequestResponse> => {
   try {
-    const token = await secureStorage.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found");
-    }
-
+    // Create form data
     const formData = new FormData();
     formData.append("request_title", data.request_title);
     formData.append("description", data.description);
     if (data.file_path) {
       formData.append("file_path", data.file_path);
     }
+    if (data.category_id) {
+      formData.append("category_id", data.category_id.toString());
+    }
 
+    // Send request
     const response = await api.post("/request/create", formData, {
       headers: {
         ...(await getAuthHeaders("multipart/form-data")),
@@ -97,82 +68,54 @@ export const createRequest = async (
 
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const errorData = error.response?.data;
-      // Check if we have validation errors
-      if (errorData && typeof errorData === "object") {
-        if ("errors" in errorData) {
-          const validationErrors = Object.values(
-            errorData.errors as Record<string, string[]>
-          ).flat();
-          throw new Error(validationErrors[0] || "Validation failed");
-        }
-        if ("message" in errorData) {
-          throw new Error(String(errorData.message));
-        }
-      }
-      throw new Error("Failed to create request");
-    }
-    throw error;
+    throw handleApiError(error);
   }
 };
 
+/**
+ * Updates a request status (approve/reject)
+ */
 export const updateRequestStatus = async (
   requestId: number,
-  status: "Approved" | "Rejected"
+  status: "Approved" | "Rejected",
+  note?: string
 ): Promise<RequestStatusResponse> => {
   try {
-    const token = await secureStorage.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found");
-    }
-
-    const endpoint =
-      status === "Approved"
-        ? `/request/accept/${requestId}`
-        : `/request/reject/${requestId}`;
+    const endpoint = status === "Approved" 
+      ? `/request/accept/${requestId}` 
+      : `/request/reject/${requestId}`;
+    
+    const payload = status === "Rejected" ? { note } : {};
 
     const response = await api.post(
       endpoint,
-      status === "Rejected"
-        ? { note: await secureStorage.get("rejectionNote") }
-        : {},
+      payload,
       { headers: await getAuthHeaders() }
     );
 
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const errorData = error.response?.data;
-      if (errorData && typeof errorData === "object") {
-        if ("message" in errorData) {
-          throw new Error(String(errorData.message));
-        }
-      }
-      throw new Error(`Failed to ${status.toLowerCase()} request`);
-    }
-    throw error;
+    throw handleApiError(error);
   }
 };
 
+/**
+ * Assesses a request
+ */
 export const assessRequest = async (
   requestId: number,
   data: AssessRequestData
-) => {
+): Promise<{ isSuccess: boolean; message: string }> => {
   try {
     const response = await api.post(`/request/assess/${requestId}`, data, {
       headers: await getAuthHeaders(),
     });
+    
     return {
       isSuccess: true,
       message: response.data.message,
     };
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(
-        error.response?.data?.message || "Failed to assess request"
-      );
-    }
-    throw error;
+    throw handleApiError(error);
   }
 };

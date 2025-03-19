@@ -3,18 +3,29 @@
 import { useEffect, useState } from "react";
 import { getRequests } from "@/lib/api/requests";
 import RequestCards from "@/components/cards/request-cards";
-import { Request } from "@/types";
+import { Request, Pagination } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (page: number = 1) => {
     try {
-      const response = await getRequests();
+      const isInitialLoad = page === 1;
+
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const response = await getRequests(page, 6); // Fetch 6 items per page
       const requestData = response.requests || [];
+      const paginationData = response.pagination;
 
       const formattedData = requestData.map((request: Request): Request => {
         return {
@@ -39,8 +50,13 @@ export default function AdminPage() {
         };
       });
 
-      // console.log("Formatted Data:", formattedData);
-      setRequests(formattedData);
+      if (isInitialLoad) {
+        setRequests(formattedData);
+      } else {
+        setRequests((prev) => [...prev, ...formattedData]);
+      }
+
+      setPagination(paginationData);
       setError(null);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
@@ -48,6 +64,17 @@ export default function AdminPage() {
       // Don't redirect here, just show an error message
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (
+      pagination &&
+      pagination.current_page < pagination.last_page &&
+      !loadingMore
+    ) {
+      fetchRequests(pagination.current_page + 1);
     }
   };
 
@@ -98,10 +125,16 @@ export default function AdminPage() {
       </div>
     );
   }
-  // console.log("REQUEST DATA", requests);
+
   return (
     <div className="">
-      <RequestCards requests={requests} onRequestUpdate={fetchRequests} />
+      <RequestCards
+        requests={requests}
+        onRequestUpdate={() => fetchRequests(1)}
+        pagination={pagination || undefined}
+        onLoadMore={handleLoadMore}
+        loading={loadingMore}
+      />
     </div>
   );
 }

@@ -7,21 +7,47 @@ import { Badge } from "@/components/ui/badge";
 import { Request } from "@/types";
 import RequestDetailsModal from "@/components/modals/request-details";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useInView } from "react-intersection-observer";
 
 interface RequestCardsProps {
   requests: Request[];
   onRequestUpdate?: () => void;
+  pagination?: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+  onLoadMore?: () => void;
+  loading?: boolean;
 }
 
 export default function RequestCards({
   requests,
   onRequestUpdate,
+  pagination,
+  onLoadMore,
+  loading = false,
 }: RequestCardsProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
-  // const [selectedRequest, setSelectedRequest] = React.useState<Request | null>(null)
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+  });
 
+  // First deduplicate the requests array by ID
+  const uniqueRequests = React.useMemo(() => {
+    const uniqueMap = new Map();
+    requests.forEach(request => {
+      if (!uniqueMap.has(request.id)) {
+        uniqueMap.set(request.id, request);
+      }
+    });
+    return Array.from(uniqueMap.values());
+  }, [requests]);
+
+  // Then apply the filter on the deduplicated array
   const filteredData = React.useMemo(() => {
-    return requests.filter((request) => {
+    return uniqueRequests.filter((request) => {
       const searchTerm = globalFilter.toLowerCase();
       return (
         request.control_no.toLowerCase().includes(searchTerm) ||
@@ -32,7 +58,19 @@ export default function RequestCards({
         request.requested_by.last_name.toLowerCase().includes(searchTerm)
       );
     });
-  }, [requests, globalFilter]);
+  }, [uniqueRequests, globalFilter]);
+
+  // Trigger loading more when scrolling to bottom
+  React.useEffect(() => {
+    if (
+      inView &&
+      !loading &&
+      pagination &&
+      pagination.current_page < pagination.last_page
+    ) {
+      onLoadMore?.();
+    }
+  }, [inView, loading, pagination, onLoadMore]);
 
   return (
     <div className="w-full">
@@ -102,6 +140,30 @@ export default function RequestCards({
           />
         ))}
       </div>
+
+      {/* Load more trigger element */}
+      <div ref={ref} className="w-full py-8 flex justify-center">
+        {loading ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            <p className="text-sm text-muted-foreground">
+              Loading more requests...
+            </p>
+          </div>
+        ) : pagination && pagination.current_page < pagination.last_page ? (
+          <p className="text-sm text-muted-foreground">Scroll for more</p>
+        ) : requests.length > 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No more requests to load
+          </p>
+        ) : null}
+      </div>
+
+      {pagination && (
+        <div className="text-center text-sm text-muted-foreground mt-2 mb-6">
+          Showing {requests.length} of {pagination.total} requests
+        </div>
+      )}
     </div>
   );
 }

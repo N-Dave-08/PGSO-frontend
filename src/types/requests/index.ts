@@ -33,6 +33,20 @@ export interface Request {
   requested_by: RequestedBy;
 }
 
+export interface Pagination {
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
+
+export interface RequestsResponse {
+  requests: Request[];
+  pagination: Pagination;
+  isSuccess?: boolean;
+  message?: string;
+}
+
 export interface CreateRequestData {
   request_title: string;
   description: string;

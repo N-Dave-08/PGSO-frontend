@@ -1,5 +1,4 @@
-import axios from "axios";
-import { secureStorage } from "@/lib/utils/encryption";
+import api, { getAuthHeaders, handleApiError } from "./axios";
 
 export interface CategoryPersonnel {
   id: number;
@@ -25,80 +24,34 @@ export interface CreateCategoryResponse {
   category: Category;
 }
 
+/**
+ * Creates a new category
+ */
 export const createCategory = async (
   data: CreateCategoryData
 ): Promise<CreateCategoryResponse> => {
   try {
-    const token = await secureStorage.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found");
-    }
-
-    const response = await axios.post(
-      process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/category/create",
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      }
-    );
+    const response = await api.post("/admin/category/create", data, {
+      headers: await getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        await secureStorage.remove("token");
-        await secureStorage.remove("user");
-        await secureStorage.remove("sessionCode");
-        window.location.href = "/";
-        throw new Error("Session expired. Please login again.");
-      }
-      throw new Error(
-        error.response?.data?.message || "Failed to create category"
-      );
-    }
-    throw error;
+    throw handleApiError(error);
   }
 };
 
-export const getCategories = async () => {
+/**
+ * Gets all categories
+ */
+export const getCategories = async (): Promise<Category[]> => {
   try {
-    const token = await secureStorage.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found");
-    }
+    const response = await api.get("/dropdown/categories", {
+      headers: await getAuthHeaders(),
+    });
 
-    const response = await axios.get(
-      process.env.NEXT_PUBLIC_API_BASE_URL + "/categories",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-
-    if (!response.data) {
-      throw new Error("No data received from the API");
-    }
-
-    return response.data;
+    // Return empty array if no data
+    return response.data?.data || [];
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        await secureStorage.remove("token");
-        await secureStorage.remove("user");
-        await secureStorage.remove("sessionCode");
-        window.location.href = "/";
-        throw new Error("Session expired. Please login again.");
-      }
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch categories"
-      );
-    }
-    throw error;
+    throw handleApiError(error);
   }
 };

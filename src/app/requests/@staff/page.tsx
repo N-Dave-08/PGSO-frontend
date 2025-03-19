@@ -10,11 +10,24 @@ import CreateRequest from "@/components/modals/create-request";
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+  });
 
-  const fetchRequests = async () => {
+  const fetchRequests = async (page = 1) => {
     try {
-      const response = await getRequests();
+      if (page > 1) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+
+      const response = await getRequests(page);
       const requestData = response.requests || [];
 
       const formattedData = requestData.map((request: Request): Request => {
@@ -45,13 +58,24 @@ export default function Page() {
       });
 
       // console.log("Formatted Data:", formattedData);
-      setRequests(formattedData);
+      // If loading more, append to existing data, otherwise replace
+      if (page > 1) {
+        // Deduplicate by ID to avoid duplicate key errors
+        const existingIds = new Set(requests.map((r) => r.id));
+        const newRequests = formattedData.filter((r) => !existingIds.has(r.id));
+        setRequests((prev) => [...prev, ...newRequests]);
+      } else {
+        setRequests(formattedData);
+      }
+
+      setPagination(response.pagination);
       setError(null);
     } catch (error) {
       console.error("Failed to fetch requests:", error);
       setError("Failed to load requests. Please try again.");
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -59,7 +83,13 @@ export default function Page() {
     fetchRequests();
   }, []);
 
-  if (loading) {
+  const handleLoadMore = () => {
+    if (!loadingMore && pagination.current_page < pagination.last_page) {
+      fetchRequests(pagination.current_page + 1);
+    }
+  };
+
+  if (loading && !loadingMore) {
     return (
       <div>
         <Loader />
@@ -84,8 +114,14 @@ export default function Page() {
   // console.log("REQUEST DATA", requests);
   return (
     <div className="container mx-auto py-10">
-      <CreateRequest />
-      <RequestCards requests={requests} onRequestUpdate={fetchRequests} />
+      <CreateRequest onRequestCreated={() => fetchRequests(1)} />
+      <RequestCards
+        requests={requests}
+        onRequestUpdate={() => fetchRequests(1)}
+        pagination={pagination}
+        onLoadMore={handleLoadMore}
+        loading={loadingMore}
+      />
     </div>
   );
 }
