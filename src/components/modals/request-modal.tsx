@@ -17,7 +17,7 @@ export default function RequestModal() {
   const [formValues, setFormValues] = useState({
     title: "",
     description: "",
-    file: null,
+    file: null as File | null,
   });
 
   const clearForm = () => {
@@ -74,7 +74,10 @@ export default function RequestModal() {
               id="file"
               className="col-span-3"
               onChange={(e) =>
-                setFormValues({ ...formValues, description: e.target.value[0] })
+                setFormValues({
+                  ...formValues,
+                  file: e.target.files?.[0] || null,
+                })
               }
               type="file"
               accept="image/*"

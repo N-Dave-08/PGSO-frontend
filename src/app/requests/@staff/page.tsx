@@ -5,6 +5,7 @@ import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request } from "@/types";
 import { Loader } from "@/components/loader";
+import CreateRequest from "@/components/modals/create-request";
 
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);
@@ -83,6 +84,7 @@ export default function Page() {
   // console.log("REQUEST DATA", requests);
   return (
     <div className="container mx-auto py-10">
+      <CreateRequest />
       <RequestCards requests={requests} onRequestUpdate={fetchRequests} />
     </div>
   );
