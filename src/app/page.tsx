@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Hero from "@/components/sections/hero";
-import Navbar from "@/components/navbars/navbar";
-import Footer from "@/components/sections/footer";
 import { FeaturesSection } from "@/components/sections/features-section";
 import { SwirlBackground } from "@/components/backgrounds/swirl-bg";
+import Navbar from "@/components/navbars/navbar";
+import Hero from "@/components/sections/hero";
+import Footer from "@/components/sections/footer";
 
 export default function Home() {
   const router = useRouter();
