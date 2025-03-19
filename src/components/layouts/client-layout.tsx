@@ -35,13 +35,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center w-full">
-        <Loader />
+        <Loader size="small" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex min-h-screen w-full ">
       <div
         className={`transition-opacity duration-300 w-full ${
           visible ? "opacity-100" : "opacity-0"

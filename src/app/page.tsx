@@ -6,6 +6,7 @@ import Hero from "@/components/sections/hero";
 import Navbar from "@/components/navbars/navbar";
 import Footer from "@/components/sections/footer";
 import { FeaturesSection } from "@/components/sections/features-section";
+import { SwirlBackground } from "@/components/backgrounds/swirl-bg";
 
 export default function Home() {
   const router = useRouter();
@@ -19,10 +20,12 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SwirlBackground particleCount={700} baseHue={10} rangeHue={30} />
+
       {/* Header */}
       <Navbar />
 
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         {/* Hero Section */}
         <Hero />
 
