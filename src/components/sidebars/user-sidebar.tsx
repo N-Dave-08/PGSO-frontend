@@ -18,6 +18,7 @@ import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/types";
 import Link from "next/link";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export default function UserSidebar() {
   const path = usePathname();
@@ -26,20 +27,35 @@ export default function UserSidebar() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    setRole(role || "");
+    const fetchUserData = async () => {
+      try {
+        // Get role from localStorage for compatibility
+        const role = localStorage.getItem("role");
+        setRole(role || "");
 
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+        // Get user data from secure storage
+        const userData = await secureStorage.get("user");
+        if (userData) {
+          setUser(userData);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        router.push("/");
+      }
+    };
+
+    fetchUserData();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    // Use the secureStorage to remove items
+    await secureStorage.remove("token");
+    await secureStorage.remove("user");
+    await secureStorage.remove("sessionCode");
+    localStorage.removeItem("role");
+
     window.dispatchEvent(new Event("authChange"));
     router.push("/");
   };
@@ -134,8 +150,13 @@ export default function UserSidebar() {
       <SidebarHeader className="border-b border-sidebar-border pb-2">
         <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="h-10 w-10 rounded-lg">
-            <AvatarImage src="" alt="user" />
-            <AvatarFallback className="rounded-lg">AA</AvatarFallback>
+            <AvatarImage
+              src={user?.profile_img || ""}
+              alt={user?.first_name || "User"}
+            />
+            <AvatarFallback className="rounded-lg">
+              {user ? `${user.first_name[0]}${user.last_name[0]}` : "U"}
+            </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="flex gap-1 truncate">

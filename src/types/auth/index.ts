@@ -4,6 +4,7 @@ export interface LoginResponse {
     id: number;
     email: string;
     name: string;
+    profile_img: string | null;
   };
   token: string;
   sessionCode: string;
@@ -14,6 +15,6 @@ export interface LoginResponse {
 export interface AuthHeaders {
   [key: string]: string | undefined;
   Authorization: string;
-  'X-Session-Code'?: string;
-  'Content-Type': string;
+  "X-Session-Code"?: string;
+  "Content-Type": string;
 }

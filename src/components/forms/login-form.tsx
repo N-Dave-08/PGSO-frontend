@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
 import { secureStorage } from "@/lib/utils/encryption";
 import api from "@/lib/api/axios";
+import { useAuth } from "@/hooks/use-auth";
 
 // User data sanitization
 const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
@@ -19,6 +20,7 @@ const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
     first_name: firstName || "",
     last_name: lastNameParts.join(" ") || "",
     email: userData.email,
+    profile_img: userData.profile_img,
     role,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -32,6 +34,7 @@ export default function LoginForm() {
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,19 +97,13 @@ export default function LoginForm() {
       // Sanitize and store user data securely
       const sanitizedUser = sanitizeUserData(user, role);
       console.log("Sanitized user:", sanitizedUser); // Log sanitized data
-      await secureStorage.set("user", sanitizedUser);
-      await secureStorage.set("token", token);
-      await secureStorage.set("sessionCode", sessionCode);
 
-      // Keep a minimal version in localStorage for compatibility
-      localStorage.setItem("role", role);
+      // Use the auth hook for login instead of directly managing storage
+      await login(token, sanitizedUser, sessionCode, role);
 
       // Clear sensitive form data
       setEmail("");
       setPassword("");
-
-      // Trigger auth change event
-      window.dispatchEvent(new Event("authChange"));
 
       // Navigate to dashboard
       router.push("/dashboard");
