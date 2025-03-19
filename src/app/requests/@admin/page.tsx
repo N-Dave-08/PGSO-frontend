@@ -17,10 +17,6 @@ export default function AdminPage() {
       const requestData = response.requests || [];
 
       const formattedData = requestData.map((request: Request): Request => {
-        // console.log('Individual Request:', JSON.stringify(request, null, 2));
-        // console.log('Requested By:', request.requested_by);
-        // console.log("REQUESTERRRR", request.requested_by_name)
-
         return {
           id: request.id,
           control_no: request.control_no,

@@ -34,7 +34,7 @@ jobs:
           NODE_ENV: production
           NEXT_TELEMETRY_DISABLED: 1
 
-      - name: Upload to Hostinger
+      - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-build
@@ -43,6 +43,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      FTP_HOST: ${{ secrets.FTP_HOST || '145.223.108.80' }}
 
     steps:
       - name: Install lftp
@@ -54,6 +56,9 @@ jobs:
           name: nextjs-build
           path: out
 
-      - name: Upload to Hostinger
+      - name: Deploy to Hostinger via FTP
         run: |
-          lftp -c "set ftp:ssl-allow on; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://145.223.108.80; mirror -Rev out/ /public_html/dev/ --ignore-time --parallel=10"
+          lftp -c "set ftp:ssl-allow on; 
+                  set ssl:verify-certificate true; 
+                  open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASSWORD }} ftp://${{ env.FTP_HOST }}; 
+                  mirror -Rev out/ /public_html/dev/ --ignore-time --parallel=10" || { echo "FTP upload failed"; exit 1; }
