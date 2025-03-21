@@ -26,8 +26,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     return () => clearTimeout(visibilityTimeout);
   }, [isAuthenticated]);
 
-  console.log("isAuthenticated", isAuthenticated);
-
   return (
     <div className="flex min-h-screen w-full">
       <div
