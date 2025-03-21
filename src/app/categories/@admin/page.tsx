@@ -73,13 +73,11 @@ export default function Page() {
   }
 
   return (
-    <div className="container py-10">
-      <div className="mb-4">
-        <CreateCategory
-          onCategoryCreated={handleCategoryCreated}
-          personnel={formattedPersonnel}
-        />
-      </div>
+    <div>
+      <CreateCategory
+        onCategoryCreated={handleCategoryCreated}
+        personnel={formattedPersonnel}
+      />
       <CategoryTable
         data={categories}
         pagination={pagination}

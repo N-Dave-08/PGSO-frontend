@@ -96,7 +96,9 @@ export default function CreateDivision({
         category_id: parseInt(categoryId, 10),
         department_id: parseInt(categoryId, 10),
         staff: selectedStaff.map((id) => {
-          const foundStaff = staffMembers.find((s) => s.id === parseInt(id, 10));
+          const foundStaff = staffMembers.find(
+            (s) => s.id === parseInt(id, 10)
+          );
           return {
             id: parseInt(id, 10),
             name: foundStaff?.name || "",
@@ -186,7 +188,9 @@ export default function CreateDivision({
                   <Checkbox
                     id={`staff-${staff.id}`}
                     checked={selectedStaff.includes(staff.id.toString())}
-                    onCheckedChange={() => handleStaffChange(staff.id.toString())}
+                    onCheckedChange={() =>
+                      handleStaffChange(staff.id.toString())
+                    }
                   />
                   <label
                     htmlFor={`staff-${staff.id}`}

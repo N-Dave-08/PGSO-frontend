@@ -28,11 +28,4 @@ export default function Users() {
   if (!user) {
     return <div>Loading...</div>;
   }
-
-  return (
-    <div>
-      <h1 className="text-lg font-bold">Users</h1>
-      <p className="text-sm">Uniting a Diverse User Base</p>
-    </div>
-  );
 }

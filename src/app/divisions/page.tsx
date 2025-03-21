@@ -28,11 +28,4 @@ export default function Divisions() {
   if (!user) {
     return <div>Loading...</div>;
   }
-
-  return (
-    <div>
-      <h1 className="text-lg font-bold">Divisions</h1>
-      <p className="text-sm">Fostering Synergy Across Teams</p>
-    </div>
-  );
 }

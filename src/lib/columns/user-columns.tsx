@@ -1,7 +1,7 @@
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,17 +9,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export type User = {
-  id: number
-  name: string
-  email: string
-  role: string
-  department: string
-  division: string
-  status: string
-
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  division: string;
+  status: string;
+  profile_img: string | null;
 }
 
 export const columns: ColumnDef<User>[] = [
@@ -46,6 +48,40 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "id",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "profile",
+    header: "Profile",
+    cell: ({ row }) => {
+      const profile_img = row.original.profile_img;
+      const name = row.original.name;
+      const initials = name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase();
+
+      return (
+        <Avatar>
+          <AvatarImage src={profile_img || ""} alt={name} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -56,9 +92,8 @@ export const columns: ColumnDef<User>[] = [
           Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "email",
@@ -71,30 +106,103 @@ export const columns: ColumnDef<User>[] = [
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
     accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Role
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const role = row.getValue("role") as string;
+      return (
+        <Badge
+          variant={
+            role === "admin"
+              ? "destructive"
+              : role === "head"
+              ? "default"
+              : role === "personnel"
+              ? "secondary"
+              : "outline"
+          }
+        >
+          {role}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "department",
-    header: "Department",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("department")}</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Department
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const department = row.getValue("department") as string;
+      return <div className="capitalize">{department || "N/A"}</div>;
+    },
   },
   {
     accessorKey: "division",
-    header: "Division",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("division")}</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Division
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const division = row.getValue("division") as string;
+      return <div className="capitalize">{division || "N/A"}</div>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      return (
+        <Badge variant={status === "Active" ? "default" : "destructive"}>
+          {status}
+        </Badge>
+      );
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -107,22 +215,23 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(row.original.id.toString())
+              }
             >
               Copy user ID
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <PenSquare />
+              <PenSquare className="mr-2 h-4 w-4" />
               Edit
-              </DropdownMenuItem>
+            </DropdownMenuItem>
             <DropdownMenuItem>
-              <Trash />
+              <Trash className="mr-2 h-4 w-4" />
               Delete
-              </DropdownMenuItem>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
-
+];

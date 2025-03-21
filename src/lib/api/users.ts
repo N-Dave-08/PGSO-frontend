@@ -1,19 +1,31 @@
 import api from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
+import { User } from "@/types/users";
 
-export const getUsers = async () => {
+export interface UsersResponse {
+  user: User[];
+  pagination: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+}
+
+export const getUsers = async (page: number = 1): Promise<UsersResponse> => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.get("/admin/users", {
+    const response = await api.get(`/admin/users?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("Raw API Response:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

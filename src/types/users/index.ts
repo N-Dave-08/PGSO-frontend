@@ -3,10 +3,14 @@ export interface User {
   first_name: string;
   last_name: string;
   email: string;
-  profile: string | null;
   role_name: string;
-  division?: string;
-  department?: string;
-  createdAt: string;
-  updatedAt: string;
+  department_id: number;
+  department_name: string;
+  division_id: number;
+  division_name: string;
+  profile_img: string | null;
+  is_archived: string;
+  age: string;
+  gender: string;
+  number: number;
 }

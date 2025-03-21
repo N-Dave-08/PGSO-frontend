@@ -28,11 +28,4 @@ export default function Categories() {
   if (!user) {
     return <div>Loading...</div>;
   }
-
-  return (
-    <div>
-      <h1 className="text-lg font-bold">Categories</h1>
-      <p className="text-sm">Exploring Diversity in Every Segment</p>
-    </div>
-  );
 }

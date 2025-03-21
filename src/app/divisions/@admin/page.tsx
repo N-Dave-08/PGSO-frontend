@@ -42,8 +42,11 @@ export default function Page() {
   }
 
   return (
-    <div className="py-10">
-      <CreateDivision onDivisionCreated={fetchDivisions} />
+    <div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-bold">Divisions</h1>
+        <CreateDivision onDivisionCreated={fetchDivisions} />
+      </div>
       <DivisionTable data={divisions} />
     </div>
   );

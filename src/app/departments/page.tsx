@@ -28,11 +28,4 @@ export default function Departments() {
   if (!user) {
     return <div>Loading...</div>;
   }
-
-  return (
-    <div>
-      <h1 className="text-lg font-bold">Departments</h1>
-      <p className="text-sm">Strength in Specialized Sectors</p>
-    </div>
-  );
 }
