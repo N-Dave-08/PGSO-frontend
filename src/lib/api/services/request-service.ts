@@ -26,7 +26,14 @@ export class RequestService extends ApiService {
     // Return with defaults if no data
     return {
       requests: response?.requests || [],
-      total: response?.total || 0,
+      pagination: response?.pagination || {
+        total: 0,
+        per_page: 10,
+        current_page: 1,
+        last_page: 1,
+      },
+      isSuccess: response?.isSuccess,
+      message: response?.message,
     };
   }
 
