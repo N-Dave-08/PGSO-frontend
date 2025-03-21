@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/tables/user-table";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
 interface TableUser {
   id: number;
@@ -49,8 +50,6 @@ export default function Page() {
           profile_img: user.profile_img,
         };
       });
-
-      console.log("Formatted Data:", formattedData);
       setUsers(formattedData);
       setPagination(response.pagination);
     } catch (error) {
@@ -69,7 +68,7 @@ export default function Page() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <DataTableSkeleton />;
   }
 
   return (

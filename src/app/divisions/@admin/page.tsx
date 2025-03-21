@@ -5,6 +5,7 @@ import { DivisionTable } from "@/components/tables/division-table";
 import { getDivisions } from "@/lib/api/divisions";
 import CreateDivision from "@/components/modals/create-division";
 import { Division } from "@/types";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
 export default function Page() {
   const [divisions, setDivisions] = useState<Division[]>([]);
@@ -38,7 +39,7 @@ export default function Page() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <DataTableSkeleton />;
   }
 
   return (

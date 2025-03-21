@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request } from "@/types";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/loaders/loader";
 import CreateRequest from "@/components/modals/create-request";
 
 export default function Page() {

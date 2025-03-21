@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request, Pagination } from "@/types";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/loaders/loader";
 
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import UserSidebar from "@/components/sidebars/user-sidebar";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/loaders/loader";
 
 interface ClientLayoutProps {
   children: React.ReactNode;

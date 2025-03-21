@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { getDepartments } from "@/lib/api/department";
 import { DepartmentTable } from "@/components/tables/department-table";
 import { Department } from "@/types";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -34,7 +35,7 @@ export default function Page() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <DataTableSkeleton />;
   }
 
   return (

@@ -7,6 +7,7 @@ import { getUsers } from "@/lib/api/users";
 import CreateCategory from "@/components/modals/create-category";
 import { User } from "@/types/users";
 import { Category } from "@/types/categories";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
 interface Pagination {
   total: number;
@@ -69,7 +70,7 @@ export default function Page() {
     }));
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <DataTableSkeleton />;
   }
 
   return (
