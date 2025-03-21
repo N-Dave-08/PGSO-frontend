@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { columns } from "@/lib/columns/department-columns";
+import { columns, RowContextMenu } from "@/lib/columns/department-columns";
 import { Department } from "@/types";
 
 interface DepartmentTableProps {
@@ -137,20 +137,24 @@ export function DepartmentTable({ data }: DepartmentTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
+                <RowContextMenu
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-white/10 data-[state=selected]:bg-white/20"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                  row={
+                    <TableRow
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-white/10 data-[state=selected]:bg-white/20"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  }
+                />
               ))
             ) : (
               <TableRow>

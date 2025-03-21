@@ -1,15 +1,14 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { ArrowUpDown, PenSquare, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Badge } from "@/components/ui/badge";
 import { Staff } from "@/helpers/table-data/staff-data";
 
@@ -89,15 +88,20 @@ export const columns: ColumnDef<Staff>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-
-      return status === "Active" ? (
-        <Badge variant="outline">Active</Badge>
-      ) : (
-        <Badge variant="destructive">Inactive</Badge>
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      return <div className="capitalize">{status}</div>;
     },
   },
   {
@@ -143,32 +147,51 @@ export const columns: ColumnDef<Staff>[] = [
       const user = row.original;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <div className="h-8 w-8 p-0 flex items-center justify-center">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
               Copy user ID
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <PenSquare />
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem>
+              <PenSquare className="mr-2 h-4 w-4" />
               Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash />
+            </ContextMenuItem>
+            <ContextMenuItem>
+              <Trash className="mr-2 h-4 w-4" />
               Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       );
     },
   },
 ];
+
+export const RowContextMenu = ({ row }: { row: React.ReactNode }) => {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Copy Staff ID</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>
+          <PenSquare className="mr-2 h-4 w-4" />
+          Edit Staff
+        </ContextMenuItem>
+        <ContextMenuItem className="text-red-600">
+          <Trash className="mr-2 h-4 w-4" />
+          Delete Staff
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+};

@@ -1,15 +1,14 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, PenSquare, Trash } from "lucide-react";
+import { ArrowUpDown, PenSquare, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Division } from "@/types";
 import { Department } from "@/types";
 
@@ -34,19 +33,18 @@ export const columns: ColumnDef<Department>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "department_name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Department
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("department_name")}</div>
-    ),
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "acronym",
@@ -83,38 +81,24 @@ export const columns: ColumnDef<Department>[] = [
       );
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                navigator.clipboard.writeText(row.original.id.toString())
-              }
-            >
-              Copy Department ID
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <PenSquare className="mr-2 h-4 w-4" />
-              Edit Department
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Department
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
+
+export const RowContextMenu = ({ row }: { row: React.ReactNode }) => {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Copy Department ID</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>
+          <PenSquare className="mr-2 h-4 w-4" />
+          Edit Department
+        </ContextMenuItem>
+        <ContextMenuItem className="text-red-600">
+          <Trash className="mr-2 h-4 w-4" />
+          Delete Department
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+};
