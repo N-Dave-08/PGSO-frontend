@@ -33,7 +33,7 @@ export const columns: ColumnDef<Department>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "department_name",
     header: ({ column }) => {
       return (
         <Button

@@ -21,7 +21,7 @@ export default function Page() {
           office_location: division.office_location,
           staff: division.staff || [],
           department_id: division.department_id,
-          created_at: division.created_at || new Date().toISOString(),
+          created_at: division.created_at,
         })
       );
 

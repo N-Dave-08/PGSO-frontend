@@ -101,23 +101,6 @@ export const columns: ColumnDef<Division>[] = [
       );
     },
   },
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Date Created
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return new Date(row.getValue("created_at")).toLocaleDateString();
-    },
-  },
 ];
 
 export const RowContextMenu = ({ row }: { row: React.ReactNode }) => {
