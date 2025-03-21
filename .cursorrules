@@ -32,15 +32,15 @@ app/\([a-z-]+\)/\* # Route groups in parentheses
 
 # Type Organization
 
-types/\_ # TypeScript type definitions and interfaces
-types/[a-z-]+\.ts # Type files in kebab-case
-types/index.ts # Type exports barrel file
+src/types/\_ # TypeScript type definitions and interfaces
+src/types/[a-z-]+\.ts # Type files in kebab-case
+src/types/index.ts # Type exports barrel file
 
 # Schema Organization
 
-schemas/\_ # Zod schema definitions
-schemas/[a-z-]+\.ts # Schema files in kebab-case
-schemas/index.ts # Schema exports barrel file
+src/schemas/\_ # Zod schema definitions
+src/schemas/[a-z-]+\.ts # Schema files in kebab-case
+src/schemas/index.ts # Schema exports barrel file
 
 # Static Assets
 

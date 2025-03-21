@@ -24,7 +24,6 @@ export default function Settings() {
   return (
     <div>
       <h1 className="text-lg font-bold">Profile</h1>
-      <p className="text-sm">under development</p>
     </div>
   );
 }
