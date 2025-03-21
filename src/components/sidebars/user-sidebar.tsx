@@ -146,7 +146,7 @@ export default function UserSidebar() {
   }, [allowedRoutesByRole]);
 
   return (
-    <Sidebar variant={"sidebar"} className="w-[16rem]">
+    <Sidebar variant={"sidebar"} className="hidden md:block w-[16rem]">
       <SidebarHeader className="border-b border-sidebar-border pb-2">
         <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="h-10 w-10 rounded-lg">
@@ -258,12 +258,12 @@ export default function UserSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Feedback & Logs Section */}
+        {/* Feedback Section */}
         {groupedRoutes.feedback?.length > 0 && (
           <SidebarGroup>
             <div className="px-3 py-2">
               <h3 className="text-xs font-semibold text-muted-foreground">
-                Feedback & Logs
+                Feedback
               </h3>
             </div>
             <SidebarGroupContent>
@@ -289,7 +289,12 @@ export default function UserSidebar() {
 
         {/* Settings Section */}
         {groupedRoutes.settings?.length > 0 && (
-          <SidebarGroup className="mt-auto">
+          <SidebarGroup>
+            <div className="px-3 py-2">
+              <h3 className="text-xs font-semibold text-muted-foreground">
+                Settings
+              </h3>
+            </div>
             <SidebarGroupContent>
               <SidebarMenu>
                 {groupedRoutes.settings.map(([key, route]) => (
@@ -311,18 +316,22 @@ export default function UserSidebar() {
           </SidebarGroup>
         )}
       </SidebarContent>
-      <SidebarFooter className="mt-auto border-t border-sidebar-border pt-2">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={handleLogout}
-              className="text-red-400 hover:bg-white/5 transition-colors"
-            >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Log out</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarFooter>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleLogout}
+                  className="text-base-content/70"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
   );
