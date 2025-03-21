@@ -118,11 +118,21 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
 
   togglePersonnel: (personnelId, isChecked) => {
     const { selectedPersonnel } = get();
+
+    // Ensure the ID is a number
+    const idAsNumber =
+      typeof personnelId === "string" ? parseInt(personnelId, 10) : personnelId;
+
+    if (isNaN(idAsNumber)) {
+      console.error("Invalid personnel ID:", personnelId);
+      return;
+    }
+
     if (isChecked) {
-      set({ selectedPersonnel: [...selectedPersonnel, personnelId] });
+      set({ selectedPersonnel: [...selectedPersonnel, idAsNumber] });
     } else {
       set({
-        selectedPersonnel: selectedPersonnel.filter((id) => id !== personnelId),
+        selectedPersonnel: selectedPersonnel.filter((id) => id !== idAsNumber),
       });
     }
   },
@@ -194,10 +204,17 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
 
     try {
       set({ isAssessing: true });
+
+      // Make sure category_id is a valid number
+      const categoryId = parseInt(selectedCategory, 10);
+
+      if (isNaN(categoryId)) {
+        throw new Error("Invalid category ID");
+      }
+
       const response = await assessRequest(requestId, {
-        category_id: Number.parseInt(selectedCategory),
+        category_id: categoryId,
         personnel_ids: selectedPersonnel,
-        status: "In Progress",
       });
 
       if (response.isSuccess) {

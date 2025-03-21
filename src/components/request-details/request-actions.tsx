@@ -60,10 +60,20 @@ export function RequestActions({
       });
       onClose();
     } catch (error) {
+      console.error("Error assessing request:", error);
+
+      // Show a more specific error message if available
+      let errorMessage = "An error occurred while assigning the request";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+
       toast({
         title: "Error",
-        description:
-          error instanceof Error ? error.message : "An error occurred",
+        description: errorMessage,
         variant: "destructive",
       });
     }

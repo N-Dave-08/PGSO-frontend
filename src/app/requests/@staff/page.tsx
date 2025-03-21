@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request } from "@/types";
@@ -19,69 +19,74 @@ export default function Page() {
     total: 0,
   });
 
-  const fetchRequests = async (page = 1) => {
-    try {
-      if (page > 1) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
+  const fetchRequests = useCallback(
+    async (page = 1) => {
+      try {
+        if (page > 1) {
+          setLoadingMore(true);
+        } else {
+          setLoading(true);
+        }
+
+        const response = await getRequests(page);
+        const requestData = response.requests || [];
+
+        const formattedData = requestData.map((request: Request): Request => {
+          // console.log('Individual Request:', JSON.stringify(request, null, 2));
+          // console.log('Requested By:', request.requested_by);
+          // console.log("REQUESTERRRR", request.requested_by_name)
+
+          return {
+            id: request.id,
+            control_no: request.control_no,
+            request_title: request.request_title,
+            description: request.description,
+            file_path: request.file_path,
+            file_url: request.file_url,
+            file_completion: request.file_completion,
+            file_completion_url: request.file_completion_url,
+            category_id: request.category_id,
+            category_name: request.category_name,
+            personnel: request.personnel || [],
+            feedback: request.feedback,
+            rating: request.rating,
+            status: request.status,
+            date_requested: request.date_requested,
+            date_completed: request.date_completed,
+            requested_by: request.requested_by,
+            note: request.note || null,
+          };
+        });
+
+        // console.log("Formatted Data:", formattedData);
+        // If loading more, append to existing data, otherwise replace
+        if (page > 1) {
+          // Deduplicate by ID to avoid duplicate key errors
+          const existingIds = new Set(requests.map((r) => r.id));
+          const newRequests = formattedData.filter(
+            (r) => !existingIds.has(r.id)
+          );
+          setRequests((prev) => [...prev, ...newRequests]);
+        } else {
+          setRequests(formattedData);
+        }
+
+        setPagination(response.pagination);
+        setError(null);
+      } catch (error) {
+        console.error("Failed to fetch requests:", error);
+        setError("Failed to load requests. Please try again.");
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-
-      const response = await getRequests(page);
-      const requestData = response.requests || [];
-
-      const formattedData = requestData.map((request: Request): Request => {
-        // console.log('Individual Request:', JSON.stringify(request, null, 2));
-        // console.log('Requested By:', request.requested_by);
-        // console.log("REQUESTERRRR", request.requested_by_name)
-
-        return {
-          id: request.id,
-          control_no: request.control_no,
-          request_title: request.request_title,
-          description: request.description,
-          file_path: request.file_path,
-          file_url: request.file_url,
-          file_completion: request.file_completion,
-          file_completion_url: request.file_completion_url,
-          category_id: request.category_id,
-          category_name: request.category_name,
-          personnel: request.personnel || [],
-          feedback: request.feedback,
-          rating: request.rating,
-          status: request.status,
-          date_requested: request.date_requested,
-          date_completed: request.date_completed,
-          requested_by: request.requested_by,
-          note: request.note || null,
-        };
-      });
-
-      // console.log("Formatted Data:", formattedData);
-      // If loading more, append to existing data, otherwise replace
-      if (page > 1) {
-        // Deduplicate by ID to avoid duplicate key errors
-        const existingIds = new Set(requests.map((r) => r.id));
-        const newRequests = formattedData.filter((r) => !existingIds.has(r.id));
-        setRequests((prev) => [...prev, ...newRequests]);
-      } else {
-        setRequests(formattedData);
-      }
-
-      setPagination(response.pagination);
-      setError(null);
-    } catch (error) {
-      console.error("Failed to fetch requests:", error);
-      setError("Failed to load requests. Please try again.");
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
+    },
+    [requests]
+  );
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests]);
 
   const handleLoadMore = () => {
     if (!loadingMore && pagination.current_page < pagination.last_page) {

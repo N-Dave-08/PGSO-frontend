@@ -16,7 +16,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { routesData } from "@/helpers/routes";
 import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "@/types";
+import { LoginUser } from "@/types/auth";
 import Link from "next/link";
 import { secureStorage } from "@/lib/utils/encryption";
 
@@ -24,7 +24,7 @@ export default function UserSidebar() {
   const path = usePathname();
   const router = useRouter();
   const [role, setRole] = useState<string>("");
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<LoginUser | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -151,17 +151,23 @@ export default function UserSidebar() {
         <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="h-10 w-10 rounded-lg">
             <AvatarImage
-              src={user?.profile_img || ""}
-              alt={user?.first_name || "User"}
+              src={
+                user?.profile
+                  ? `${
+                      process.env.NEXT_PUBLIC_API_BASE_URL
+                    }/${user.profile.replace(/\\/g, "")}`
+                  : ""
+              }
+              alt={user?.name || "User"}
             />
             <AvatarFallback className="rounded-lg">
-              {user ? `${user.first_name[0]}${user.last_name[0]}` : "U"}
+              {user ? user.name[0] : "U"}
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="flex gap-1 truncate">
               <p className="font-semibold truncate">
-                {user ? user.first_name : "Loading..."}
+                {user ? user.name : "Loading..."}
               </p>
               <p className="opacity-50 font-light text-xs">({role})</p>
             </span>

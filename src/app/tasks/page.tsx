@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@/types";
+import { LoginUser } from "@/types/auth";
 
 export default function Settings() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<LoginUser | null>(null);
   const router = useRouter();
 
   useEffect(() => {

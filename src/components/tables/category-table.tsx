@@ -42,9 +42,20 @@ import { Category } from "@/types";
 
 interface CategoryTableProps {
   data: Category[];
+  pagination: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+  onPageChange: (page: number) => void;
 }
 
-export function CategoryTable({ data }: CategoryTableProps) {
+export function CategoryTable({
+  data,
+  pagination,
+  onPageChange,
+}: CategoryTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -76,7 +87,7 @@ export function CategoryTable({ data }: CategoryTableProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="space-y-4">
       <div className="flex items-center py-4">
         <Input
           placeholder="Search all columns..."
@@ -114,6 +125,7 @@ export function CategoryTable({ data }: CategoryTableProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
       <div className="rounded-md border border-white/10 shadow-lg">
         <Table>
           <TableHeader className="bg-base-300">
@@ -168,31 +180,36 @@ export function CategoryTable({ data }: CategoryTableProps) {
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPageChange(pagination.current_page - 1)}
+            disabled={pagination.current_page === 1}
           >
             Previous
           </Button>
+          <span className="text-sm">
+            Page {pagination.current_page} of {pagination.last_page}
+          </span>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPageChange(pagination.current_page + 1)}
+            disabled={pagination.current_page === pagination.last_page}
           >
             Next
           </Button>
         </div>
       </div>
-      <div className="flex items-center space-x-2 py-4">
+
+      <div className="flex items-center space-x-2">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}

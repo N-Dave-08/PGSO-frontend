@@ -1,10 +1,23 @@
+export interface LoginUser {
+  id: number;
+  email: string;
+  name: string;
+  profile: string;
+  age: string;
+  gender: string;
+  number: number;
+}
+
 export interface LoginResponse {
   isSuccess: boolean;
   user: {
     id: number;
     email: string;
     name: string;
-    profile_img: string | null;
+    profile: string | null;
+    age: string;
+    gender: string;
+    number: number;
   };
   token: string;
   sessionCode: string;

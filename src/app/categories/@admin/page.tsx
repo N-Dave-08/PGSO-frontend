@@ -2,32 +2,35 @@
 
 import React, { useEffect, useState } from "react";
 import { CategoryTable } from "@/components/tables/category-table";
-import { getCategories } from "@/lib/api/categories";
+import { getCategories, CategoriesResponse } from "@/lib/api/categories";
 import { getUsers } from "@/lib/api/users";
 import CreateCategory from "@/components/modals/create-category";
 import { User } from "@/types/users";
-import { Category } from "@/types";
+import { Category } from "@/types/categories";
+
+interface Pagination {
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
 
 export default function Page() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<Pagination>({
+    total: 0,
+    per_page: 10,
+    current_page: 1,
+    last_page: 1,
+  });
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (page: number = 1) => {
     try {
-      const response = await getCategories();
-      const categoriesData = response.categories || [];
-      const formattedData = categoriesData.map(
-        (category: Category): Category => ({
-          id: category.id,
-          category_name: category.category_name,
-          description: category.description || "No description",
-          personnel: category.personnel,
-        })
-      );
-
-      // console.log("Formatted data:", formattedData);
-      setCategories(formattedData);
+      const response = await getCategories(page);
+      setCategories(response.categories);
+      setPagination(response.pagination);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     } finally {
@@ -38,8 +41,7 @@ export default function Page() {
   const fetchUsers = async () => {
     try {
       const response = await getUsers();
-      const usersData = response.user || [];
-      setUsers(usersData);
+      setUsers(response.user || []);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -54,10 +56,12 @@ export default function Page() {
     fetchCategories();
   };
 
+  const handlePageChange = (page: number) => {
+    fetchCategories(page);
+  };
+
   const formattedPersonnel = users
-    .filter((user) => {
-      return user.role_name === "personnel";
-    })
+    .filter((user) => user.role_name === "personnel")
     .map((user) => ({
       id: user.id,
       first_name: user.first_name,
@@ -76,7 +80,11 @@ export default function Page() {
           personnel={formattedPersonnel}
         />
       </div>
-      <CategoryTable data={categories} />
+      <CategoryTable
+        data={categories}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

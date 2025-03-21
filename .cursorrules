@@ -9,7 +9,7 @@ _-_ # Kebab-case for files and directories
 
 # Component Organization
 
-components/ui/_ # shadcn UI components location
+components/ui/\_ # shadcn UI components location
 app/page.tsx # Home page
 app/layout.tsx # Root layout
 app/globals.css # Global styles
@@ -30,6 +30,17 @@ app/_/loading.tsx # Loading states
 
 app/\([a-z-]+\)/\* # Route groups in parentheses
 
+# Type Organization
+
+types/\_ # TypeScript type definitions and interfaces
+types/[a-z-]+\.ts # Type files in kebab-case
+types/index.ts # Type exports barrel file
+
+# Schema Organization
+
+schemas/\_ # Zod schema definitions
+schemas/[a-z-]+\.ts # Schema files in kebab-case
+schemas/index.ts # Schema exports barrel file
 
 # Static Assets
 

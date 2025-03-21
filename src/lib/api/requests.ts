@@ -4,23 +4,27 @@ import {
   CreateRequestResponse,
   AssessRequestData,
   RequestStatusResponse,
-  RequestsResponse
+  RequestsResponse,
 } from "@/types";
+import { secureStorage } from "@/lib/utils/encryption";
 
 /**
  * Fetches the list of requests
  */
-export const getRequests = async (page?: number, perPage?: number): Promise<RequestsResponse> => {
+export const getRequests = async (
+  page?: number,
+  perPage?: number
+): Promise<RequestsResponse> => {
   try {
     const headers = await getAuthHeaders();
     const params: Record<string, any> = {};
-    
+
     if (page) params.page = page;
     if (perPage) params.per_page = perPage;
 
-    const response = await api.get("/request/list", { 
+    const response = await api.get("/request/list", {
       headers,
-      params 
+      params,
     });
 
     // Return data with defaults if empty
@@ -30,10 +34,10 @@ export const getRequests = async (page?: number, perPage?: number): Promise<Requ
         total: response.data?.total || 0,
         per_page: perPage || 10,
         current_page: page || 1,
-        last_page: Math.ceil((response.data?.total || 0) / (perPage || 10))
+        last_page: Math.ceil((response.data?.total || 0) / (perPage || 10)),
       },
       isSuccess: response.data?.isSuccess,
-      message: response.data?.message
+      message: response.data?.message,
     };
   } catch (error) {
     throw handleApiError(error);
@@ -81,17 +85,16 @@ export const updateRequestStatus = async (
   note?: string
 ): Promise<RequestStatusResponse> => {
   try {
-    const endpoint = status === "Approved" 
-      ? `/request/accept/${requestId}` 
-      : `/request/reject/${requestId}`;
-    
+    const endpoint =
+      status === "Approved"
+        ? `/request/accept/${requestId}`
+        : `/request/reject/${requestId}`;
+
     const payload = status === "Rejected" ? { note } : {};
 
-    const response = await api.post(
-      endpoint,
-      payload,
-      { headers: await getAuthHeaders() }
-    );
+    const response = await api.post(endpoint, payload, {
+      headers: await getAuthHeaders(),
+    });
 
     return response.data;
   } catch (error) {
@@ -107,13 +110,36 @@ export const assessRequest = async (
   data: AssessRequestData
 ): Promise<{ isSuccess: boolean; message: string }> => {
   try {
-    const response = await api.post(`/request/assess/${requestId}`, data, {
-      headers: await getAuthHeaders(),
-    });
-    
+    if (!requestId || isNaN(Number(requestId))) {
+      throw new Error("Invalid request ID");
+    }
+
+    // Ensure data has the correct types
+    const formattedData = {
+      category_id: Number(data.category_id),
+      personnel_ids: data.personnel_ids.map((id) => Number(id)),
+      status: data.status,
+      remarks: data.remarks,
+    };
+
+    const response = await api.post(
+      `/request/assess/${requestId}`,
+      formattedData,
+      {
+        headers: {
+          Authorization: `Bearer ${await secureStorage.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.data) {
+      throw new Error("No response data received from server");
+    }
+
     return {
-      isSuccess: true,
-      message: response.data.message,
+      isSuccess: response.data.isSuccess || true,
+      message: response.data.message || "Request assessed successfully",
     };
   } catch (error) {
     throw handleApiError(error);

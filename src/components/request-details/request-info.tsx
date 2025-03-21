@@ -98,7 +98,14 @@ export function RequestInfo({ request }: RequestInfoProps) {
                       id={`person-${person.id}`}
                       checked={selectedPersonnel.includes(person.id)}
                       onCheckedChange={(checked) => {
-                        togglePersonnel(person.id, checked === true);
+                        if (typeof person.id === "number") {
+                          togglePersonnel(person.id, checked === true);
+                        } else {
+                          const personId = parseInt(String(person.id), 10);
+                          if (!isNaN(personId)) {
+                            togglePersonnel(personId, checked === true);
+                          }
+                        }
                       }}
                     />
                     <label
