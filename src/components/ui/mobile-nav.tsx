@@ -160,9 +160,11 @@ const MobileNav = () => {
                           }/${user.profile.replace(/\\/g, "")}`
                         : ""
                     }
-                    alt={user?.name || "User"}
+                    alt={user?.first_name + " " + user?.last_name || "User"}
                   />
-                  <AvatarFallback>{user ? user.name[0] : "U"}</AvatarFallback>
+                  <AvatarFallback>
+                    {user ? user.first_name[0] + user.last_name[0] : "U"}
+                  </AvatarFallback>
                 </Avatar>
               </Link>
             </TooltipTrigger>

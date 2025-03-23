@@ -1,7 +1,8 @@
 export interface LoginUser {
   id: number;
   email: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   profile: string;
   age: string;
   gender: string;
@@ -13,8 +14,9 @@ export interface LoginResponse {
   user: {
     id: number;
     email: string;
-    name: string;
-    profile: string | null;
+    first_name: string;
+    last_name: string;
+    avatar: string | null;
     age: string;
     gender: string;
     number: number;

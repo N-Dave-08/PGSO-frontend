@@ -39,8 +39,9 @@ const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
   return {
     id: userData.id,
     email: userData.email,
-    name: userData.name,
-    profile: userData.profile || "",
+    first_name: userData.first_name,
+    last_name: userData.last_name,
+    profile: userData.avatar || "",
     age: userData.age || "",
     gender: userData.gender || "",
     number: userData.number || 0,
@@ -124,7 +125,7 @@ export default function LoginForm() {
       }
 
       // Validate user object
-      if (!user.id || !user.email || !user.name) {
+      if (!user.id || !user.email || !user.first_name || !user.last_name) {
         throw new Error("Invalid user data received");
       }
 

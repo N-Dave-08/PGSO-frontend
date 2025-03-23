@@ -158,16 +158,16 @@ export default function UserSidebar() {
                     }/${user.profile.replace(/\\/g, "")}`
                   : ""
               }
-              alt={user?.name || "User"}
+              alt={user?.first_name + " " + user?.last_name || "User"}
             />
             <AvatarFallback className="rounded-lg">
-              {user ? user.name[0] : "U"}
+              {user ? user.first_name[0] + user.last_name[0] : "U"}
             </AvatarFallback>
           </Avatar>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="flex gap-1 truncate">
               <p className="font-semibold truncate">
-                {user ? user.name : "Loading..."}
+                {user ? user.first_name + " " + user.last_name : "Loading..."}
               </p>
               <p className="opacity-50 font-light text-xs">({role})</p>
             </span>
