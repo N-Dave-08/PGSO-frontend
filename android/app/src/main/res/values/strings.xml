@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PGSO App</string>
+    <string name="title_activity_main">PGSO App</string>
+    <string name="package_name">com.pgso.app</string>
+    <string name="custom_url_scheme">com.pgso.app</string>
+</resources>
