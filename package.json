@@ -8,14 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export",
-    "cap:build": "next build && npx cap sync",
-    "cap:sync": "npx cap sync",
-    "cap:open:android": "npx cap open android",
-    "cap:run:android": "npx cap run android",
-    "cap:dev": "node scripts/use-dev-config.js && npm run dev",
-    "cap:prod": "node scripts/use-prod-config.js && npm run cap:build",
-    "cap:fix-permissions": "node scripts/fix-android-permissions.js"
+    "export": "next export"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.3",
