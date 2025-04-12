@@ -76,7 +76,7 @@ export function DivisionTable({ data }: DivisionTableProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between pb-4">
         <Input
           placeholder="Search all columns..."
           value={globalFilter ?? ""}
@@ -192,7 +192,7 @@ export function DivisionTable({ data }: DivisionTableProps) {
           </Button>
         </div>
       </div>
-      <div className="flex items-center space-x-2 py-4">
+      {/* <div className="flex items-center space-x-2 py-4">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}
@@ -211,7 +211,7 @@ export function DivisionTable({ data }: DivisionTableProps) {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
     </div>
   );
 }

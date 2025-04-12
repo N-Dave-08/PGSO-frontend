@@ -95,7 +95,7 @@ export function UserTable({ data, pagination, onPageChange }: UserTableProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center pb-4">
         <Input
           placeholder="Search all columns..."
           value={globalFilter ?? ""}
@@ -215,7 +215,7 @@ export function UserTable({ data, pagination, onPageChange }: UserTableProps) {
           </Button>
         </div>
       </div>
-      <div className="flex items-center space-x-2 py-4">
+      {/* <div className="flex items-center space-x-2 py-4">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}
@@ -234,7 +234,7 @@ export function UserTable({ data, pagination, onPageChange }: UserTableProps) {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
     </div>
   );
 }

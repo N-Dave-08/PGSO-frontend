@@ -88,7 +88,7 @@ export function CategoryTable({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center pb-4">
         <Input
           placeholder="Search all columns..."
           value={globalFilter ?? ""}
@@ -210,7 +210,7 @@ export function CategoryTable({
         </div>
       </div>
 
-      <div className="flex items-center space-x-2">
+      {/* <div className="flex items-center space-x-2">
         <p className="text-sm font-medium">Rows per page</p>
         <Select
           value={`${table.getState().pagination.pageSize}`}
@@ -229,7 +229,7 @@ export function CategoryTable({
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
     </div>
   );
 }

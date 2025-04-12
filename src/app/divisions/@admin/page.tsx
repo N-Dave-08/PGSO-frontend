@@ -44,8 +44,7 @@ export default function Page() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">Divisions</h1>
+      <div className="mb-4">
         <CreateDivision onDivisionCreated={fetchDivisions} />
       </div>
       <DivisionTable data={divisions} />

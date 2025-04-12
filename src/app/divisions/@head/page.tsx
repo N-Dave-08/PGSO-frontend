@@ -22,7 +22,7 @@ export default function Page() {
           office_location: division.office_location,
           staff: division.staff || [],
           department_id: division.department_id,
-          created_at: division.created_at || new Date().toISOString(),
+          created_at: division.created_at,
         })
       );
 
@@ -44,8 +44,7 @@ export default function Page() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">Divisions</h1>
+      <div className="mb-4">
         <CreateDivision onDivisionCreated={fetchDivisions} />
       </div>
       <DivisionTable data={divisions} />

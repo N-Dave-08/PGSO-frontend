@@ -36,9 +36,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       >
         <div className="flex w-full">
           {isAuthenticated && <UserSidebar />}
-          <main
-            className={`w-full ${isAuthenticated ? "p-6 pb-20 md:pb-6" : ""}`}
-          >
+          <main className={`w-full ${isAuthenticated ? "p-6" : ""}`}>
             {children}
           </main>
         </div>

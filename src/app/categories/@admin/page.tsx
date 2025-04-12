@@ -75,10 +75,12 @@ export default function Page() {
 
   return (
     <div>
-      <CreateCategory
-        onCategoryCreated={handleCategoryCreated}
-        personnel={formattedPersonnel}
-      />
+      <div className="mb-4">
+        <CreateCategory
+          onCategoryCreated={handleCategoryCreated}
+          personnel={formattedPersonnel}
+        />
+      </div>
       <CategoryTable
         data={categories}
         pagination={pagination}
