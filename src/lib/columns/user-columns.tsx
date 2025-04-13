@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Trash, PenSquare } from "lucide-react";
+import { ArrowUpDown, Trash, PenSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,17 +11,7 @@ import {
 } from "@/components/ui/context-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  division: string;
-  status: string;
-  profile_img: string | null;
-}
+import { User } from "@/types/users";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -59,39 +49,43 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => <div>{row.getValue("id")}</div>,
   },
   {
-    accessorKey: "profile",
+    accessorKey: "avatar",
     header: "Profile",
     cell: ({ row }) => {
-      const profile_img = row.original.profile_img;
-      const name = row.original.name;
-      const initials = name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase();
-
+      const initials = row.original.first_name[0].toUpperCase();
+      const avatarUrl = (row.getValue("avatar") as string)?.replace(
+        "/storage/",
+        "/"
+      );
       return (
         <Avatar>
-          <AvatarImage src={profile_img || ""} alt={name} />
+          {avatarUrl && (
+            <AvatarImage src={avatarUrl} alt={row.original.first_name} />
+          )}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       );
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "full name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Name
+          Ful Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      const name = row.original.first_name + " " + row.original.last_name;
+      return <div className="capitalize">{name}</div>;
     },
   },
   {
@@ -110,6 +104,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
+    accessorFn: (row) => row.role_name,
     header: ({ column }) => {
       return (
         <Button
@@ -141,7 +136,26 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
+    accessorKey: "age",
+    header: "Age",
+    cell: ({ row }) => <div>{row.getValue("age") || "N/A"}</div>,
+  },
+  {
+    accessorKey: "gender",
+    header: "Gender",
+    cell: ({ row }) => {
+      const gender = row.getValue("gender") as string;
+      return <div className="capitalize">{gender || "N/A"}</div>;
+    },
+  },
+  {
+    accessorKey: "number",
+    header: "Number",
+    cell: ({ row }) => <div>{row.getValue("number")}</div>,
+  },
+  {
     accessorKey: "department",
+    accessorFn: (row) => row.department_name,
     header: ({ column }) => {
       return (
         <Button
@@ -160,6 +174,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "division",
+    accessorFn: (row) => row.division_name,
     header: ({ column }) => {
       return (
         <Button

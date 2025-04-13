@@ -30,26 +30,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import { columns, RowContextMenu } from "@/lib/columns/user-columns";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  division: string;
-  status: string;
-  profile_img: string | null;
-}
+import { User } from "@/types/users";
 
 interface UserTableProps {
   data: User[];

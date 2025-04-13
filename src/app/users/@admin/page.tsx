@@ -6,17 +6,6 @@ import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
-interface TableUser {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  division: string;
-  status: string;
-  profile_img: string | null;
-}
-
 interface Pagination {
   total: number;
   per_page: number;
@@ -25,7 +14,7 @@ interface Pagination {
 }
 
 export default function Page() {
-  const [users, setUsers] = useState<TableUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
@@ -38,16 +27,23 @@ export default function Page() {
     try {
       const response = await getUsers(page);
       const usersData = response.user || [];
-      const formattedData = usersData.map((user: User): TableUser => {
+      const formattedData = usersData.map((user: User): User => {
         return {
           id: user.id,
-          name: `${user.first_name} ${user.last_name}`,
+          first_name: user.first_name,
+          last_name: user.last_name,
           email: user.email,
-          role: user.role_name,
-          department: user.department_name || "N/A",
-          division: user.division_name || "N/A",
-          status: user.is_archived === "0" ? "Active" : "Archived",
-          profile_img: user.profile_img,
+          avatar: user.avatar,
+          role_name: user.role_name,
+          department_name: user.department_name || "N/A",
+          division_name: user.division_name || "N/A",
+          department_id: user.department_id,
+          division_id: user.division_id,
+          age: user.age,
+          gender: user.gender,
+          number: user.number,
+          is_archived: user.is_archived === "0" ? "Active" : "Archived",
+          status: user.status,
         };
       });
       setUsers(formattedData);

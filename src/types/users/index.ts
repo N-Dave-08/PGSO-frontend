@@ -8,9 +8,10 @@ export interface User {
   department_name: string;
   division_id: number;
   division_name: string;
-  profile_img: string | null;
+  avatar: string | null;
   is_archived: string;
   age: string;
   gender: string;
   number: number;
+  status: string;
 }
