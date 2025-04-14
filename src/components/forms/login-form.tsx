@@ -12,7 +12,7 @@ import api, { handleApiError } from "@/lib/api/axios";
 import { useAuth } from "@/hooks/use-auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { z } from "zod";
-
+import { UserRole } from "@/lib/auth/roles";
 // Constants for validation and rate limiting
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
@@ -133,7 +133,7 @@ export default function LoginForm() {
       const sanitizedUser = sanitizeUserData(user, role);
 
       // Use the auth hook for login
-      await login(token, sanitizedUser, sessionCode, role);
+      await login(token, sanitizedUser, sessionCode, role as UserRole);
 
       // Clear sensitive form data
       setFormData({ email: "", password: "" });
