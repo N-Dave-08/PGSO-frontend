@@ -3,12 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FeaturesSection } from "@/components/sections/features-section";
-import { SwirlBackground } from "@/components/backgrounds/swirl-bg";
 import Navbar from "@/components/navbars/navbar";
 import Hero from "@/components/sections/hero";
 import Footer from "@/components/sections/footer";
 import { secureStorage } from "@/lib/utils/encryption";
-
+import DiagonalPatternBg from "@/components/backgrounds/diagonal-pattern-bg";
 export default function Home() {
   const router = useRouter();
 
@@ -29,7 +28,9 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SwirlBackground particleCount={700} baseHue={10} rangeHue={30} />
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <DiagonalPatternBg />
+      </div>
 
       {/* Header */}
       <Navbar />

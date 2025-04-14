@@ -23,11 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className="bg-base-100 text-base-content"
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           httpEquiv="Content-Security-Policy"
