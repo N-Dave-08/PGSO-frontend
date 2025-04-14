@@ -15,3 +15,13 @@ export interface User {
   number: number;
   status: string;
 }
+
+export interface UsersResponse {
+  user: User[];
+  pagination: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+}

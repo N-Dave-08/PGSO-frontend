@@ -1,17 +1,7 @@
 import api from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
-import { User } from "@/types/users";
-
-export interface UsersResponse {
-  user: User[];
-  pagination: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
-  };
-}
+import { User, UsersResponse } from "@/types/users";
 
 export const getUsers = async (page: number = 1): Promise<UsersResponse> => {
   try {

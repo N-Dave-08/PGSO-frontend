@@ -1,6 +1,6 @@
 import { useProtectedRoute } from "@/hooks/use-protected-route";
 import type { UserRole } from "@/lib/auth/roles";
-
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 interface WithAuthProps {
   allowedRoles?: UserRole[];
 }
@@ -13,11 +13,7 @@ export function withAuth<P extends object>(
     const { isLoading, user } = useProtectedRoute(allowedRoles);
 
     if (isLoading) {
-      return (
-        <div className="h-screen flex items-center justify-center">
-          Loading...
-        </div>
-      );
+      return <></>;
     }
 
     if (!user) {

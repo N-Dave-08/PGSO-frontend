@@ -1,17 +1,6 @@
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
-
-export interface CreateDivisionRequest {
-  division_name: string;
-  office_location: string;
-  staff: Array<{
-    id: number;
-    name: string;
-    position: string;
-  }>;
-  category_id: number;
-  department_id: number;
-}
+import { CreateDivisionRequest } from "@/types/divisions";
 
 export const createDivision = async (data: CreateDivisionRequest) => {
   try {

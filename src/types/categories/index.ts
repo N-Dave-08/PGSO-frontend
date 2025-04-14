@@ -25,3 +25,15 @@ export interface CreateCategoryResponse {
   message: string;
   category: Category;
 }
+
+export interface CategoriesResponse {
+  isSuccess: boolean;
+  message: string;
+  categories: Category[];
+  pagination: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+}

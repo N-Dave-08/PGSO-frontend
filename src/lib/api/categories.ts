@@ -1,44 +1,11 @@
 import api, { getAuthHeaders, handleApiError } from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
+import {
+  CreateCategoryData,
+  CreateCategoryResponse,
+  CategoriesResponse,
+} from "@/types/categories";
 import axios from "axios";
-
-export interface CategoryPersonnel {
-  id: number;
-  first_name: string;
-  last_name: string;
-}
-
-export interface Category {
-  id: number;
-  category_name: string;
-  description: string;
-  personnel: CategoryPersonnel[];
-}
-
-export interface CreateCategoryData {
-  category_name: string;
-  description: string;
-  personnel_ids: number[];
-}
-
-export interface CreateCategoryResponse {
-  isSuccess: boolean;
-  message: string;
-  category: Category;
-}
-
-export interface CategoriesResponse {
-  isSuccess: boolean;
-  message: string;
-  categories: Category[];
-  pagination: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
-  };
-}
-
 /**
  * Creates a new category
  */
