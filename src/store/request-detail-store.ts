@@ -3,12 +3,7 @@ import { Request, RequestStatusResponse } from "@/types";
 import { updateRequestStatus, assessRequest } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
-
-interface Category {
-  id: number;
-  category_name: string;
-  personnel: Array<{ id: number; name: string }>;
-}
+import { Category } from "@/types/categories";
 
 interface RequestDetailState {
   request: Request | null;

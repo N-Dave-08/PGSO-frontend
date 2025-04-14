@@ -1,6 +1,5 @@
 import { useProtectedRoute } from "@/hooks/use-protected-route";
 import type { UserRole } from "@/lib/auth/roles";
-import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 interface WithAuthProps {
   allowedRoles?: UserRole[];
 }
