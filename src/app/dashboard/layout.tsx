@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { secureStorage } from "@/lib/utils/encryption";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,13 +28,24 @@ export default function Layout({
   const router = useRouter();
 
   useEffect(() => {
-    setRole(localStorage.getItem("role"));
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+    const initializeUser = async () => {
+      try {
+        const storedRole = await secureStorage.get("role");
+        const storedUser = await secureStorage.get("user");
+
+        setRole(storedRole);
+        if (storedUser) {
+          setUser(storedUser);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error retrieving user data:", error);
+        router.push("/");
+      }
+    };
+
+    initializeUser();
   }, [router]);
 
   if (!user) {

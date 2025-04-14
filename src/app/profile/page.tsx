@@ -2,19 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@/types";
+import { LoginUser } from "@/types/auth";
+import { secureStorage } from "@/lib/utils/encryption";
 
-export default function Settings() {
-  const [user, setUser] = useState<User | null>(null);
+export default function Profile() {
+  const [user, setUser] = useState<LoginUser | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+    const initializeData = async () => {
+      try {
+        const storedUser = await secureStorage.get("user");
+        if (storedUser) {
+          setUser(storedUser);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error retrieving user data:", error);
+        router.push("/");
+      }
+    };
+
+    initializeData();
   }, [router]);
 
   if (!user) {

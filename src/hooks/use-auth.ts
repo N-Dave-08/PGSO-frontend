@@ -28,7 +28,7 @@ export function useAuth() {
       await secureStorage.set("token", token);
       await secureStorage.set("user", userData);
       await secureStorage.set("sessionCode", sessionCode);
-      localStorage.setItem("role", role);
+      await secureStorage.set("role", role);
 
       setIsAuthenticated(true);
       setUser(userData);
@@ -37,6 +37,7 @@ export function useAuth() {
       await secureStorage.get("token");
     } catch (error) {
       console.error("Error in login function:", error);
+      throw error;
     }
   };
 
@@ -44,7 +45,7 @@ export function useAuth() {
     await secureStorage.remove("token");
     await secureStorage.remove("user");
     await secureStorage.remove("sessionCode");
-    localStorage.removeItem("role");
+    await secureStorage.remove("role");
     setIsAuthenticated(false);
     setUser(null);
     window.dispatchEvent(new Event("authChange"));

@@ -2,11 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-interface UserType {
-  id: number;
-  email: string;
-}
+import { secureStorage } from "@/lib/utils/encryption";
+import { LoginUser } from "@/types/auth";
 
 export default function Layout({
   children,
@@ -21,18 +18,29 @@ export default function Layout({
   personnel?: React.ReactNode;
   staff?: React.ReactNode;
 }) {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<LoginUser | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    setRole(localStorage.getItem("role"));
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+    const initializeData = async () => {
+      try {
+        const storedUser = await secureStorage.get("user");
+        const storedRole = await secureStorage.get("role");
+
+        if (storedUser && storedRole) {
+          setUser(storedUser);
+          setRole(storedRole);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error retrieving user data:", error);
+        router.push("/");
+      }
+    };
+
+    initializeData();
   }, [router]);
 
   if (!user) {

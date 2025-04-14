@@ -29,14 +29,12 @@ export default function UserSidebar() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Get role from localStorage for compatibility
-        const role = localStorage.getItem("role");
-        setRole(role || "");
-
-        // Get user data from secure storage
+        const storedRole = await secureStorage.get("role");
         const userData = await secureStorage.get("user");
-        if (userData) {
+
+        if (userData && storedRole) {
           setUser(userData);
+          setRole(storedRole);
         } else {
           router.push("/");
         }
@@ -50,14 +48,18 @@ export default function UserSidebar() {
   }, [router]);
 
   const handleLogout = async () => {
-    // Use the secureStorage to remove items
-    await secureStorage.remove("token");
-    await secureStorage.remove("user");
-    await secureStorage.remove("sessionCode");
-    localStorage.removeItem("role");
+    try {
+      await secureStorage.remove("token");
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
 
-    window.dispatchEvent(new Event("authChange"));
-    router.push("/");
+      window.dispatchEvent(new Event("authChange"));
+      router.push("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      router.push("/");
+    }
   };
 
   // Define route categories

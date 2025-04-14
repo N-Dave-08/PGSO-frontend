@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -10,13 +11,24 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    setRole(localStorage.getItem("role"));
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      router.push("/");
-    }
+    const initializeDashboard = async () => {
+      try {
+        const storedUser = await secureStorage.get("user");
+        const storedRole = await secureStorage.get("role");
+
+        if (storedUser && storedRole) {
+          setUser(storedUser);
+          setRole(storedRole);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error retrieving dashboard data:", error);
+        router.push("/");
+      }
+    };
+
+    initializeDashboard();
   }, [router]);
 
   if (!user) {

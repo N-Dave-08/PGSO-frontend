@@ -74,29 +74,31 @@ export async function decryptData(encryptedString: string): Promise<string> {
 export const secureStorage = {
   async set(key: string, value: unknown) {
     try {
-      // Ensure we're storing valid JSON
+      // Convert value to string and encrypt it
       const jsonString = JSON.stringify(value);
-      localStorage.setItem(key, jsonString);
+      const encryptedData = await encryptData(jsonString);
+      localStorage.setItem(key, encryptedData);
     } catch (error) {
-      console.error("Failed to store data:", error);
+      console.error("Failed to store encrypted data:", error);
+      throw error;
     }
   },
   async get(key: string) {
     try {
-      const value = localStorage.getItem(key);
-      if (!value) return null;
+      const encryptedValue = localStorage.getItem(key);
+      if (!encryptedValue) return null;
 
-      // Try to parse, if it fails return null
+      // Decrypt and parse the data
+      const decryptedString = await decryptData(encryptedValue);
       try {
-        return JSON.parse(value);
+        return JSON.parse(decryptedString);
       } catch (parseError) {
         console.error("Failed to parse stored data:", parseError);
-        // If data is corrupted, remove it
         localStorage.removeItem(key);
         return null;
       }
     } catch (error) {
-      console.error("Failed to retrieve data:", error);
+      console.error("Failed to retrieve encrypted data:", error);
       return null;
     }
   },
