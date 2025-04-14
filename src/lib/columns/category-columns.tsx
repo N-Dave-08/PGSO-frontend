@@ -52,7 +52,7 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "description",
-    header: "Desription",
+    header: "Description",
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("description")}</div>
     ),
@@ -62,13 +62,7 @@ export const columns: ColumnDef<Category>[] = [
     header: "Personnel",
     cell: ({ row }) => {
       const personnel = row.getValue("personnel") as Category["personnel"];
-      return (
-        <div>
-          {personnel
-            .map((person) => `${person.first_name} ${person.last_name}`)
-            .join(", ")}
-        </div>
-      );
+      return <div>{personnel.map((person) => person.name).join(", ")}</div>;
     },
   },
 ];

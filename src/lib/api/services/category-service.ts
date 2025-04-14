@@ -32,7 +32,7 @@ export class CategoryService extends ApiService {
   async createCategory(
     data: CreateCategoryData
   ): Promise<CreateCategoryResponse> {
-    return this.post<CreateCategoryResponse>("admin/category/create", data);
+    return this.post<CreateCategoryResponse>("category/create", data);
   }
 
   /**

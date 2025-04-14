@@ -21,7 +21,8 @@ export const getDepartments = async () => {
         await secureStorage.remove("token");
         await secureStorage.remove("user");
         await secureStorage.remove("sessionCode");
-        localStorage.removeItem("role");
+        await secureStorage.remove("role");
+        window.dispatchEvent(new Event("authChange"));
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }

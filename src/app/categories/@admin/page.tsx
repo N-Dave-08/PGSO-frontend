@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { CategoryTable } from "@/components/tables/category-table";
-import { getCategories, CategoriesResponse } from "@/lib/api/categories";
+import { getCategories } from "@/lib/api/categories";
 import { getUsers } from "@/lib/api/users";
 import CreateCategory from "@/components/modals/create-category";
 import { User } from "@/types/users";

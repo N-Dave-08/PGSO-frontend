@@ -1,6 +1,8 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -55,23 +57,27 @@ const NavLink = ({ item, isActive }: { item: NavItem; isActive: boolean }) => {
   );
 };
 
-const MobileNav = () => {
+export function MobileNav() {
   const pathname = usePathname();
-  const [role, setRole] = React.useState<string>("");
   const [user, setUser] = React.useState<LoginUser | null>(null);
+  const [role, setRole] = React.useState<string>("");
+  const router = useRouter();
 
   React.useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setRole(localStorage.getItem("role") || "");
+        const storedRole = await secureStorage.get("role");
         const userData = await secureStorage.get("user");
-        if (userData) {
+
+        if (userData && storedRole) {
           setUser(userData);
+          setRole(storedRole);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
+
     fetchUserData();
   }, []);
 
@@ -189,6 +195,6 @@ const MobileNav = () => {
       <div className="pb-16 pt-16 md:pb-0 md:pt-0" />
     </TooltipProvider>
   );
-};
+}
 
 export default MobileNav;

@@ -1,28 +1,28 @@
 import { useState, useEffect } from "react";
 import { secureStorage } from "@/lib/utils/encryption";
 import { LoginUser } from "@/types/auth";
+import { UserRole } from "@/lib/auth/roles";
 
-interface AuthContextType {
+export interface AuthState {
   isAuthenticated: boolean;
-  login: (
-    token: string,
-    userData: LoginUser,
-    sessionCode: string,
-    role: string
-  ) => Promise<void>;
-  logout: () => Promise<void>;
   user: LoginUser | null;
+  role: UserRole | null;
+  isLoading: boolean;
 }
 
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [user, setUser] = useState<LoginUser | null>(null);
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    user: null,
+    role: null,
+    isLoading: true,
+  });
 
   const login = async (
     token: string,
     userData: LoginUser,
     sessionCode: string,
-    role: string
+    role: UserRole
   ) => {
     try {
       await secureStorage.set("token", token);
@@ -30,11 +30,14 @@ export function useAuth() {
       await secureStorage.set("sessionCode", sessionCode);
       await secureStorage.set("role", role);
 
-      setIsAuthenticated(true);
-      setUser(userData);
-      window.dispatchEvent(new Event("authChange"));
+      setAuthState({
+        isAuthenticated: true,
+        user: userData,
+        role: role,
+        isLoading: false,
+      });
 
-      await secureStorage.get("token");
+      window.dispatchEvent(new Event("authChange"));
     } catch (error) {
       console.error("Error in login function:", error);
       throw error;
@@ -42,27 +45,49 @@ export function useAuth() {
   };
 
   const logout = async () => {
-    await secureStorage.remove("token");
-    await secureStorage.remove("user");
-    await secureStorage.remove("sessionCode");
-    await secureStorage.remove("role");
-    setIsAuthenticated(false);
-    setUser(null);
-    window.dispatchEvent(new Event("authChange"));
+    try {
+      await secureStorage.remove("token");
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
+
+      setAuthState({
+        isAuthenticated: false,
+        user: null,
+        role: null,
+        isLoading: false,
+      });
+
+      window.dispatchEvent(new Event("authChange"));
+    } catch (error) {
+      console.error("Error in logout function:", error);
+      throw error;
+    }
   };
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = await secureStorage.get("token");
-        const userData = await secureStorage.get("user");
+        const [token, userData, role] = await Promise.all([
+          secureStorage.get("token"),
+          secureStorage.get("user"),
+          secureStorage.get("role"),
+        ]);
 
-        setIsAuthenticated(!!token);
-        setUser(userData);
+        setAuthState({
+          isAuthenticated: !!token,
+          user: userData,
+          role: role,
+          isLoading: false,
+        });
       } catch (error) {
         console.error("Error checking authentication:", error);
-        setIsAuthenticated(false);
-        setUser(null);
+        setAuthState({
+          isAuthenticated: false,
+          user: null,
+          role: null,
+          isLoading: false,
+        });
       }
     };
 
@@ -82,8 +107,7 @@ export function useAuth() {
   }, []);
 
   return {
-    isAuthenticated,
-    user,
+    ...authState,
     login,
     logout,
   };

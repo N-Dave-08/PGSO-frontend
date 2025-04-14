@@ -1,31 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { User } from "@/types";
+import { withAuth } from "@/components/hoc/with-auth";
 
-export default function Divisions() {
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const userRole = localStorage.getItem("role");
-
-    if (!storedUser) {
-      router.push("/");
-      return;
-    }
-
-    if (userRole !== "admin" && userRole !== "head") {
-      router.back();
-      return;
-    }
-
-    setUser(JSON.parse(storedUser));
-  }, [router]);
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+function Divisions() {
+  return <></>;
 }
+
+export default withAuth(Divisions, { allowedRoles: ["admin", "head"] });

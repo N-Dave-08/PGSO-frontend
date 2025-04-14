@@ -10,8 +10,7 @@ export interface Category {
   description: string;
   personnel: {
     id: number;
-    first_name: string;
-    last_name: string;
+    name: string;
   }[];
 }
 

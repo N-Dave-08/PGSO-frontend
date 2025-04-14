@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { secureStorage } from "@/lib/utils/encryption";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAccess } from "@/lib/auth/roles";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,10 +9,6 @@ interface LayoutProps {
   head: React.ReactNode;
   personnel: React.ReactNode;
   staff: React.ReactNode;
-}
-interface UserType {
-  id: number;
-  email: string;
 }
 
 export default function Layout({
@@ -23,63 +18,20 @@ export default function Layout({
   personnel,
   staff,
 }: LayoutProps) {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    const initializeUser = async () => {
-      try {
-        const storedRole = await secureStorage.get("role");
-        const storedUser = await secureStorage.get("user");
-
-        setRole(storedRole);
-        if (storedUser) {
-          setUser(storedUser);
-        } else {
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        router.push("/");
-      }
-    };
-
-    initializeUser();
-  }, [router]);
-
-  if (!user) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
-
-  const isAuthorized = (allowedRoles: string[]) => {
-    if (!role) return false;
-    return allowedRoles.includes(role);
-  };
+  const { role } = useAuth();
 
   const renderContent = () => {
-    switch (role) {
-      case "admin":
-        return isAuthorized(["admin"]) ? admin : null;
-      case "head":
-        return isAuthorized(["head"]) ? head : null;
-      case "personnel":
-        return isAuthorized(["personnel"]) ? personnel : null;
-      case "staff":
-        return isAuthorized(["staff"]) ? staff : null;
-      default:
-        return null;
-    }
+    if (hasAccess(role, ["admin"])) return admin;
+    if (hasAccess(role, ["head"])) return head;
+    if (hasAccess(role, ["personnel"])) return personnel;
+    if (hasAccess(role, ["staff"])) return staff;
+    return null;
   };
 
   return (
-    <>
+    <main className="w-full">
       {children}
       {renderContent()}
-    </>
+    </main>
   );
 }

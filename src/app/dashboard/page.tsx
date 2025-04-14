@@ -1,46 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { User } from "@/types";
-import { secureStorage } from "@/lib/utils/encryption";
+import { withAuth } from "@/components/hoc/with-auth";
 
-export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    const initializeDashboard = async () => {
-      try {
-        const storedUser = await secureStorage.get("user");
-        const storedRole = await secureStorage.get("role");
-
-        if (storedUser && storedRole) {
-          setUser(storedUser);
-          setRole(storedRole);
-        } else {
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("Error retrieving dashboard data:", error);
-        router.push("/");
-      }
-    };
-
-    initializeDashboard();
-  }, [router]);
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
+function Dashboard() {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">
-        Welcome to the Dashboard, {user.email}
-      </h1>
-      <p>Your role is: {role}</p>
+      <h1>Dashboard Page</h1>
     </div>
   );
 }
+
+export default withAuth(Dashboard, {
+  allowedRoles: ["admin", "head", "personnel", "staff"],
+});

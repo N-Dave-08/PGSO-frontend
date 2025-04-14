@@ -42,3 +42,16 @@ export const getUsers = async (page: number = 1): Promise<UsersResponse> => {
     throw error;
   }
 };
+
+export const handleLogout = async () => {
+  try {
+    await secureStorage.remove("token");
+    await secureStorage.remove("user");
+    await secureStorage.remove("sessionCode");
+    await secureStorage.remove("role");
+    window.dispatchEvent(new Event("authChange"));
+  } catch (error) {
+    console.error("Error during logout:", error);
+    throw error;
+  }
+};

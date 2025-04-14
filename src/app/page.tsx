@@ -7,15 +7,24 @@ import { SwirlBackground } from "@/components/backgrounds/swirl-bg";
 import Navbar from "@/components/navbars/navbar";
 import Hero from "@/components/sections/hero";
 import Footer from "@/components/sections/footer";
+import { secureStorage } from "@/lib/utils/encryption";
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      router.push("/dashboard");
-    }
+    const checkAuth = async () => {
+      try {
+        const user = await secureStorage.get("user");
+        if (user) {
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+      }
+    };
+
+    checkAuth();
   }, [router]);
 
   return (

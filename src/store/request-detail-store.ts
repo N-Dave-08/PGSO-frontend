@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { Request, RequestStatusResponse } from "@/types";
 import { updateRequestStatus, assessRequest } from "@/lib/api/requests";
 import axios from "axios";
+import { secureStorage } from "@/lib/utils/encryption";
 
 interface Category {
   id: number;
@@ -56,6 +57,8 @@ interface RequestDetailState {
     requestId: number,
     callback?: () => void
   ) => Promise<any>;
+  clearRejectionNote: () => void;
+  init: () => Promise<void>;
 }
 
 export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
@@ -64,7 +67,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   categories: [],
   selectedCategory: undefined,
   selectedPersonnel: [],
-  rejectionNote: localStorage.getItem("rejectionNote") || "",
+  rejectionNote: "",
   showRejectionDialog: false,
   loading: false,
   isAssessing: false,
@@ -83,14 +86,18 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     });
   },
 
-  fetchUserRole: () => {
-    const userRole = localStorage.getItem("role");
-    set({ userRole });
+  fetchUserRole: async () => {
+    try {
+      const userRole = await secureStorage.get("role");
+      set({ userRole });
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+    }
   },
 
   fetchCategories: async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = await secureStorage.get("token");
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_BASE_URL + "/dropdown/categories",
         {
@@ -137,8 +144,13 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     }
   },
 
-  setRejectionNote: (note) => {
-    set({ rejectionNote: note });
+  setRejectionNote: async (note: string) => {
+    try {
+      await secureStorage.set("rejectionNote", note);
+      set({ rejectionNote: note });
+    } catch (error) {
+      console.error("Error storing rejection note:", error);
+    }
   },
 
   toggleRejectionDialog: (show) => {
@@ -155,7 +167,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     try {
       set({ loading: true });
       if (status === "Rejected") {
-        localStorage.setItem("rejectionNote", rejectionNote);
+        await secureStorage.set("rejectionNote", rejectionNote);
       }
 
       const response = await updateRequestStatus(requestId, status);
@@ -177,7 +189,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
         }
 
         if (status === "Rejected") {
-          localStorage.removeItem("rejectionNote");
+          await secureStorage.remove("rejectionNote");
           set({ rejectionNote: "", showRejectionDialog: false });
         }
 
@@ -244,7 +256,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       const formData = new FormData();
       formData.append("file_completion", completionFile);
 
-      const token = localStorage.getItem("token");
+      const token = await secureStorage.get("token");
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/pro/request/completion/${requestId}`,
         formData,
@@ -306,6 +318,26 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       throw error;
     } finally {
       set({ isSubmittingFeedback: false });
+    }
+  },
+
+  clearRejectionNote: async () => {
+    try {
+      await secureStorage.remove("rejectionNote");
+      set({ rejectionNote: "" });
+    } catch (error) {
+      console.error("Error clearing rejection note:", error);
+    }
+  },
+
+  init: async () => {
+    try {
+      const storedNote = await secureStorage.get("rejectionNote");
+      if (storedNote) {
+        set({ rejectionNote: storedNote });
+      }
+    } catch (error) {
+      console.error("Error initializing store:", error);
     }
   },
 }));

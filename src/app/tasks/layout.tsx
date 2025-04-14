@@ -1,61 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LoginUser } from "@/types/auth";
-import { secureStorage } from "@/lib/utils/encryption";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAccess } from "@/lib/auth/roles";
 
-export default function Layout({
-  children,
-  personnel,
-}: {
+interface LayoutProps {
   children: React.ReactNode;
   personnel: React.ReactNode;
-}) {
-  const [user, setUser] = useState<LoginUser | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const router = useRouter();
+}
 
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        const storedUser = await secureStorage.get("user");
-        const storedRole = await secureStorage.get("role");
-
-        if (storedUser && storedRole) {
-          setUser(storedUser);
-          setRole(storedRole);
-        } else {
-          router.push("/");
-        }
-      } catch (error) {
-        console.error("Error retrieving user data:", error);
-        router.push("/");
-      }
-    };
-
-    initializeData();
-  }, [router]);
-
-  if (!user) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
+export default function Layout({ children, personnel }: LayoutProps) {
+  const { role } = useAuth();
 
   const renderContent = () => {
-    if (role === "personnel") {
-      return personnel;
-    }
+    if (hasAccess(role, ["personnel"])) return personnel;
     return null;
   };
 
   return (
-    <>
+    <main className="w-full">
       {children}
       {renderContent()}
-    </>
+    </main>
   );
 }

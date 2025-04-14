@@ -58,24 +58,18 @@ export const createCategory = async (
 /**
  * Gets all categories
  */
-export const getCategories = async (
-  page: number = 1
-): Promise<CategoriesResponse> => {
+export const getCategories = async (page: number = 1) => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.get<CategoriesResponse>(
-      `/categories?page=${page}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    const response = await api.get(`/categories?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -83,7 +77,8 @@ export const getCategories = async (
         await secureStorage.remove("token");
         await secureStorage.remove("user");
         await secureStorage.remove("sessionCode");
-        localStorage.removeItem("role");
+        await secureStorage.remove("role");
+        window.dispatchEvent(new Event("authChange"));
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }
