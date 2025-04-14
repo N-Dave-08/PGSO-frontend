@@ -15,9 +15,9 @@ export interface Category {
 }
 
 export interface CreateCategoryData {
-  name: string;
+  category_name: string;
   description: string;
-  personnelIds: number[];
+  personnel_ids: number[];
 }
 
 export interface CreateCategoryResponse {

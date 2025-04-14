@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
-import { createDivision, CreateDivisionRequest } from "@/lib/api/divisions";
+import { createDivision } from "@/lib/api/divisions";
 import { getCategories } from "@/lib/api/categories";
 import {
   Select,
@@ -105,7 +105,7 @@ export default function CreateDivision({
             position: foundStaff?.position || "",
           };
         }),
-      } as CreateDivisionRequest);
+      });
 
       setOpen(false);
       setDivisionName("");

@@ -3,7 +3,7 @@ import {
   Category,
   CreateCategoryData,
   CreateCategoryResponse,
-} from "../categories";
+} from "@/types/categories";
 
 /**
  * Service for managing categories
