@@ -58,34 +58,24 @@ export const createCategory = async (
 /**
  * Gets all categories
  */
-export const getCategories = async (page: number = 1) => {
+export const getCategories = async (
+  page: number = 1
+): Promise<CategoriesResponse> => {
   try {
-    const token = await secureStorage.get("token");
-    if (!token) {
-      throw new Error("Authentication token not found");
-    }
-
-    const response = await api.get(`/categories?page=${page}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const headers = await getAuthHeaders();
+    const response = await api.get(`/categories?page=${page}`, { headers });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        await secureStorage.remove("token");
-        await secureStorage.remove("user");
-        await secureStorage.remove("sessionCode");
-        await secureStorage.remove("role");
-        window.dispatchEvent(new Event("authChange"));
-        window.location.href = "/";
-        throw new Error("Session expired. Please login again.");
-      }
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch categories"
-      );
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      await secureStorage.remove("token");
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
+      window.dispatchEvent(new Event("authChange"));
+      window.location.href = "/";
+      throw new Error("Session expired. Please login again.");
     }
-    throw error;
+    // Generic error message to avoid leaking implementation details
+    throw new Error("Unable to fetch categories. Please try again later.");
   }
 };
