@@ -31,10 +31,9 @@ export default function Home() {
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <DiagonalPatternBg />
       </div>
-
+      asd
       {/* Header */}
       <Navbar />
-
       <main className="flex-1 relative z-10">
         {/* Hero Section */}
         <Hero />
@@ -42,7 +41,6 @@ export default function Home() {
         {/* Feature Cards */}
         <FeaturesSection />
       </main>
-
       {/* Footer */}
       <Footer />
     </div>
