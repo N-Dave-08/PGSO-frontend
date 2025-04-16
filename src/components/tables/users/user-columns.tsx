@@ -179,7 +179,7 @@ export const columns: ColumnDef<User>[] = [
           columnId="fullName"
           baseWidth="120px"
           expandedWidth="200px"
-          compressedWidth="70px"
+          compressedWidth="80px"
           className="capitalize"
         />
       );
@@ -194,9 +194,9 @@ export const columns: ColumnDef<User>[] = [
         <ExpandableCell
           content={email}
           columnId="email"
-          baseWidth="70px"
+          baseWidth="100px"
           expandedWidth="200px"
-          compressedWidth="70px"
+          compressedWidth="100px"
         />
       );
     },
@@ -232,7 +232,7 @@ export const columns: ColumnDef<User>[] = [
           columnId="role"
           baseWidth="75px"
           expandedWidth="75px"
-          compressedWidth="70px"
+          compressedWidth="75px"
         />
       );
     },
@@ -296,7 +296,7 @@ export const columns: ColumnDef<User>[] = [
           columnId="department"
           baseWidth="120px"
           expandedWidth="250px"
-          compressedWidth="70px"
+          compressedWidth="80px"
           className="capitalize"
         />
       );
@@ -319,7 +319,7 @@ export const columns: ColumnDef<User>[] = [
           columnId="division"
           baseWidth="150px"
           expandedWidth="300px"
-          compressedWidth="70px"
+          compressedWidth="100px"
           className="capitalize"
         />
       );
@@ -327,7 +327,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
