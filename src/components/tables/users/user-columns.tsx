@@ -13,112 +13,25 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/types/users";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { create } from "zustand";
-
-// Store to track which column is expanded
-interface ExpandedColumnStore {
-  expandedColumn: string | null;
-  setExpandedColumn: (column: string | null) => void;
-}
-
-const useExpandedColumn = create<ExpandedColumnStore>((set) => ({
-  expandedColumn: null,
-  setExpandedColumn: (column) => set({ expandedColumn: column }),
-}));
-
-// Reusable expandable cell component
-function ExpandableCell({
-  content,
-  columnId,
-  baseWidth,
-  expandedWidth,
-  compressedWidth,
-  className = "",
-}: {
-  content: React.ReactNode;
-  columnId: string;
-  baseWidth: string;
-  expandedWidth: string;
-  compressedWidth: string;
-  className?: string;
-}) {
-  const { expandedColumn, setExpandedColumn } = useExpandedColumn();
-  const isExpanded = expandedColumn === columnId;
-  const isAnyExpanded = expandedColumn !== null;
-
-  const width = isExpanded
-    ? expandedWidth
-    : isAnyExpanded
-    ? compressedWidth
-    : baseWidth;
-
-  return (
-    <div
-      className={cn(
-        "truncate transition-all duration-200 cursor-pointer",
-        `w-[${width}]`,
-        className
-      )}
-      onClick={() => setExpandedColumn(isExpanded ? null : columnId)}
-      title={typeof content === "string" ? content : undefined}
-    >
-      {content}
-    </div>
-  );
-}
-
-function CompressibleCell({
-  content,
-  baseWidth,
-  compressedWidth,
-  className = "",
-}: {
-  content: React.ReactNode;
-  baseWidth: string;
-  compressedWidth: string;
-  className?: string;
-}) {
-  const { expandedColumn } = useExpandedColumn();
-  const isAnyExpanded = expandedColumn !== null;
-
-  return (
-    <div
-      className={cn(
-        "truncate transition-all duration-200",
-        `w-[${isAnyExpanded ? compressedWidth : baseWidth}]`,
-        className
-      )}
-    >
-      {content}
-    </div>
-  );
-}
 
 export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() ? true : false)
+        }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
-      <ExpandableCell
-        content={
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        }
-        columnId="select"
-        baseWidth="40px"
-        expandedWidth="50px"
-        compressedWidth="30px"
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
       />
     ),
     enableSorting: false,
@@ -129,15 +42,7 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
-    cell: ({ row }) => (
-      <ExpandableCell
-        content={row.getValue("id")}
-        columnId="id"
-        baseWidth="50px"
-        expandedWidth="70px"
-        compressedWidth="40px"
-      />
-    ),
+    cell: ({ row }) => <div>{row.getValue("id")}</div>,
   },
   {
     accessorKey: "avatar",
@@ -149,20 +54,12 @@ export const columns: ColumnDef<User>[] = [
         "/"
       );
       return (
-        <ExpandableCell
-          content={
-            <Avatar>
-              {avatarUrl && (
-                <AvatarImage src={avatarUrl} alt={row.original.first_name} />
-              )}
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
-          }
-          columnId="avatar"
-          baseWidth="50px"
-          expandedWidth="70px"
-          compressedWidth="40px"
-        />
+        <Avatar>
+          {avatarUrl && (
+            <AvatarImage src={avatarUrl} alt={row.original.first_name} />
+          )}
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
       );
     },
   },
@@ -173,33 +70,12 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const name = row.original.first_name + " " + row.original.last_name;
-      return (
-        <ExpandableCell
-          content={name}
-          columnId="fullName"
-          baseWidth="120px"
-          expandedWidth="200px"
-          compressedWidth="80px"
-          className="capitalize"
-        />
-      );
+      return <div className="capitalize">{name}</div>;
     },
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => {
-      const email = row.getValue("email") as string;
-      return (
-        <ExpandableCell
-          content={email}
-          columnId="email"
-          baseWidth="100px"
-          expandedWidth="200px"
-          compressedWidth="100px"
-        />
-      );
-    },
   },
   {
     accessorKey: "role",
@@ -213,27 +89,19 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const role = row.getValue("role") as string;
       return (
-        <ExpandableCell
-          content={
-            <Badge
-              variant={
-                role === "admin"
-                  ? "destructive"
-                  : role === "head"
-                  ? "default"
-                  : role === "personnel"
-                  ? "secondary"
-                  : "outline"
-              }
-            >
-              {role}
-            </Badge>
+        <Badge
+          variant={
+            role === "admin"
+              ? "destructive"
+              : role === "head"
+              ? "default"
+              : role === "personnel"
+              ? "secondary"
+              : "outline"
           }
-          columnId="role"
-          baseWidth="75px"
-          expandedWidth="75px"
-          compressedWidth="75px"
-        />
+        >
+          {role}
+        </Badge>
       );
     },
   },
@@ -242,45 +110,24 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Age" />
     ),
-    cell: ({ row }) => (
-      <ExpandableCell
-        content={row.getValue("age") || "N/A"}
-        columnId="age"
-        baseWidth="35px"
-        expandedWidth="35px"
-        compressedWidth="35px"
-      />
-    ),
+    cell: ({ row }) => <div>{row.getValue("age") || "N/A"}</div>,
   },
   {
     accessorKey: "gender",
-    header: "Gender",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Gender" />
+    ),
     cell: ({ row }) => {
       const gender = row.getValue("gender") as string;
-      return (
-        <ExpandableCell
-          content={gender || "N/A"}
-          columnId="gender"
-          baseWidth="70px"
-          expandedWidth="70px"
-          compressedWidth="70px"
-          className="capitalize"
-        />
-      );
+      return <div className="capitalize">{gender || "N/A"}</div>;
     },
   },
   {
     accessorKey: "number",
-    header: "Number",
-    cell: ({ row }) => (
-      <ExpandableCell
-        content={row.getValue("number")}
-        columnId="number"
-        baseWidth="90px"
-        expandedWidth="100px"
-        compressedWidth="50px"
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Number" />
     ),
+    cell: ({ row }) => <div>{row.getValue("number")}</div>,
   },
   {
     accessorKey: "department",
@@ -290,16 +137,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const department = row.getValue("department") as string;
-      return (
-        <ExpandableCell
-          content={department || "N/A"}
-          columnId="department"
-          baseWidth="120px"
-          expandedWidth="250px"
-          compressedWidth="80px"
-          className="capitalize"
-        />
-      );
+      return <div className="capitalize">{department || "N/A"}</div>;
     },
   },
   {
@@ -313,16 +151,7 @@ export const columns: ColumnDef<User>[] = [
     },
     cell: ({ row }) => {
       const division = row.getValue("division") as string;
-      return (
-        <ExpandableCell
-          content={division || "N/A"}
-          columnId="division"
-          baseWidth="150px"
-          expandedWidth="300px"
-          compressedWidth="100px"
-          className="capitalize"
-        />
-      );
+      return <div className="capitalize">{division || "N/A"}</div>;
     },
   },
   {
@@ -333,17 +162,9 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
-        <ExpandableCell
-          content={
-            <Badge variant={status === "Active" ? "default" : "destructive"}>
-              {status}
-            </Badge>
-          }
-          columnId="status"
-          baseWidth="90px"
-          expandedWidth="120px"
-          compressedWidth="60px"
-        />
+        <Badge variant={status === "Active" ? "default" : "destructive"}>
+          {status}
+        </Badge>
       );
     },
   },
