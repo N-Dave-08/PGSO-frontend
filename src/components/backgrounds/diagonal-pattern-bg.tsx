@@ -2,7 +2,7 @@ import React from "react";
 
 export default function DiagonalPatternBg() {
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden bg-black">
+    <div className="fixed inset-0 -z-10 overflow-hidden dark:bg-black">
       {/* Blurred purple circle */}
       <div
         className="absolute -top-[600px] left-1/2 translate-x-[-50%] w-[900px] h-[900px] rounded-full"

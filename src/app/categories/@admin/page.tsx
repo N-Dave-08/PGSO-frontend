@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CategoryTable } from "@/components/tables/category-table";
+import { CategoryTable } from "@/components/tables/categories/category-table";
 import { getCategories } from "@/lib/api/categories";
 import { getUsers } from "@/lib/api/users";
 import CreateCategory from "@/components/modals/create-category";
