@@ -68,12 +68,10 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <UserTable
-        data={users}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-      />
-    </div>
+    <UserTable
+      data={users}
+      pagination={pagination}
+      onPageChange={handlePageChange}
+    />
   );
 }

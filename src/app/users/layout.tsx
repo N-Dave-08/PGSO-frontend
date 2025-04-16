@@ -17,9 +17,9 @@ export default function Layout({ children, admin }: LayoutProps) {
   };
 
   return (
-    <main className="w-full">
+    <>
       {children}
       {renderContent()}
-    </main>
+    </>
   );
 }
