@@ -57,7 +57,10 @@ const profileFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  number: z.coerce.number().int().nonnegative().optional(),
+  number: z
+    .string()
+    .regex(/^\d*$/, { message: "Contact number must contain only digits" })
+    .optional(),
   age: z.string().optional(),
   gender: z.string().optional(),
   current_password: z.string().min(1, {
@@ -95,7 +98,7 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
     first_name: user.first_name || "",
     last_name: user.last_name || "",
     email: user.email || "",
-    number: user.number ? Number(user.number) : 0,
+    number: user.number ? String(user.number) : "",
     age: user.age ? user.age.toString() : "",
     gender: user.gender || "",
     current_password: "",
@@ -114,7 +117,7 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
       form.setValue("first_name", user.first_name || "");
       form.setValue("last_name", user.last_name || "");
       form.setValue("email", user.email || "");
-      form.setValue("number", user.number ? Number(user.number) : 0);
+      form.setValue("number", user.number ? String(user.number) : "");
       form.setValue("age", user.age ? user.age.toString() : "");
       form.setValue("gender", user.gender || "");
     }
@@ -253,11 +256,13 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
                     <FormLabel>Contact Number</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="text"
                         placeholder="09XXXXXXXXX"
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e.target.valueAsNumber || 0);
+                          // Only allow digits in the input
+                          const value = e.target.value.replace(/\D/g, "");
+                          field.onChange(value);
                         }}
                         value={field.value || ""}
                       />
