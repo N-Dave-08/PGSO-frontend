@@ -39,10 +39,27 @@ export default function Page() {
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchAllUsers = async () => {
     try {
-      const response = await getUsers();
-      setUsers(response.user || []);
+      let allUsers: User[] = [];
+      let currentPage = 1;
+      let hasMorePages = true;
+
+      while (hasMorePages) {
+        const response = await getUsers(currentPage);
+        const users = response.user || [];
+        allUsers = [...allUsers, ...users];
+
+        // Check if there are more pages
+        if (response.pagination.current_page < response.pagination.last_page) {
+          currentPage++;
+        } else {
+          hasMorePages = false;
+        }
+      }
+
+      console.log("All users fetched:", allUsers);
+      setUsers(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -50,7 +67,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchCategories();
-    fetchUsers();
+    fetchAllUsers();
   }, []);
 
   const handleCategoryCreated = () => {
@@ -62,12 +79,17 @@ export default function Page() {
   };
 
   const formattedPersonnel = users
-    .filter((user) => user.role_name === "personnel")
+    .filter((user) => {
+      console.log("User role:", user.role_name);
+      return user.role_name === "personnel";
+    })
     .map((user) => ({
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
     }));
+
+  console.log("Formatted personnel:", formattedPersonnel);
 
   if (loading) {
     return <DataTableSkeleton />;

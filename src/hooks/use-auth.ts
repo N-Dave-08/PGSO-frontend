@@ -65,6 +65,32 @@ export function useAuth() {
     }
   };
 
+  const updateUser = async (userData: Partial<LoginUser>) => {
+    try {
+      const currentUser = await secureStorage.get("user");
+
+      if (!currentUser) {
+        throw new Error("User data not found in storage");
+      }
+
+      const updatedUser = { ...currentUser, ...userData };
+
+      await secureStorage.set("user", updatedUser);
+
+      setAuthState((prev) => ({
+        ...prev,
+        user: updatedUser,
+      }));
+
+      window.dispatchEvent(new Event("authChange"));
+
+      return updatedUser;
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -110,5 +136,6 @@ export function useAuth() {
     ...authState,
     login,
     logout,
+    updateUser,
   };
 }

@@ -8,7 +8,13 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Category } from "@/types";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -62,7 +68,56 @@ export const columns: ColumnDef<Category>[] = [
     header: "Personnel",
     cell: ({ row }) => {
       const personnel = row.getValue("personnel") as Category["personnel"];
-      return <div>{personnel.map((person) => person.name).join(", ")}</div>;
+      const teamLeads = personnel.filter((person) => person.is_team_lead === 1);
+      const regularPersonnel = personnel.filter(
+        (person) => person.is_team_lead === 0
+      );
+
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="cursor-pointer">
+              <div className="flex items-center space-x-2">
+                <span>{personnel.length} members</span>
+                {teamLeads.length > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    {teamLeads.length} team lead
+                    {teamLeads.length > 1 ? "s" : ""}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="space-y-4">
+              {teamLeads.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Team Leads</h4>
+                  <div className="space-y-1">
+                    {teamLeads.map((lead) => (
+                      <div key={lead.id} className="text-sm">
+                        {lead.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {regularPersonnel.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Personnel</h4>
+                  <div className="space-y-1">
+                    {regularPersonnel.map((person) => (
+                      <div key={person.id} className="text-sm">
+                        {person.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      );
     },
   },
 ];
