@@ -1,38 +1,32 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Eye, EyeClosed, Mail, Lock, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "@/types";
-import { secureStorage } from "@/lib/utils/encryption";
 import api, { handleApiError } from "@/lib/api/axios";
 import { useAuth } from "@/hooks/use-auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { z } from "zod";
 import { UserRole } from "@/lib/auth/roles";
+import { loginSchema, LoginFormData } from "@/schemas";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 // Constants for validation and rate limiting
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes in milliseconds
-
-// Zod validation schema
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters long")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
 
 // User data sanitization
 const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
@@ -49,10 +43,6 @@ const sanitizeUserData = (userData: LoginResponse["user"], role: string) => {
 };
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,25 +51,20 @@ export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
 
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onChange",
+  });
+
   const isLocked = (): boolean => {
     return Boolean(lockoutUntil && Date.now() < lockoutUntil);
   };
 
-  const validateForm = (data: LoginFormData): string | null => {
-    try {
-      loginSchema.parse(data);
-      return null;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return error.errors[0].message;
-      }
-      return "An unexpected error occurred during validation";
-    }
-  };
-
-  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  async function onSubmit(data: LoginFormData) {
     // Check for lockout
     if (isLocked()) {
       const remainingMinutes = Math.ceil(
@@ -91,18 +76,11 @@ export default function LoginForm() {
       return;
     }
 
-    // Validate form data using Zod
-    const validationError = validateForm(formData);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await api.post<LoginResponse>("/login", formData);
+      const response = await api.post<LoginResponse>("/login", data);
 
       // Reset login attempts on successful login
       setLoginAttempts(0);
@@ -136,7 +114,7 @@ export default function LoginForm() {
       await login(token, sanitizedUser, sessionCode, role as UserRole);
 
       // Clear sensitive form data
-      setFormData({ email: "", password: "" });
+      form.reset();
 
       // Navigate to dashboard
       router.push("/dashboard");
@@ -160,79 +138,91 @@ export default function LoginForm() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "email" ? value.trim() : value,
-    }));
-    setError(null);
-  };
+  }
 
   return (
-    <form onSubmit={handleLogin} className="grid gap-4 py-4">
-      <div className="grid gap-2">
-        <Label htmlFor="email">Email</Label>
-        <div className="relative">
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            className="pl-10"
-            placeholder="Enter your email"
-            disabled={isLoading || isLocked()}
-          />
-          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-        </div>
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
-        <div className="relative">
-          <Input
-            id="password"
-            name="password"
-            type={isShowPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={handleInputChange}
-            className="pl-10 pr-10"
-            placeholder="Enter your password"
-            disabled={isLoading || isLocked()}
-          />
-          <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-          <button
-            type="button"
-            onClick={() => setIsShowPassword(!isShowPassword)}
-            className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
-            aria-label={isShowPassword ? "Hide password" : "Show password"}
-            disabled={isLoading || isLocked()}
-          >
-            {isShowPassword ? (
-              <EyeClosed className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-      </div>
+    <div className="grid gap-4 py-4">
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <Button type="submit" disabled={isLoading || isLocked()}>
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Logging in...
-          </>
-        ) : (
-          "Login"
-        )}
-      </Button>
-    </form>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter your email"
+                      className="pl-10"
+                      disabled={isLoading || isLocked()}
+                      {...field}
+                    />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={isShowPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="pl-10 pr-10"
+                      disabled={isLoading || isLocked()}
+                      {...field}
+                    />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                    <button
+                      type="button"
+                      onClick={() => setIsShowPassword(!isShowPassword)}
+                      className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+                      aria-label={
+                        isShowPassword ? "Hide password" : "Show password"
+                      }
+                      disabled={isLoading || isLocked()}
+                    >
+                      {isShowPassword ? (
+                        <EyeClosed className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            disabled={isLoading || isLocked()}
+            className="w-full"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
