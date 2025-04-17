@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/context-menu";
 import { Division } from "@/types";
 import { Department } from "@/types";
+import { deleteDepartment } from "@/lib/api/department";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Department>[] = [
   {
@@ -83,18 +85,45 @@ export const columns: ColumnDef<Department>[] = [
   },
 ];
 
-export const RowContextMenu = ({ row }: { row: React.ReactNode }) => {
+export const RowContextMenu = ({
+  row,
+  children,
+  onDelete,
+}: {
+  row: any;
+  children: React.ReactNode;
+  onDelete: () => Promise<void>;
+}) => {
+  const handleDelete = async () => {
+    try {
+      await deleteDepartment(row.id);
+      toast.success("Department deleted successfully");
+      await onDelete();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete department"
+      );
+    }
+  };
+
   return (
     <ContextMenu>
-      <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem>Copy Department ID</ContextMenuItem>
+        <ContextMenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(row.id.toString());
+            toast.success("Department ID copied to clipboard");
+          }}
+        >
+          Copy Department ID
+        </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem>
           <PenSquare className="mr-2 h-4 w-4" />
           Edit Department
         </ContextMenuItem>
-        <ContextMenuItem className="text-red-600">
+        <ContextMenuItem className="text-red-600" onClick={handleDelete}>
           <Trash className="mr-2 h-4 w-4" />
           Delete Department
         </ContextMenuItem>

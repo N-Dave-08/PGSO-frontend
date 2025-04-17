@@ -5,6 +5,7 @@ import { getDepartments } from "@/lib/api/department";
 import { DepartmentTable } from "@/components/tables/department-table";
 import { Department } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
+import CreateDepartment from "@/components/modals/create-department";
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -38,9 +39,5 @@ export default function Page() {
     return <DataTableSkeleton />;
   }
 
-  return (
-    <div>
-      <DepartmentTable data={departments} />
-    </div>
-  );
+  return <DepartmentTable data={departments} />;
 }

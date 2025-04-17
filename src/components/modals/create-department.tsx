@@ -19,7 +19,7 @@ import { createDepartment } from "@/lib/api/department";
 import { Division } from "@/types";
 
 interface CreateDepartmentProps {
-  onDepartmentCreated: () => void;
+  onDepartmentCreated: () => Promise<void>;
 }
 
 export default function CreateDepartment({
@@ -74,7 +74,7 @@ export default function CreateDepartment({
       setDepartmentName("");
       setAcronym("");
       setSelectedDivisions([]);
-      onDepartmentCreated();
+      await onDepartmentCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
