@@ -24,7 +24,6 @@ import { Division } from "@/types";
 import { Department } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
-import { useState } from "react";
 import EditDepartment from "@/components/modals/edit-department";
 
 export const columns: ColumnDef<Department>[] = [
