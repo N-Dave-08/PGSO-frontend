@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "@/types/users";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -38,17 +39,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "id",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
     cell: ({ row }) => <div>{row.getValue("id")}</div>,
   },
   {
@@ -72,17 +65,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "full name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Ful Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Full Name" />
+    ),
     cell: ({ row }) => {
       const name = row.original.first_name + " " + row.original.last_name;
       return <div className="capitalize">{name}</div>;
@@ -90,31 +75,16 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Email",
   },
   {
     accessorKey: "role",
     accessorFn: (row) => row.role_name,
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Role
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Role" />
+    ),
+    filterFn: (row, id, value: string[]) => {
+      return value.includes(row.getValue(id));
     },
     cell: ({ row }) => {
       const role = row.getValue("role") as string;
@@ -137,12 +107,16 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "age",
-    header: "Age",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Age" />
+    ),
     cell: ({ row }) => <div>{row.getValue("age") || "N/A"}</div>,
   },
   {
     accessorKey: "gender",
-    header: "Gender",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Gender" />
+    ),
     cell: ({ row }) => {
       const gender = row.getValue("gender") as string;
       return <div className="capitalize">{gender || "N/A"}</div>;
@@ -150,23 +124,17 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "number",
-    header: "Number",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Number" />
+    ),
     cell: ({ row }) => <div>{row.getValue("number")}</div>,
   },
   {
     accessorKey: "department",
     accessorFn: (row) => row.department_name,
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Department
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Department" />
+    ),
     cell: ({ row }) => {
       const department = row.getValue("department") as string;
       return <div className="capitalize">{department || "N/A"}</div>;
@@ -175,16 +143,11 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "division",
     accessorFn: (row) => row.division_name,
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Division
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Division" />
+    ),
+    filterFn: (row, id, value: string[]) => {
+      return value.includes(row.getValue(id));
     },
     cell: ({ row }) => {
       const division = row.getValue("division") as string;
@@ -193,17 +156,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (

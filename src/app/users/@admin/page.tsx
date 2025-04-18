@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { UserTable } from "@/components/tables/user-table";
+import { UserTable } from "@/components/tables/users/user-table";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
@@ -68,12 +68,10 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <UserTable
-        data={users}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-      />
-    </div>
+    <UserTable
+      data={users}
+      pagination={pagination}
+      onPageChange={handlePageChange}
+    />
   );
 }
