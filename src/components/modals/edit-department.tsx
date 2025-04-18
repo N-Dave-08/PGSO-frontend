@@ -12,28 +12,34 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getDivisions } from "@/lib/api/divisions";
-import { createDepartment } from "@/lib/api/department";
-import { Division } from "@/types";
-import axios from "axios";
+import { updateDepartment } from "@/lib/api/department";
+import { Division, Department } from "@/types";
 
-interface CreateDepartmentProps {
-  onDepartmentCreated: () => Promise<void>;
+interface EditDepartmentProps {
+  department: Department;
+  onDepartmentUpdated: () => Promise<void>;
+  trigger: React.ReactNode;
 }
 
-export default function CreateDepartment({
-  onDepartmentCreated,
-}: CreateDepartmentProps) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [departmentName, setDepartmentName] = useState<string>("");
-  const [acronym, setAcronym] = useState<string>("");
+export default function EditDepartment({
+  department,
+  onDepartmentUpdated,
+  trigger,
+}: EditDepartmentProps) {
+  const [open, setOpen] = useState(false);
+  const [departmentName, setDepartmentName] = useState<string>(
+    department.department_name
+  );
+  const [acronym, setAcronym] = useState<string>(department.acronym);
   const [divisions, setDivisions] = useState<Division[]>([]);
-  const [selectedDivisions, setSelectedDivisions] = useState<number[]>([]);
+  const [selectedDivisions, setSelectedDivisions] = useState<number[]>(
+    department.divisions.map((div) => div.id)
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [generalError, setGeneralError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
@@ -50,6 +56,12 @@ export default function CreateDepartment({
       fetchDivisions();
     }
   }, [open]);
+
+  useEffect(() => {
+    setDepartmentName(department.department_name);
+    setAcronym(department.acronym);
+    setSelectedDivisions(department.divisions.map((div) => div.id));
+  }, [department]);
 
   const filteredDivisions = divisions.filter((division) =>
     division.division_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -68,36 +80,19 @@ export default function CreateDepartment({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrors({});
-    setGeneralError(null);
+    setError("");
 
     try {
-      await createDepartment(departmentName, acronym, selectedDivisions);
+      await updateDepartment(
+        department.id,
+        departmentName,
+        acronym,
+        selectedDivisions
+      );
       setOpen(false);
-      setDepartmentName("");
-      setAcronym("");
-      setSelectedDivisions([]);
-      await onDepartmentCreated();
+      await onDepartmentUpdated();
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.data?.error) {
-        if (
-          typeof err.response.data.error === "object" &&
-          err.response.data.error !== null
-        ) {
-          setErrors(err.response.data.error);
-        } else {
-          setGeneralError(
-            err.response.data.message ||
-              "An unexpected error format was received."
-          );
-        }
-      } else if (axios.isAxiosError(err) && err.response?.data?.message) {
-        setGeneralError(err.response.data.message);
-      } else if (err instanceof Error) {
-        setGeneralError(err.message);
-      } else {
-        setGeneralError("An unknown error occurred");
-      }
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -105,21 +100,16 @@ export default function CreateDepartment({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Department
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Department</DialogTitle>
+          <DialogTitle>Edit Department</DialogTitle>
           <DialogDescription>
-            Fill in the department details below.
+            Update the department details below.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="departmentName">Department Name</Label>
             <Input
               id="departmentName"
@@ -128,13 +118,8 @@ export default function CreateDepartment({
               placeholder="Enter department name"
               required
             />
-            {errors.department_name && (
-              <div className="text-sm text-red-500 mt-1">
-                {errors.department_name[0]}
-              </div>
-            )}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="acronym">Acronym</Label>
             <Input
               id="acronym"
@@ -143,13 +128,8 @@ export default function CreateDepartment({
               placeholder="Enter acronym"
               required
             />
-            {errors.acronym && (
-              <div className="text-sm text-red-500 mt-1">
-                {errors.acronym[0]}
-              </div>
-            )}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Divisions</Label>
             <div className="mb-2">
               <Input
@@ -177,19 +157,12 @@ export default function CreateDepartment({
                 </div>
               ))}
             </div>
-            {errors.division_id && (
-              <div className="text-sm text-red-500 mt-1">
-                {errors.division_id[0]}
-              </div>
-            )}
           </div>
-          {generalError && (
-            <div className="text-sm text-red-500">{generalError}</div>
-          )}
+          {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex justify-end">
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Department
+              Update Department
             </Button>
           </div>
         </form>

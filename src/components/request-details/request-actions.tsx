@@ -3,7 +3,7 @@
 import { Request } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useRequestDetailStore } from "@/store/request-detail-store";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface RequestActionsProps {
   request: Request;
@@ -16,7 +16,6 @@ export function RequestActions({
   onRequestUpdate,
   onClose,
 }: RequestActionsProps) {
-  const { toast } = useToast();
   const {
     userRole,
     loading,
@@ -36,28 +35,17 @@ export function RequestActions({
   const onStatusUpdate = async (status: "Approved" | "Rejected") => {
     try {
       await handleStatusUpdate(request.id, status, onRequestUpdate);
-      toast({
-        title: "Success",
-        description: `Request ${status.toLowerCase()} successfully`,
-      });
+      toast.success(`Request ${status.toLowerCase()} successfully`);
       onClose();
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An error occurred",
-        variant: "destructive",
-      });
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
   const onAssessRequest = async () => {
     try {
       await handleAssessRequest(request.id, onRequestUpdate);
-      toast({
-        title: "Success",
-        description: "Request assigned successfully",
-      });
+      toast.success("Request assigned successfully");
       onClose();
     } catch (error) {
       console.error("Error assessing request:", error);
@@ -71,47 +59,27 @@ export function RequestActions({
         errorMessage = error;
       }
 
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
     }
   };
 
   const onMarkAsComplete = async () => {
     try {
       await handleMarkAsComplete(request.id, onRequestUpdate);
-      toast({
-        title: "Success",
-        description: "Request marked as complete",
-      });
+      toast.success("Request marked as complete");
       onClose();
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An error occurred",
-        variant: "destructive",
-      });
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
   const onSubmitFeedback = async () => {
     try {
       await handleFeedbackSubmit(request.id, onRequestUpdate);
-      toast({
-        title: "Success",
-        description: "Feedback submitted successfully",
-      });
+      toast.success("Feedback submitted successfully");
       onClose();
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An error occurred",
-        variant: "destructive",
-      });
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     }
   };
 

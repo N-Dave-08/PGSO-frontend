@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -36,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { profileFormSchema, ProfileFormValues } from "@/schemas";
+import { toast } from "sonner";
 
 // Create a type that includes only the fields we need from either User or LoginUser
 type ProfileUser = {
@@ -58,7 +58,6 @@ interface ProfileFormProps {
 
 export function ProfileForm({ user, onSave }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   // Create a ref for the initial values to avoid resetting form on parent re-render
   const formValuesRef = React.useRef({
@@ -95,10 +94,7 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
 
     try {
       await onSave(data);
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
-      });
+      toast.success("Your profile has been updated successfully.");
       // Reset the password field after successful submission
       form.setValue("current_password", "");
     } catch (error: any) {
@@ -114,11 +110,7 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
         });
       }
 
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

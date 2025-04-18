@@ -9,10 +9,23 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Division } from "@/types";
 import { Department } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
+import { useState } from "react";
+import EditDepartment from "@/components/modals/edit-department";
 
 export const columns: ColumnDef<Department>[] = [
   {
@@ -107,27 +120,57 @@ export const RowContextMenu = ({
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-      <ContextMenuContent>
-        <ContextMenuItem
-          onClick={() => {
-            navigator.clipboard.writeText(row.id.toString());
-            toast.success("Department ID copied to clipboard");
-          }}
-        >
-          Copy Department ID
-        </ContextMenuItem>
-        <ContextMenuSeparator />
-        <ContextMenuItem>
-          <PenSquare className="mr-2 h-4 w-4" />
-          Edit Department
-        </ContextMenuItem>
-        <ContextMenuItem className="text-red-600" onClick={handleDelete}>
-          <Trash className="mr-2 h-4 w-4" />
-          Delete Department
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            onClick={() => {
+              navigator.clipboard.writeText(row.id.toString());
+              toast.success("Department ID copied to clipboard");
+            }}
+          >
+            Copy Department ID
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <EditDepartment
+            department={row}
+            onDepartmentUpdated={onDelete}
+            trigger={
+              <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+                <PenSquare className="mr-2 h-4 w-4" />
+                Edit Department
+              </ContextMenuItem>
+            }
+          />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trash className="mr-2 h-4 w-4" />
+                Delete Department
+              </ContextMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete the department "
+                  {row.department_name}". This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </ContextMenuContent>
+      </ContextMenu>
+    </>
   );
 };

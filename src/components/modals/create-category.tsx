@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,9 +16,9 @@ import { Loader2, Plus } from "lucide-react";
 import { createCategory } from "@/lib/api/categories";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 interface Personnel {
   id: number;
@@ -41,7 +41,6 @@ export default function CreateCategory({
   const [selectedPersonnel, setSelectedPersonnel] = useState<number[]>([]);
   const [selectedTeamLeads, setSelectedTeamLeads] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const handlePersonnelChange = (personnelId: number) => {
     setSelectedPersonnel((current) =>
@@ -82,10 +81,7 @@ export default function CreateCategory({
       });
 
       if (response.isSuccess) {
-        toast({
-          title: "Success",
-          description: response.message,
-        });
+        toast.success(response.message);
         setOpen(false);
         setCategoryName("");
         setDescription("");
@@ -93,19 +89,12 @@ export default function CreateCategory({
         setSelectedTeamLeads([]);
         onCategoryCreated();
       } else {
-        toast({
-          title: "Error",
-          description: response.message,
-          variant: "destructive",
-        });
+        toast.error(response.message);
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "Failed to create category",
-        variant: "destructive",
-      });
+      toast.error(
+        err instanceof Error ? err.message : "Failed to create category"
+      );
     } finally {
       setIsLoading(false);
     }
