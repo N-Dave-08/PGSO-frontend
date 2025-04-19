@@ -4,10 +4,6 @@ export interface User {
   last_name: string;
   email: string;
   role_name: string;
-  department_id: number;
-  department_name: string;
-  division_id: number;
-  division_name: string;
   avatar: string | null;
   is_archived: string;
   age: string;

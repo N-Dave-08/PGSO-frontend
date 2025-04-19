@@ -44,22 +44,8 @@ function generateFilterOptions(data: User[]) {
     };
   });
 
-  // Generate unique division options
-  const divisionOptions = Array.from(
-    new Set(
-      data
-        .filter((user) => user.division_name)
-        .map((user) => user.division_name)
-    )
-  ).map((dept) => ({
-    value: dept,
-    label: dept,
-    icon: Building2,
-  }));
-
   return {
     roleOptions,
-    divisionOptions,
   };
 }
 
@@ -70,7 +56,7 @@ export function UserTable({
   onPerPageChange,
 }: UserTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const { roleOptions, divisionOptions } = React.useMemo(
+  const { roleOptions } = React.useMemo(
     () => generateFilterOptions(data),
     [data]
   );
@@ -89,16 +75,9 @@ export function UserTable({
             options={roleOptions}
           />
         )}
-        {table.getColumn("division") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("division")}
-            title="Division"
-            options={divisionOptions}
-          />
-        )}
       </DataTableToolbar>
     ),
-    [globalFilter, roleOptions, divisionOptions]
+    [globalFilter, roleOptions]
   );
 
   const renderPagination = React.useCallback(

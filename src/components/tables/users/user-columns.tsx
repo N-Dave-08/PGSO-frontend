@@ -80,9 +80,7 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "role",
     accessorFn: (row) => row.role_name,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
+    header: "Role",
     filterFn: (row, id, value: string[]) => {
       return value.includes(row.getValue(id));
     },
@@ -107,16 +105,15 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "age",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Age" />
-    ),
-    cell: ({ row }) => <div>{row.getValue("age") || "N/A"}</div>,
+    header: "Age",
+    cell: ({ row }) => {
+      const age = row.getValue("age") as string;
+      return <div>{age || "N/A"}</div>;
+    },
   },
   {
     accessorKey: "gender",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Gender" />
-    ),
+    header: "Gender",
     cell: ({ row }) => {
       const gender = row.getValue("gender") as string;
       return <div className="capitalize">{gender || "N/A"}</div>;
@@ -124,41 +121,12 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "number",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Number" />
-    ),
+    header: "Number",
     cell: ({ row }) => <div>{row.getValue("number")}</div>,
   },
   {
-    accessorKey: "department",
-    accessorFn: (row) => row.department_name,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Department" />
-    ),
-    cell: ({ row }) => {
-      const department = row.getValue("department") as string;
-      return <div className="capitalize">{department || "N/A"}</div>;
-    },
-  },
-  {
-    accessorKey: "division",
-    accessorFn: (row) => row.division_name,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Division" />
-    ),
-    filterFn: (row, id, value: string[]) => {
-      return value.includes(row.getValue(id));
-    },
-    cell: ({ row }) => {
-      const division = row.getValue("division") as string;
-      return <div className="capitalize">{division || "N/A"}</div>;
-    },
-  },
-  {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
+    header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (

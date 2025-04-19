@@ -85,7 +85,7 @@ export function DataTable<TData>({
   return (
     <div className="w-full space-y-4">
       {renderToolbar?.(table)}
-      <div className="rounded-md border border-white/10 shadow-lg overflow-y-auto max-h-[75vh]">
+      <div className="rounded-md border border-white/10 shadow-lg overflow-y-auto h-full">
         <Table>
           <TableHeader className="bg-base-300 sticky top-0 z-10">
             {table.getHeaderGroups().map((headerGroup) => (
