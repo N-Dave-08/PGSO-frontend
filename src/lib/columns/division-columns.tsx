@@ -10,11 +10,24 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Division } from "@/types";
+import { deleteDivision } from "@/lib/api/divisions";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Division>[] = [
   {
@@ -103,21 +116,70 @@ export const columns: ColumnDef<Division>[] = [
   },
 ];
 
-export const RowContextMenu = ({ row }: { row: React.ReactNode }) => {
+export const RowContextMenu = ({
+  row,
+  children,
+  onDelete,
+}: {
+  row: Division;
+  children: React.ReactNode;
+  onDelete: () => Promise<void>;
+}) => {
+  const handleDelete = async () => {
+    try {
+      await deleteDivision(row.id);
+      toast.success("Division deleted successfully");
+      await onDelete();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete division"
+      );
+    }
+  };
+
   return (
     <ContextMenu>
-      <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem>Copy Division ID</ContextMenuItem>
+        <ContextMenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(row.id.toString());
+            toast.success("Division ID copied to clipboard");
+          }}
+        >
+          Copy Division ID
+        </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem>
           <PenSquare className="mr-2 h-4 w-4" />
           Edit Division
         </ContextMenuItem>
-        <ContextMenuItem className="text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
-          Delete Division
-        </ContextMenuItem>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <ContextMenuItem
+              onSelect={(e) => e.preventDefault()}
+              className="text-red-600"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete Division
+            </ContextMenuItem>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will archive the division "{row.division_name}". This
+                action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </ContextMenuContent>
     </ContextMenu>
   );

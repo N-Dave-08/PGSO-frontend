@@ -47,7 +47,7 @@ export default function Page() {
       <div className="mb-4">
         <CreateDivision onDivisionCreated={fetchDivisions} />
       </div>
-      <DivisionTable data={divisions} />
+      <DivisionTable data={divisions} onDelete={fetchDivisions} />
     </div>
   );
 }

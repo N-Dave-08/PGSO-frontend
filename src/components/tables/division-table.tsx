@@ -41,9 +41,10 @@ import { Division } from "@/types";
 
 interface DivisionTableProps {
   data: Division[];
+  onDelete: () => Promise<void>;
 }
 
-export function DivisionTable({ data }: DivisionTableProps) {
+export function DivisionTable({ data, onDelete }: DivisionTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -138,22 +139,23 @@ export function DivisionTable({ data }: DivisionTableProps) {
               table.getRowModel().rows.map((row) => (
                 <RowContextMenu
                   key={row.id}
-                  row={
-                    <TableRow
-                      data-state={row.getIsSelected() && "selected"}
-                      className="hover:bg-white/10 data-[state=selected]:bg-white/20"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  }
-                />
+                  row={row.original}
+                  onDelete={onDelete}
+                >
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-white/10 data-[state=selected]:bg-white/20"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </RowContextMenu>
               ))
             ) : (
               <TableRow>
