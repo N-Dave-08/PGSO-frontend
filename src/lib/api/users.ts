@@ -10,7 +10,7 @@ export const getUsers = async (page: number = 1): Promise<UsersResponse> => {
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.get(`/admin/users?page=${page}`, {
+    const response = await api.post(`/admin/users?page=${page}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

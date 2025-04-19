@@ -106,9 +106,9 @@ export default function CreateDepartment({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="outline" size="sm">
           <Plus className="mr-2 h-4 w-4" />
-          Create Department
+          Add Department
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -119,7 +119,7 @@ export default function CreateDepartment({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="departmentName">Department Name</Label>
             <Input
               id="departmentName"
@@ -134,7 +134,7 @@ export default function CreateDepartment({
               </div>
             )}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="acronym">Acronym</Label>
             <Input
               id="acronym"
@@ -149,7 +149,7 @@ export default function CreateDepartment({
               </div>
             )}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label>Divisions</Label>
             <div className="mb-2">
               <Input

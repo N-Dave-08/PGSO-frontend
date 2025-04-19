@@ -91,7 +91,7 @@ export const columns: ColumnDef<Division>[] = [
               ) : (
                 staff.map((member) => (
                   <div key={member.id} className="text-sm">
-                    {member.name}
+                    {member.first_name} {member.last_name}
                   </div>
                 ))
               )}

@@ -12,11 +12,6 @@ export interface Division {
 export interface CreateDivisionRequest {
   division_name: string;
   office_location: string;
-  staff: Array<{
-    id: number;
-    name: string;
-    position: string;
-  }>;
+  staff_id: number[];
   category_id: number;
-  department_id: number;
 }

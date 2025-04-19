@@ -42,9 +42,9 @@ export default function Page() {
   }
 
   return (
-    <>
+    <div className="space-y-4">
       <CreateDepartment onDepartmentCreated={fetchDepartments} />
       <DepartmentTable data={departments} onDelete={fetchDepartments} />
-    </>
+    </div>
   );
 }

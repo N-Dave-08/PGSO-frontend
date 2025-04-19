@@ -1,5 +1,6 @@
 export interface Staff {
   id: number;
-  name: string;
-  position: string;
+  first_name: string;
+  last_name: string;
+  email: string;
 }

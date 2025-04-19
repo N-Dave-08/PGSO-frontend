@@ -153,16 +153,13 @@ export const RowContextMenu = ({
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete the department "
-                  {row.department_name}". This action cannot be undone.
+                  This will archive the department "{row.department_name}". This
+                  action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-600 hover:bg-red-700"
-                  onClick={handleDelete}
-                >
+                <AlertDialogAction onClick={handleDelete}>
                   Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
