@@ -9,9 +9,22 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Category } from "@/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
+import { deleteCategory } from "@/lib/api/categories";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -91,16 +104,33 @@ export const columns: ColumnDef<Category>[] = [
 export const RowContextMenu = ({
   row,
   category,
+  onDelete,
 }: {
   row: React.ReactNode;
   category: Category;
+  onDelete: () => Promise<void>;
 }) => {
+  const handleDelete = async () => {
+    try {
+      await deleteCategory(category.id);
+      toast.success("Category deleted successfully");
+      await onDelete();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to delete category"
+      );
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem
-          onClick={() => navigator.clipboard.writeText(category.id.toString())}
+          onClick={() => {
+            navigator.clipboard.writeText(category.id.toString());
+            toast.success("Category ID copied to clipboard");
+          }}
         >
           Copy Category ID
         </ContextMenuItem>
@@ -109,10 +139,32 @@ export const RowContextMenu = ({
           <PenSquare className="mr-2 h-4 w-4" />
           Edit Category
         </ContextMenuItem>
-        <ContextMenuItem className="text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
-          Delete Category
-        </ContextMenuItem>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <ContextMenuItem
+              onSelect={(e) => e.preventDefault()}
+              className="text-red-600"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete Category
+            </ContextMenuItem>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will archive the category "{category.category_name}". This
+                action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </ContextMenuContent>
     </ContextMenu>
   );

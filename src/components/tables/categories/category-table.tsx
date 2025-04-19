@@ -23,6 +23,7 @@ interface CategoryTableProps {
   };
   onPageChange: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
+  onDelete: () => Promise<void>;
 }
 
 function generateFilterOptions(data: Category[]) {
@@ -50,6 +51,7 @@ export function CategoryTable({
   pagination,
   onPageChange,
   onPerPageChange,
+  onDelete,
 }: CategoryTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
   const { personnelOptions } = React.useMemo(
@@ -101,7 +103,7 @@ export function CategoryTable({
       renderToolbar={renderToolbar}
       renderPagination={renderPagination}
       rowContextMenu={(row, data) => (
-        <RowContextMenu row={row} category={data} />
+        <RowContextMenu row={row} category={data} onDelete={onDelete} />
       )}
     />
   );

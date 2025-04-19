@@ -29,13 +29,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { columns, RowContextMenu } from "@/lib/columns/division-columns";
 import { Division } from "@/types";
 

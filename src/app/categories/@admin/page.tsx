@@ -107,6 +107,7 @@ export default function Page() {
         data={categories}
         pagination={pagination}
         onPageChange={handlePageChange}
+        onDelete={fetchCategories}
       />
     </div>
   );

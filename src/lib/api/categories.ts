@@ -46,3 +46,47 @@ export const getCategories = async (
     throw new Error("Unable to fetch categories. Please try again later.");
   }
 };
+
+export const deleteCategory = async (id: number) => {
+  try {
+    const token = await secureStorage.get("token");
+    if (!token) {
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
+      window.dispatchEvent(new Event("authChange"));
+      window.location.href = "/";
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/delete/category/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 401) {
+      await secureStorage.remove("token");
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
+      window.dispatchEvent(new Event("authChange"));
+      window.location.href = "/";
+      throw new Error("Session expired. Please login again.");
+    }
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || "Failed to delete category"
+      );
+    }
+    throw error;
+  }
+};
