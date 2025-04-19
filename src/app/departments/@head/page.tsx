@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { getDepartments } from "@/lib/api/department";
-import { DepartmentTable } from "@/components/tables/department-table";
+import { DepartmentTable } from "@/components/tables/departments/department-table";
 import { Department } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
