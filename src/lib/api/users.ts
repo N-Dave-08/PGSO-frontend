@@ -3,18 +3,25 @@ import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
 import { User, UsersResponse } from "@/types/users";
 
-export const getUsers = async (page: number = 1): Promise<UsersResponse> => {
+export const getUsers = async (
+  page: number = 1,
+  filters?: { role_name?: string }
+): Promise<UsersResponse> => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.post(`/admin/users?page=${page}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.post(
+      `/admin/users?page=${page}`,
+      filters, // Request body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     console.log("Raw API Response:", response.data);
     return response.data;
   } catch (error) {

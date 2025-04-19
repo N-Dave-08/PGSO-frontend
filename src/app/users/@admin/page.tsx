@@ -16,6 +16,9 @@ interface Pagination {
 export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentFilters, setCurrentFilters] = useState<{
+    role_name?: string;
+  }>();
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     per_page: 10,
@@ -23,9 +26,12 @@ export default function Page() {
     last_page: 1,
   });
 
-  const fetchUsers = async (page: number = 1) => {
+  const fetchUsers = async (
+    page: number = 1,
+    filters?: { role_name?: string }
+  ) => {
     try {
-      const response = await getUsers(page);
+      const response = await getUsers(page, filters);
       const usersData = response.user || [];
       const formattedData = usersData.map((user: User): User => {
         return {
@@ -52,11 +58,15 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(1, currentFilters);
+  }, [currentFilters]);
 
   const handlePageChange = (page: number) => {
-    fetchUsers(page);
+    fetchUsers(page, currentFilters);
+  };
+
+  const handleFilterChange = (filters: { role_name?: string }) => {
+    setCurrentFilters(filters);
   };
 
   if (loading) {
@@ -68,6 +78,7 @@ export default function Page() {
       data={users}
       pagination={pagination}
       onPageChange={handlePageChange}
+      onFilterChange={handleFilterChange}
     />
   );
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
-import { Shield, UserCog, Users2, UserCircle, Building2 } from "lucide-react";
+import { Shield, UserCog, Users2, UserCircle } from "lucide-react";
 
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
@@ -21,28 +21,32 @@ interface UserTableProps {
   };
   onPageChange: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
+  onFilterChange?: (filters: { role_name?: string }) => void;
 }
 
-function generateFilterOptions(data: User[]) {
-  // Generate unique role options with specific icons
-  const roleOptions = Array.from(
-    new Set(data.map((user) => user.role_name))
-  ).map((role) => {
-    const roleIcon =
-      role === "admin"
-        ? Shield
-        : role === "head"
-        ? UserCog
-        : role === "personnel"
-        ? Users2
-        : UserCircle; // default icon for other roles (like staff)
-
-    return {
-      value: role,
-      label: role.charAt(0).toUpperCase() + role.slice(1),
-      icon: roleIcon,
-    };
-  });
+function generateFilterOptions() {
+  const roleOptions = [
+    {
+      value: "admin",
+      label: "Admin",
+      icon: Shield,
+    },
+    {
+      value: "head",
+      label: "Head",
+      icon: UserCog,
+    },
+    {
+      value: "personnel",
+      label: "Personnel",
+      icon: Users2,
+    },
+    {
+      value: "staff",
+      label: "Staff",
+      icon: UserCircle,
+    },
+  ];
 
   return {
     roleOptions,
@@ -54,12 +58,10 @@ export function UserTable({
   pagination,
   onPageChange,
   onPerPageChange,
+  onFilterChange,
 }: UserTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const { roleOptions } = React.useMemo(
-    () => generateFilterOptions(data),
-    [data]
-  );
+  const { roleOptions } = generateFilterOptions();
 
   const renderToolbar = React.useCallback(
     (table: Table<User>) => (
@@ -68,16 +70,14 @@ export function UserTable({
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
       >
-        {table.getColumn("role") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("role")}
-            title="Role"
-            options={roleOptions}
-          />
-        )}
+        <DataTableFacetedFilter
+          title="Role"
+          options={roleOptions}
+          onFilterChange={(value) => onFilterChange?.({ role_name: value })}
+        />
       </DataTableToolbar>
     ),
-    [globalFilter, roleOptions]
+    [globalFilter, roleOptions, onFilterChange]
   );
 
   const renderPagination = React.useCallback(
