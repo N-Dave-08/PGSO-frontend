@@ -2,7 +2,10 @@ import api from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
 
-export const getDepartments = async (filters?: { division_id?: number }) => {
+export const getDepartments = async (filters?: {
+  division_id?: number;
+  search?: string;
+}) => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {

@@ -14,7 +14,7 @@ import { getDivisions } from "@/lib/api/divisions";
 interface DepartmentTableProps {
   data: Department[];
   onDelete: () => Promise<void>;
-  onFilterChange?: (filters: { division_id?: number }) => void;
+  onFilterChange?: (filters: { division_id?: number; search?: string }) => void;
 }
 
 export function DepartmentTable({
@@ -22,7 +22,6 @@ export function DepartmentTable({
   onDelete,
   onFilterChange,
 }: DepartmentTableProps) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
   const [divisions, setDivisions] = React.useState<Division[]>([]);
 
   React.useEffect(() => {
@@ -39,13 +38,16 @@ export function DepartmentTable({
     fetchDivisions();
   }, []);
 
+  const handleSearch = React.useCallback(
+    (searchTerm: string) => {
+      onFilterChange?.({ search: searchTerm });
+    },
+    [onFilterChange]
+  );
+
   const renderToolbar = React.useCallback(
     (table: Table<Department & { onDelete: () => Promise<void> }>) => (
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      >
+      <DataTableToolbar table={table} onSearch={handleSearch}>
         <DataTableFacetedFilter
           title="Division"
           options={divisions.map((division) => ({
@@ -61,7 +63,7 @@ export function DepartmentTable({
         />
       </DataTableToolbar>
     ),
-    [globalFilter, onFilterChange, divisions]
+    [divisions, onFilterChange, handleSearch]
   );
 
   const tableData = React.useMemo(

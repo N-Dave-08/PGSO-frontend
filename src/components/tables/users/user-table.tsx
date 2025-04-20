@@ -22,6 +22,7 @@ interface UserTableProps {
   onPageChange: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
   onFilterChange?: (filters: { role_name?: string }) => void;
+  onSearch?: (searchTerm: string) => void;
 }
 
 function generateFilterOptions() {
@@ -59,17 +60,13 @@ export function UserTable({
   onPageChange,
   onPerPageChange,
   onFilterChange,
+  onSearch,
 }: UserTableProps) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
   const { roleOptions } = generateFilterOptions();
 
   const renderToolbar = React.useCallback(
     (table: Table<User>) => (
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      >
+      <DataTableToolbar table={table} onSearch={onSearch}>
         <DataTableFacetedFilter
           title="Role"
           options={roleOptions}
@@ -77,7 +74,7 @@ export function UserTable({
         />
       </DataTableToolbar>
     ),
-    [globalFilter, roleOptions, onFilterChange]
+    [roleOptions, onFilterChange, onSearch]
   );
 
   const renderPagination = React.useCallback(

@@ -23,6 +23,7 @@ interface DivisionTableProps {
   onPageChange?: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
+  onSearch?: (searchTerm: string) => void;
 }
 
 export function DivisionTable({
@@ -31,18 +32,13 @@ export function DivisionTable({
   onPageChange,
   onPerPageChange,
   onDelete,
+  onSearch,
 }: DivisionTableProps) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
-
   const renderToolbar = React.useCallback(
     (table: Table<Division>) => (
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <DataTableToolbar table={table} onSearch={onSearch} />
     ),
-    [globalFilter]
+    [onSearch]
   );
 
   const renderPagination = React.useCallback(

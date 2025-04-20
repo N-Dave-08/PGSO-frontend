@@ -5,7 +5,10 @@ import { User, UsersResponse } from "@/types/users";
 
 export const getUsers = async (
   page: number = 1,
-  filters?: { role_name?: string }
+  filters?: {
+    role_name?: string;
+    search?: string;
+  }
 ): Promise<UsersResponse> => {
   try {
     const token = await secureStorage.get("token");
@@ -15,14 +18,13 @@ export const getUsers = async (
 
     const response = await api.post(
       `/admin/users?page=${page}`,
-      filters, // Request body
+      filters || {}, // Send empty object if no filters
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    console.log("Raw API Response:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

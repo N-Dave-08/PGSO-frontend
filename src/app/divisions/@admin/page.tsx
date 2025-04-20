@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { DivisionTable } from "@/components/tables/divisions/division-table";
 import { getDivisions } from "@/lib/api/divisions";
 import CreateDivision from "@/components/modals/create-division";
@@ -10,10 +10,11 @@ import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 export default function Page() {
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchDivisions = async () => {
+  const fetchDivisions = useCallback(async (search?: string) => {
     try {
-      const response = await getDivisions();
+      const response = await getDivisions(search ? { search } : undefined);
       const divisionsData = response.divisions || [];
       const formattedData = divisionsData.map(
         (division: Division): Division => ({
@@ -32,11 +33,15 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDivisions();
-  }, []);
+    fetchDivisions(searchTerm);
+  }, [fetchDivisions, searchTerm]);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+  };
 
   if (loading) {
     return <DataTableSkeleton />;
@@ -45,9 +50,13 @@ export default function Page() {
   return (
     <div>
       <div className="mb-4">
-        <CreateDivision onDivisionCreated={fetchDivisions} />
+        <CreateDivision onDivisionCreated={() => fetchDivisions(searchTerm)} />
       </div>
-      <DivisionTable data={divisions} onDelete={fetchDivisions} />
+      <DivisionTable
+        data={divisions}
+        onDelete={() => fetchDivisions(searchTerm)}
+        onSearch={handleSearch}
+      />
     </div>
   );
 }
