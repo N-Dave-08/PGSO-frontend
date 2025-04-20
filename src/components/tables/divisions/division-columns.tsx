@@ -1,7 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, PenSquare, Trash } from "lucide-react";
+import { PenSquare, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -51,45 +52,27 @@ export const columns: ColumnDef<Division>[] = [
   },
   {
     accessorKey: "division_name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Division
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Division" />
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("division_name")}</div>
+    ),
   },
   {
     accessorKey: "office_location",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Office Location
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Office Location" />
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("office_location")}</div>
+    ),
   },
   {
     accessorKey: "staff",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Staff
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Staff" />
+    ),
     cell: ({ row }) => {
       const staff = row.getValue("staff") as Division["staff"];
       return (

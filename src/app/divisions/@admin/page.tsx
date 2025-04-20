@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { DivisionTable } from "@/components/tables/division-table";
+import { DivisionTable } from "@/components/tables/divisions/division-table";
 import { getDivisions } from "@/lib/api/divisions";
 import CreateDivision from "@/components/modals/create-division";
 import { Division } from "@/types";

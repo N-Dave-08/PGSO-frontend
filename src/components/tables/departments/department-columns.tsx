@@ -1,7 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, PenSquare, Trash } from "lucide-react";
+import { PenSquare, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -54,13 +55,7 @@ export const columns: ColumnDef<
   {
     accessorKey: "department_name",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("department_name")}</div>
@@ -69,13 +64,7 @@ export const columns: ColumnDef<
   {
     accessorKey: "acronym",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Acronym
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader column={column} title="Acronym" />
     ),
     cell: ({ row }) => (
       <div className="uppercase">{row.getValue("acronym")}</div>
@@ -84,13 +73,7 @@ export const columns: ColumnDef<
   {
     accessorKey: "divisions",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Divisions
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
+      <DataTableColumnHeader column={column} title="Divisions" />
     ),
     filterFn: (row, id, filterValue: string[]) => {
       const divisions = row.getValue("divisions") as Division[];
