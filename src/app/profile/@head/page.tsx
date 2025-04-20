@@ -5,15 +5,12 @@ import { ProfileForm } from "@/components/forms/profile-form";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect } from "react";
 import { updateUserProfile } from "@/lib/profile/profile-service";
-import { LoadingState } from "@/components/ui/loading-state";
 import { NotFoundState } from "@/components/ui/not-found-state";
-import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HeadProfilePage() {
   const { user, updateUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
