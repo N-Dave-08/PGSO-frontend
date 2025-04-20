@@ -153,8 +153,8 @@ export const RowContextMenu = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will archive the category "{category.category_name}". This
-                action cannot be undone.
+                This will archive the category &quot;{category.category_name}
+                &quot;. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

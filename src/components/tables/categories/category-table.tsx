@@ -9,7 +9,6 @@ import {
 } from "@/components/tables/categories/category-columns";
 import { Category } from "@/types";
 import { DataTable } from "@/components/ui/data-table/data-table";
-import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
 
@@ -26,26 +25,6 @@ interface CategoryTableProps {
   onDelete: () => Promise<void>;
 }
 
-function generateFilterOptions(data: Category[]) {
-  // Flatten and get unique personnel names
-  const allPersonnel = new Set<string>();
-  data.forEach((category) => {
-    category.personnel.forEach((person) => {
-      allPersonnel.add(person.name);
-    });
-  });
-
-  const personnelOptions = Array.from(allPersonnel).map((name) => ({
-    value: name,
-    label: name,
-    icon: Users,
-  }));
-
-  return {
-    personnelOptions,
-  };
-}
-
 export function CategoryTable({
   data,
   pagination,
@@ -54,10 +33,6 @@ export function CategoryTable({
   onDelete,
 }: CategoryTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const { personnelOptions } = React.useMemo(
-    () => generateFilterOptions(data),
-    [data]
-  );
 
   const renderToolbar = React.useCallback(
     (table: Table<Category>) => (
@@ -65,17 +40,9 @@ export function CategoryTable({
         table={table}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
-      >
-        {table.getColumn("personnel") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("personnel")}
-            title="Personnel"
-            options={personnelOptions}
-          />
-        )}
-      </DataTableToolbar>
+      ></DataTableToolbar>
     ),
-    [globalFilter, personnelOptions]
+    [globalFilter]
   );
 
   const renderPagination = React.useCallback(
