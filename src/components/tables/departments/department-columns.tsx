@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Division, Department } from "@/types";
+import { Division, Department, Head } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
 import EditDepartment from "@/components/modals/edit-department";
@@ -72,15 +72,7 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "divisions",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Divisions" />
-    ),
-    filterFn: (row, id, filterValue: string[]) => {
-      const divisions = row.getValue("divisions") as Division[];
-      return divisions.some((division) =>
-        filterValue.includes(division.division_name)
-      );
-    },
+    header: "Divisions",
     cell: ({ row }) => {
       const divisions = row.getValue("divisions") as Division[];
       return (
@@ -90,6 +82,18 @@ export const columns: ColumnDef<
               {division.division_name}
             </Badge>
           ))}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "head",
+    header: "Head",
+    cell: ({ row }) => {
+      const head = row.getValue("head") as Head;
+      return (
+        <div>
+          {head.first_name} {head.last_name}
         </div>
       );
     },

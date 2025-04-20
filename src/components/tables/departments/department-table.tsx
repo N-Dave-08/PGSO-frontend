@@ -2,30 +2,66 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
+import { Building2 } from "lucide-react";
+
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
+import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { columns, RowContextMenu } from "./department-columns";
-import { Department } from "@/types";
-
-type DepartmentWithActions = Department & { onDelete: () => Promise<void> };
+import { Department, Division } from "@/types";
+import { getDivisions } from "@/lib/api/divisions";
 
 interface DepartmentTableProps {
   data: Department[];
   onDelete: () => Promise<void>;
+  onFilterChange?: (filters: { division_id?: number }) => void;
 }
 
-export function DepartmentTable({ data, onDelete }: DepartmentTableProps) {
+export function DepartmentTable({
+  data,
+  onDelete,
+  onFilterChange,
+}: DepartmentTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [divisions, setDivisions] = React.useState<Division[]>([]);
+
+  React.useEffect(() => {
+    const fetchDivisions = async () => {
+      try {
+        const response = await getDivisions();
+        if (response.divisions) {
+          setDivisions(response.divisions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch divisions:", error);
+      }
+    };
+    fetchDivisions();
+  }, []);
 
   const renderToolbar = React.useCallback(
-    (table: Table<DepartmentWithActions>) => (
+    (table: Table<Department & { onDelete: () => Promise<void> }>) => (
       <DataTableToolbar
         table={table}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
-      />
+      >
+        <DataTableFacetedFilter
+          title="Division"
+          options={divisions.map((division) => ({
+            label: division.division_name,
+            value: division.id.toString(),
+          }))}
+          onFilterChange={(value) =>
+            onFilterChange?.({
+              division_id: value ? parseInt(value) : undefined,
+            })
+          }
+          optionsIcon={Building2}
+        />
+      </DataTableToolbar>
     ),
-    [globalFilter]
+    [globalFilter, onFilterChange, divisions]
   );
 
   const tableData = React.useMemo(
