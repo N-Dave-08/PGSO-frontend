@@ -44,6 +44,12 @@ export default function Page() {
             last_name: string;
             email: string;
           }>;
+          personnel: Array<{
+            id: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+          }>;
           department_id: number;
           created_at: string;
         }>;
@@ -55,6 +61,7 @@ export default function Page() {
           staff: division.staff || [],
           department_id: division.department_id || 0,
           created_at: division.created_at,
+          personnel: division.personnel || [],
         }));
 
         setDivisions(formattedData);

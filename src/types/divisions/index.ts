@@ -1,4 +1,4 @@
-import { Staff } from "@/types";
+import { Staff, Personnel } from "@/types";
 
 export interface Division {
   id: number;
@@ -7,6 +7,7 @@ export interface Division {
   department_id: number;
   created_at: string;
   staff: Staff[];
+  personnel: Personnel[];
 }
 
 export interface CreateDivisionRequest {
@@ -14,4 +15,5 @@ export interface CreateDivisionRequest {
   office_location: string;
   staff_id: number[];
   category_id: number;
+  personnel_id: number[];
 }

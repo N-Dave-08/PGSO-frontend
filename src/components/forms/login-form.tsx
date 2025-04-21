@@ -13,7 +13,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserRole } from "@/lib/auth/roles";
 import { loginSchema, LoginFormData } from "@/schemas";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -57,7 +56,7 @@ export default function LoginForm() {
       email: "",
       password: "",
     },
-    mode: "onChange",
+    mode: "onSubmit",
   });
 
   const isLocked = (): boolean => {

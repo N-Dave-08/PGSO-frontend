@@ -6,3 +6,4 @@ export * from "./divisions";
 export * from "./common";
 export * from "./departments";
 export * from "./staffs";
+export * from "./personnel";

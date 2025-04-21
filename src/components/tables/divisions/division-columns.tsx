@@ -97,6 +97,36 @@ export const columns: ColumnDef<Division>[] = [
       );
     },
   },
+  {
+    accessorKey: "personnel",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Personnel" />
+    ),
+    cell: ({ row }) => {
+      const personnel =
+        (row.getValue("personnel") as Division["personnel"]) || [];
+      return (
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button variant="ghost">{personnel.length} members</Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <div className="space-y-1">
+              {personnel.length === 0 ? (
+                <div className="">No members</div>
+              ) : (
+                personnel.map((member) => (
+                  <div key={member.id} className="text-sm">
+                    {member.first_name} {member.last_name}
+                  </div>
+                ))
+              )}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+  },
 ];
 
 export const RowContextMenu = ({
