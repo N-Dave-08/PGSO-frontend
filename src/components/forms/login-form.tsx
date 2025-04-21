@@ -117,6 +117,8 @@ export default function LoginForm() {
       // Role-based navigation
       if (role === "admin") {
         router.push("/dashboard");
+      } else if (role === "personnel") {
+        router.push("/tasks");
       } else {
         router.push("/requests");
       }

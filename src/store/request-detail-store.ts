@@ -235,33 +235,33 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   handleAssessRequest: async (requestId, callback) => {
-    const { selectedCategory, selectedPersonnel } = get();
+    const { selectedCategory, selectedPersonnel, request, categories } = get();
 
-    if (!selectedCategory) {
-      throw new Error("Please select a category");
-    }
+    // If status is "For Assign", we're assigning personnel, not team lead
+    if (request?.status === "For Assign") {
+      if (selectedPersonnel.length === 0) {
+        throw new Error("Please select at least one personnel");
+      }
 
-    if (selectedPersonnel.length === 0) {
-      throw new Error("Please select at least one personnel");
-    }
+      try {
+        set({ isAssessing: true });
+        const token = await secureStorage.get("token");
 
-    try {
-      set({ isAssessing: true });
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/assess/${requestId}`,
+          {
+            personnel_ids: selectedPersonnel,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      const response = await api.post(
-        `/request/assess/${requestId}`,
-        {
-          personnel_ids: selectedPersonnel,
-        },
-        {
-          headers: await getAuthHeaders(),
-        }
-      );
-
-      if (response.data.isSuccess) {
-        // Update local request state
-        const { request } = get();
-        if (request) {
+        if (response.data.isSuccess && request) {
+          // Update local request state
           set({
             request: {
               ...request,
@@ -273,15 +273,89 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
               status: "In Progress",
             },
           });
-        }
 
-        callback?.();
-        return response.data;
+          callback?.();
+          return response.data;
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.data) {
+          throw new Error(
+            error.response.data.message || "Error assigning personnel"
+          );
+        }
+        throw error;
+      } finally {
+        set({ isAssessing: false });
       }
-    } catch (error) {
-      throw error;
-    } finally {
-      set({ isAssessing: false });
+    } else {
+      // Initial team lead assignment
+      if (!selectedCategory) {
+        throw new Error("Please select a category");
+      }
+
+      const category = categories.find(
+        (cat) => cat.id.toString() === selectedCategory
+      );
+      if (!category) {
+        throw new Error("Selected category not found");
+      }
+
+      // Find the selected team lead from the selected personnel
+      const selectedTeamLead = category.personnel.find(
+        (p) => p.is_team_lead && selectedPersonnel.includes(p.id)
+      );
+
+      if (!selectedTeamLead) {
+        throw new Error("Please select a team lead");
+      }
+
+      try {
+        set({ isAssessing: true });
+        const token = await secureStorage.get("token");
+
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/assign/${requestId}`,
+          {
+            category_id: Number(selectedCategory),
+            team_lead_id: selectedTeamLead.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.isSuccess && request) {
+          // Update local request state with all required properties
+          set({
+            request: {
+              ...request,
+              category_id: Number(selectedCategory),
+              category_name: category.category_name,
+              team_lead: {
+                id: selectedTeamLead.id,
+                first_name: selectedTeamLead.name.split(" ")[0],
+                last_name: selectedTeamLead.name.split(" ")[1] || "",
+              },
+              status: "For Assign",
+            },
+          });
+
+          callback?.();
+          return response.data;
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.data) {
+          throw new Error(
+            error.response.data.message || "Error assigning team lead"
+          );
+        }
+        throw error;
+      } finally {
+        set({ isAssessing: false });
+      }
     }
   },
 
