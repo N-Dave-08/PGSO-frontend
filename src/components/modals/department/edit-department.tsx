@@ -94,14 +94,19 @@ export default function EditDepartment({
     };
 
     fetchData();
-  }, [department.id]); // Add department.id as dependency since we use it in filtering
+  }, [department.id, department.divisions]); // Add department.divisions as dependency since we use it in filtering
 
   useEffect(() => {
     setDepartmentName(department.department_name);
     setAcronym(department.acronym);
     setSelectedDivisions(department.divisions.map((div) => div.id));
     setSelectedHead(department.head?.id ? department.head.id.toString() : "");
-  }, [department]);
+  }, [
+    department.department_name,
+    department.acronym,
+    department.divisions,
+    department.head,
+  ]);
 
   const filteredDivisions = divisions.filter((division) =>
     division.division_name.toLowerCase().includes(searchQuery.toLowerCase())
