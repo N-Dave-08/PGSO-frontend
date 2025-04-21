@@ -26,22 +26,47 @@ export default function Page() {
           page,
           search ? { search } : undefined
         );
-        const divisionsData = response.divisions || [];
-        const formattedData = divisionsData.map(
-          (division: Division): Division => ({
-            id: division.id,
-            division_name: division.division_name,
-            office_location: division.office_location,
-            staff: division.staff || [],
-            department_id: division.department_id,
-            created_at: division.created_at,
-          })
-        );
+
+        if (!response?.divisions?.data) {
+          console.error("Invalid response format:", response);
+          setDivisions([]);
+          return;
+        }
+
+        // Convert the object-based data to an array
+        const divisionsArray = Object.values(response.divisions.data) as Array<{
+          id: number;
+          division_name: string;
+          office_location: string;
+          staff: Array<{
+            id: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+          }>;
+          department_id: number;
+          created_at: string;
+        }>;
+
+        const formattedData: Division[] = divisionsArray.map((division) => ({
+          id: division.id,
+          division_name: division.division_name,
+          office_location: division.office_location,
+          staff: division.staff || [],
+          department_id: division.department_id || 0,
+          created_at: division.created_at,
+        }));
 
         setDivisions(formattedData);
-        setPagination(response.pagination);
+        setPagination({
+          current_page: response.divisions.current_page,
+          last_page: response.divisions.last_page,
+          total: response.divisions.total,
+          per_page: response.divisions.per_page,
+        });
       } catch (error) {
         console.error("Failed to fetch divisions:", error);
+        setDivisions([]);
       } finally {
         setLoading(false);
       }

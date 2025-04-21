@@ -63,15 +63,9 @@ export const getDivisions = async (
       throw new Error("No data received from the API");
     }
 
-    // Return the divisions array from the nested structure
+    // Return the divisions data structure exactly as it comes from the API
     return {
-      divisions: response.data.divisions.data,
-      pagination: {
-        current_page: response.data.divisions.current_page,
-        last_page: response.data.divisions.last_page,
-        total: response.data.divisions.total,
-        per_page: response.data.divisions.per_page,
-      },
+      divisions: response.data.divisions,
     };
   } catch (error) {
     if (axios.isAxiosError(error)) {

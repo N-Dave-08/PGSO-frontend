@@ -38,8 +38,12 @@ export function DepartmentTable({
     const fetchDivisions = async () => {
       try {
         const response = await getDivisions();
-        if (response.divisions) {
-          setDivisions(response.divisions);
+        if (response?.divisions?.data) {
+          // Convert the object-based data to an array and cast to Division type
+          const divisionsArray = Object.values(
+            response.divisions.data
+          ) as Division[];
+          setDivisions(divisionsArray);
         }
       } catch (error) {
         console.error("Failed to fetch divisions:", error);
