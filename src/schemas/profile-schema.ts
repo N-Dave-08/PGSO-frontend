@@ -20,10 +20,7 @@ export const profileFormSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  number: z
-    .string()
-    .regex(/^\d*$/, { message: "Contact number must contain only digits" })
-    .optional(),
+  number: z.string().nullable().optional(),
   age: z.string().optional(),
   gender: z.string().optional(),
   current_password: z.string().min(1, {

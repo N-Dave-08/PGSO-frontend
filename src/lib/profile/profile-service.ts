@@ -6,14 +6,10 @@ interface ProfileUpdatePayload {
   first_name: string;
   last_name: string;
   email: string;
-  number: string;
-  age: string | number;
-  gender: string;
+  number?: string | null | undefined;
+  age?: string;
+  gender?: string;
   current_password: string;
-}
-
-interface ProfileFormValues extends Omit<ProfileUpdatePayload, "number"> {
-  number: string | number;
 }
 
 export interface ProfileUpdateResponse {
@@ -27,7 +23,7 @@ interface ApiErrorResponse {
 }
 
 export async function updateUserProfile(
-  values: ProfileFormValues,
+  values: ProfileUpdatePayload,
   updateUserFn: (userData: Partial<LoginUser>) => Promise<void>
 ): Promise<void> {
   try {
@@ -43,7 +39,7 @@ export async function updateUserProfile(
       first_name: values.first_name,
       last_name: values.last_name,
       email: values.email,
-      number: values.number.toString(), // Convert to string as expected by API
+      number: values.number || "",
       age: values.age,
       gender: values.gender,
       current_password: values.current_password,

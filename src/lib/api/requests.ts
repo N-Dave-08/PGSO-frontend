@@ -8,6 +8,11 @@ import {
 } from "@/types";
 import { secureStorage } from "@/lib/utils/encryption";
 
+interface RequestParams {
+  page?: number;
+  per_page?: number;
+}
+
 /**
  * Fetches the list of requests
  */
@@ -17,7 +22,7 @@ export const getRequests = async (
 ): Promise<RequestsResponse> => {
   try {
     const headers = await getAuthHeaders();
-    const params: Record<string, any> = {};
+    const params: RequestParams = {};
 
     if (page) params.page = page;
     if (perPage) params.per_page = perPage;

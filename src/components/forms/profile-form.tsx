@@ -81,10 +81,12 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
       toast.success("Your profile has been updated successfully.");
       // Reset the password field after successful submission
       form.setValue("current_password", "");
-    } catch (error: any) {
+    } catch (error) {
       // Check if it's a password error
       const errorMessage =
-        error.message || "Failed to update profile. Please try again.";
+        error instanceof Error
+          ? error.message
+          : "Failed to update profile. Please try again.";
       const isPasswordError = errorMessage.toLowerCase().includes("password");
 
       // If it's a password error, set error on the password field
@@ -101,8 +103,15 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
   }
 
   // Helper function to safely get user properties
-  const getUserProperty = (propertyName: string): string => {
-    return (user as any)[propertyName] || "";
+  const getUserProperty = (
+    propertyName: keyof User | keyof LoginUser
+  ): string => {
+    return (
+      (propertyName in user
+        ? user[propertyName as keyof typeof user]
+        : ""
+      )?.toString() || ""
+    );
   };
 
   const getInitials = (): string => {
@@ -138,11 +147,6 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
             {getUserProperty("role_name") && (
               <p className="text-sm text-muted-foreground">
                 {getUserProperty("role_name")}
-              </p>
-            )}
-            {getUserProperty("department_name") && (
-              <p className="text-sm text-muted-foreground">
-                {getUserProperty("department_name")}
               </p>
             )}
           </div>

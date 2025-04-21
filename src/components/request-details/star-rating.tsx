@@ -25,13 +25,13 @@ export function StarRating({
     }
   };
 
-  const handleMouseEnter = (rating: number) => (e: MouseEvent) => {
+  const handleMouseEnter = () => {
     if (!readonly && onHoverChange) {
-      onHoverChange(rating);
+      onHoverChange(hover || value);
     }
   };
 
-  const handleMouseLeave = (e: MouseEvent) => {
+  const handleMouseLeave = () => {
     if (!readonly && onHoverChange) {
       onHoverChange(0);
     }
@@ -48,7 +48,7 @@ export function StarRating({
               readonly ? "cursor-default" : ""
             }`}
             onClick={handleClick(star)}
-            onMouseEnter={handleMouseEnter(star)}
+            onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             disabled={readonly}
           >

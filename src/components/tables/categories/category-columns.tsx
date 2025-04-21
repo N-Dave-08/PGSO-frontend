@@ -118,7 +118,6 @@ export const columns: ColumnDef<Category>[] = [
   },
 ];
 
-// Add a row action menu component that will be used in the table
 export const RowContextMenu = ({
   row,
   category,

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { updateUserProfile } from "@/lib/profile/profile-service";
 import { NotFoundState } from "@/components/ui/not-found-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileFormValues } from "@/schemas";
 
 export default function HeadProfilePage() {
   const { user, updateUser } = useAuth();
@@ -18,12 +19,11 @@ export default function HeadProfilePage() {
     }
   }, [user]);
 
-  const handleSaveProfile = async (values: any) => {
+  const handleSaveProfile = async (values: ProfileFormValues) => {
     try {
       await updateUserProfile(values, updateUser);
       return Promise.resolve();
-    } catch (error: any) {
-      // Let the form component handle the specific error
+    } catch (error) {
       return Promise.reject(error);
     }
   };

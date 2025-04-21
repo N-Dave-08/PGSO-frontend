@@ -1,7 +1,7 @@
 import api from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
-import { User, UsersResponse } from "@/types/users";
+import type { UsersResponse } from "@/types/users";
 
 export const getUsers = async (
   page: number = 1,

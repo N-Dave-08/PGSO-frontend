@@ -8,6 +8,7 @@ import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Pagination } from "@/types";
+import { ApiError } from "@/types/api";
 
 export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
@@ -50,9 +51,10 @@ export default function Page() {
         setUsers(formattedData);
         setPagination(response.pagination);
         setError(null);
-      } catch (error: any) {
-        if (error.message !== "No users found.") {
-          setError(error.message || "Failed to fetch users");
+      } catch (error: unknown) {
+        const apiError = error as ApiError;
+        if (apiError.message !== "No users found.") {
+          setError(apiError.message || "Failed to fetch users");
         }
         setUsers([]);
         setPagination({

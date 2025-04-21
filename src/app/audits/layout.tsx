@@ -9,7 +9,7 @@ interface LayoutProps {
   head: React.ReactNode;
 }
 
-export default function Layout({ children, admin, head }: LayoutProps) {
+export default function Layout({ children, admin }: LayoutProps) {
   const { role } = useAuth();
 
   const renderContent = () => {
