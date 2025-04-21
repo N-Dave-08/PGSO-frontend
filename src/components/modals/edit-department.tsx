@@ -60,7 +60,7 @@ export default function EditDepartment({
       try {
         // Fetch divisions
         const divisionsResponse = await getDivisions();
-        setDivisions(divisionsResponse.divisions || []);
+        setDivisions(divisionsResponse.divisions.data || []);
 
         // Fetch users with head role
         const usersResponse = await getUsers(1, { role_name: "head" });
