@@ -103,21 +103,24 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
 
   fetchCategories: async () => {
     try {
-      const token = await secureStorage.get("token");
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_API_BASE_URL + "/dropdown/categories",
+      set({ loading: true });
+      const response = await api.post(
+        "/categories",
+        {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: await getAuthHeaders(),
         }
       );
-      const data = await response.json();
-      if (data.isSuccess) {
-        set({ categories: data.categories });
+      if (response.data.isSuccess) {
+        set({ categories: response.data.categories });
+      } else {
+        console.error("Failed to fetch categories:", response.data.message);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+      // Optionally set an error state here if needed
+    } finally {
+      set({ loading: false });
     }
   },
 

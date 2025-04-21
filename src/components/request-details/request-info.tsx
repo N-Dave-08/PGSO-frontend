@@ -34,6 +34,7 @@ export function RequestInfo({ request }: RequestInfoProps) {
     setSelectedCategory,
     setSelectedPersonnel,
     fetchCategories,
+    loading,
   } = useRequestDetailStore();
 
   useEffect(() => {
@@ -72,21 +73,35 @@ export function RequestInfo({ request }: RequestInfoProps) {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categories</SelectLabel>
-                  {categories.map((category) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id.toString()}
-                    >
-                      {category.category_name}
+                  {loading ? (
+                    <SelectItem value="loading" disabled>
+                      Loading categories...
                     </SelectItem>
-                  ))}
+                  ) : categories.length > 0 ? (
+                    categories.map((category) => (
+                      <SelectItem
+                        key={category.id}
+                        value={category.id.toString()}
+                      >
+                        {category.category_name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled>
+                      No categories available
+                    </SelectItem>
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
           ) : (
             <p className="text-sm mt-1">
-              {categories.find((cat) => cat.id === request.category_id)
-                ?.category_name || "No category"}
+              {loading
+                ? "Loading category..."
+                : request.category_name ||
+                  categories.find((cat) => cat.id === request.category_id)
+                    ?.category_name ||
+                  "No category"}
             </p>
           )}
         </div>
