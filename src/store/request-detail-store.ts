@@ -278,11 +278,11 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     try {
       set({ isCompleting: true });
       const formData = new FormData();
-      formData.append("file", completionFile);
+      formData.append("file_completion", completionFile);
 
       const token = await secureStorage.get("token");
       const response = await axios.post<CompletionResponse>(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${requestId}/complete`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/completion/${requestId}`,
         formData,
         {
           headers: {
