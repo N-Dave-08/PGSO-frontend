@@ -11,18 +11,15 @@ import { Category } from "@/types";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
+import { Pagination } from "@/types";
 
 interface CategoryTableProps {
   data: Category[];
-  pagination: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
-  };
+  pagination: Pagination;
   onPageChange: (page: number) => void;
   onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
+  onSearch?: (searchTerm: string) => void;
 }
 
 export function CategoryTable({
@@ -31,18 +28,13 @@ export function CategoryTable({
   onPageChange,
   onPerPageChange,
   onDelete,
+  onSearch,
 }: CategoryTableProps) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
-
   const renderToolbar = React.useCallback(
     (table: Table<Category>) => (
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      ></DataTableToolbar>
+      <DataTableToolbar table={table} onSearch={onSearch} />
     ),
-    [globalFilter]
+    [onSearch]
   );
 
   const renderPagination = React.useCallback(

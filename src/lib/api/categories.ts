@@ -26,11 +26,14 @@ export const createCategory = async (
  * Gets all categories
  */
 export const getCategories = async (
-  page: number = 1
+  page: number = 1,
+  filters?: { search?: string }
 ): Promise<CategoriesResponse> => {
   try {
     const headers = await getAuthHeaders();
-    const response = await api.get(`/categories?page=${page}`, { headers });
+    const response = await api.post(`/categories?page=${page}`, filters || {}, {
+      headers,
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {

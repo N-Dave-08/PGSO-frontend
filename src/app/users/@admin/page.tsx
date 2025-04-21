@@ -7,13 +7,7 @@ import { User } from "@/types/users";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-
-interface Pagination {
-  total: number;
-  per_page: number;
-  current_page: number;
-  last_page: number;
-}
+import { Pagination } from "@/types";
 
 export default function Page() {
   const [users, setUsers] = useState<User[]>([]);

@@ -8,18 +8,13 @@ import CreateCategory from "@/components/modals/create-category";
 import { User } from "@/types/users";
 import { Category } from "@/types/categories";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
-
-interface Pagination {
-  total: number;
-  per_page: number;
-  current_page: number;
-  last_page: number;
-}
+import { Pagination } from "@/types";
 
 export default function Page() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     per_page: 10,
@@ -27,9 +22,12 @@ export default function Page() {
     last_page: 1,
   });
 
-  const fetchCategories = async (page: number = 1) => {
+  const fetchCategories = async (page: number = 1, search?: string) => {
     try {
-      const response = await getCategories(page);
+      const response = await getCategories(
+        page,
+        search ? { search } : undefined
+      );
       setCategories(response.categories);
       setPagination(response.pagination);
     } catch (error) {
@@ -50,7 +48,6 @@ export default function Page() {
         const users = response.user || [];
         allUsers = [...allUsers, ...users];
 
-        // Check if there are more pages
         if (response.pagination.current_page < response.pagination.last_page) {
           currentPage++;
         } else {
@@ -58,7 +55,6 @@ export default function Page() {
         }
       }
 
-      console.log("All users fetched:", allUsers);
       setUsers(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -66,30 +62,29 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(pagination.current_page, searchTerm);
     fetchAllUsers();
-  }, []);
+  }, [searchTerm, pagination.current_page]);
 
   const handleCategoryCreated = () => {
-    fetchCategories();
+    fetchCategories(pagination.current_page, searchTerm);
   };
 
   const handlePageChange = (page: number) => {
-    fetchCategories(page);
+    fetchCategories(page, searchTerm);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
   };
 
   const formattedPersonnel = users
-    .filter((user) => {
-      console.log("User role:", user.role_name);
-      return user.role_name === "personnel";
-    })
+    .filter((user) => user.role_name === "personnel")
     .map((user) => ({
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
     }));
-
-  console.log("Formatted personnel:", formattedPersonnel);
 
   if (loading) {
     return <DataTableSkeleton />;
@@ -107,7 +102,8 @@ export default function Page() {
         data={categories}
         pagination={pagination}
         onPageChange={handlePageChange}
-        onDelete={fetchCategories}
+        onDelete={() => fetchCategories(pagination.current_page, searchTerm)}
+        onSearch={handleSearch}
       />
     </div>
   );
