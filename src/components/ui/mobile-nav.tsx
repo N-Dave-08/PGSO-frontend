@@ -91,21 +91,16 @@ export function MobileNav() {
         { name: "Audit Logs", href: "/audits", icon: FileText },
       ],
       head: [
-        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Departments", href: "/departments", icon: Building2 },
         { name: "Divisions", href: "/divisions", icon: Network },
         { name: "Requests", href: "/requests", icon: ClipboardList },
       ],
       personnel: [
-        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Tasks", href: "/tasks", icon: ListTodo },
         { name: "Calendar", href: "/calendar", icon: Calendar },
         { name: "Feedback", href: "/feedback", icon: MessageSquare },
       ],
-      staff: [
-        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Requests", href: "/requests", icon: ClipboardList },
-      ],
+      staff: [{ name: "Requests", href: "/requests", icon: ClipboardList }],
     };
 
     // Top navigation items based on role

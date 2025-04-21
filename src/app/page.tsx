@@ -8,15 +8,24 @@ import Hero from "@/components/sections/hero";
 import Footer from "@/components/sections/footer";
 import { secureStorage } from "@/lib/utils/encryption";
 import DiagonalPatternBg from "@/components/backgrounds/diagonal-pattern-bg";
+
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await secureStorage.get("user");
+        const [user, role] = await Promise.all([
+          secureStorage.get("user"),
+          secureStorage.get("role"),
+        ]);
+
         if (user) {
-          router.push("/dashboard");
+          if (role === "admin") {
+            router.push("/dashboard");
+          } else {
+            router.push("/requests");
+          }
         }
       } catch (error) {
         console.error("Error checking authentication:", error);

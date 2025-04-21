@@ -114,8 +114,12 @@ export default function LoginForm() {
       // Clear sensitive form data
       form.reset();
 
-      // Navigate to dashboard
-      router.push("/dashboard");
+      // Role-based navigation
+      if (role === "admin") {
+        router.push("/dashboard");
+      } else {
+        router.push("/requests");
+      }
     } catch (error) {
       // Increment login attempts
       const newAttempts = loginAttempts + 1;

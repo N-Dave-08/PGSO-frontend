@@ -84,7 +84,6 @@ export default function UserSidebar() {
       "SETTINGS",
     ];
     const personnelRoutes = [
-      "DASHBOARD",
       "PROFILE",
       "TASKS",
       "CALENDAR",
@@ -92,7 +91,6 @@ export default function UserSidebar() {
       "SETTINGS",
     ];
     const headRoutes = [
-      "DASHBOARD",
       "REQUESTS",
       "DEPARTMENTS",
       "DIVISIONS",
@@ -100,7 +98,7 @@ export default function UserSidebar() {
       "SETTINGS",
       "PROFILE",
     ];
-    const staffRoutes = ["DASHBOARD", "REQUESTS", "PROFILE", "SETTINGS"];
+    const staffRoutes = ["REQUESTS", "PROFILE", "SETTINGS"];
 
     switch (role) {
       case "personnel":

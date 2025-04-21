@@ -235,57 +235,48 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   handleAssessRequest: async (requestId, callback) => {
-    const { selectedCategory, categories, selectedPersonnel } = get();
+    const { selectedCategory, selectedPersonnel } = get();
 
     if (!selectedCategory) {
       throw new Error("Please select a category");
     }
 
-    const category = categories.find(
-      (cat) => cat.id.toString() === selectedCategory
-    );
-    if (!category) {
-      throw new Error("Selected category not found");
-    }
-
-    // Find the selected team lead from the selected personnel
-    const selectedTeamLead = category.personnel.find(
-      (p) => p.is_team_lead && selectedPersonnel.includes(p.id)
-    );
-
-    if (!selectedTeamLead) {
-      throw new Error("Please select a team lead");
+    if (selectedPersonnel.length === 0) {
+      throw new Error("Please select at least one personnel");
     }
 
     try {
       set({ isAssessing: true });
 
-      const response = await assignRequest(requestId, {
-        category_id: Number(selectedCategory),
-        team_lead_id: selectedTeamLead.id,
-      });
+      const response = await api.post(
+        `/request/assess/${requestId}`,
+        {
+          personnel_ids: selectedPersonnel,
+        },
+        {
+          headers: await getAuthHeaders(),
+        }
+      );
 
-      if (response.isSuccess) {
+      if (response.data.isSuccess) {
         // Update local request state
         const { request } = get();
         if (request) {
           set({
             request: {
               ...request,
-              category_id: Number(selectedCategory),
-              category_name: category.category_name,
-              team_lead: {
-                id: selectedTeamLead.id,
-                first_name: selectedTeamLead.name.split(" ")[0],
-                last_name: selectedTeamLead.name.split(" ")[1] || "",
-              },
-              status: "For Assign",
+              personnel: selectedPersonnel.map((id) => ({
+                id,
+                name: "", // This will be updated when the page refreshes
+                is_team_lead: false,
+              })),
+              status: "In Progress",
             },
           });
         }
 
         callback?.();
-        return response;
+        return response.data;
       }
     } catch (error) {
       throw error;
@@ -358,11 +349,15 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   ): Promise<FeedbackResponse | undefined> => {
     const { rating, feedback } = get();
 
+    if (!rating) {
+      throw new Error("Please provide a rating");
+    }
+
     try {
       set({ isSubmittingFeedback: true });
       const token = await secureStorage.get("token");
       const response = await axios.post<FeedbackResponse>(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${requestId}/feedback`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/feedback/${requestId}`,
         { rating, feedback },
         {
           headers: {
@@ -373,6 +368,18 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       );
 
       if (response.data.isSuccess) {
+        // Update local request state
+        const { request } = get();
+        if (request) {
+          set({
+            request: {
+              ...request,
+              rating,
+              feedback,
+              status: "Completed",
+            },
+          });
+        }
         callback?.();
         return response.data;
       }

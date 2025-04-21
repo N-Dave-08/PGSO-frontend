@@ -11,5 +11,5 @@ function Dashboard() {
 }
 
 export default withAuth(Dashboard, {
-  allowedRoles: ["admin", "head", "personnel", "staff"],
+  allowedRoles: ["admin"],
 });
