@@ -114,6 +114,7 @@ export default function CreateDivision({
         office_location: officeLocation,
         category_id: parseInt(categoryId, 10),
         staff_id: selectedStaff.map((id) => parseInt(id, 10)),
+        personnel_id: [],
       });
 
       setOpen(false);
