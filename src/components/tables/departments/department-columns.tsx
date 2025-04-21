@@ -25,6 +25,14 @@ import { Division, Department, Head } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
 import EditDepartment from "@/components/modals/edit-department";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const columns: ColumnDef<
   Department & { onDelete: () => Promise<void> }
@@ -116,6 +124,8 @@ export const RowContextMenu = ({
   department: Department;
   onDelete: () => Promise<void>;
 }) => {
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const handleDelete = async () => {
     try {
       await deleteDepartment(department.id);
@@ -125,6 +135,15 @@ export const RowContextMenu = ({
       toast.error(
         error instanceof Error ? error.message : "Failed to delete department"
       );
+    }
+  };
+
+  const handleEditComplete = async () => {
+    try {
+      setShowEditModal(false);
+      await onDelete();
+    } catch (error) {
+      console.error("Error updating department:", error);
     }
   };
 
@@ -141,16 +160,15 @@ export const RowContextMenu = ({
           Copy Department ID
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <EditDepartment
-          department={department}
-          onDepartmentUpdated={onDelete}
-          trigger={
-            <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-              <PenSquare className="mr-2 h-4 w-4" />
-              <span>Edit Department</span>
-            </ContextMenuItem>
-          }
-        />
+        <ContextMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+            setShowEditModal(true);
+          }}
+        >
+          <PenSquare className="mr-2 h-4 w-4" />
+          <span>Edit Department</span>
+        </ContextMenuItem>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ContextMenuItem
@@ -178,6 +196,36 @@ export const RowContextMenu = ({
           </AlertDialogContent>
         </AlertDialog>
       </ContextMenuContent>
+      {showEditModal && (
+        <Dialog
+          open={showEditModal}
+          onOpenChange={(open) => {
+            setShowEditModal(open);
+            if (!open) {
+              setTimeout(() => {
+                document.body.style.pointerEvents = "";
+              }, 0);
+            }
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>Edit Department</DialogTitle>
+              <DialogDescription>
+                Update the department details below.
+              </DialogDescription>
+            </DialogHeader>
+            <EditDepartment
+              department={department}
+              onDepartmentUpdated={handleEditComplete}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </ContextMenu>
   );
 };

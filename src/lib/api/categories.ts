@@ -99,26 +99,46 @@ export const updateCategory = async (
   data: {
     category_name: string;
     description: string;
-    personnel_ids: number[];
-    teamlead_ids: number[];
+    personnel_ids?: number[];
+    teamlead_ids?: number[];
   }
 ) => {
   try {
-    const response = await fetch(`/category/update/${categoryId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to update category");
+    const token = await secureStorage.get("token");
+    if (!token) {
+      await secureStorage.remove("user");
+      await secureStorage.remove("sessionCode");
+      await secureStorage.remove("role");
+      window.dispatchEvent(new Event("authChange"));
+      window.location.href = "/";
+      throw new Error("Authentication token not found");
     }
 
-    return await response.json();
+    // Only include personnel_ids and teamlead_ids if they are not empty
+    const requestData = {
+      category_name: data.category_name,
+      description: data.description,
+      ...(data.personnel_ids?.length
+        ? { personnel_ids: data.personnel_ids }
+        : {}),
+      ...(data.teamlead_ids?.length ? { teamlead_ids: data.teamlead_ids } : {}),
+    };
+
+    const response = await api.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/update/${categoryId}`,
+      requestData,
+      {
+        headers: await getAuthHeaders(),
+      }
+    );
+
+    return response.data;
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || "Failed to update category"
+      );
+    }
     throw error;
   }
 };

@@ -30,6 +30,14 @@ import { Division } from "@/types";
 import { deleteDivision } from "@/lib/api/divisions";
 import { toast } from "sonner";
 import EditDivision from "@/components/modals/edit-division";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const columns: ColumnDef<Division>[] = [
   {
@@ -139,6 +147,8 @@ export const RowContextMenu = ({
   children: React.ReactNode;
   onDelete: () => Promise<void>;
 }) => {
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const handleDelete = async () => {
     try {
       await deleteDivision(row.id);
@@ -148,6 +158,15 @@ export const RowContextMenu = ({
       toast.error(
         error instanceof Error ? error.message : "Failed to delete division"
       );
+    }
+  };
+
+  const handleEditComplete = async () => {
+    try {
+      setShowEditModal(false);
+      await onDelete();
+    } catch (error) {
+      console.error("Error updating division:", error);
     }
   };
 
@@ -164,16 +183,15 @@ export const RowContextMenu = ({
           Copy Division ID
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <EditDivision
-          division={row}
-          onDivisionUpdated={onDelete}
-          trigger={
-            <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-              <PenSquare className="mr-2 h-4 w-4" />
-              <span>Edit Division</span>
-            </ContextMenuItem>
-          }
-        />
+        <ContextMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+            setShowEditModal(true);
+          }}
+        >
+          <PenSquare className="mr-2 h-4 w-4" />
+          <span>Edit Division</span>
+        </ContextMenuItem>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ContextMenuItem
@@ -201,6 +219,38 @@ export const RowContextMenu = ({
           </AlertDialogContent>
         </AlertDialog>
       </ContextMenuContent>
+      {showEditModal && (
+        <Dialog
+          open={showEditModal}
+          onOpenChange={(open) => {
+            setShowEditModal(open);
+            if (!open) {
+              // Force a small delay to ensure proper cleanup
+              setTimeout(() => {
+                document.body.style.pointerEvents = "";
+              }, 0);
+            }
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              // Prevent pointer events from being blocked
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>Edit Division</DialogTitle>
+              <DialogDescription>
+                Update the division details below.
+              </DialogDescription>
+            </DialogHeader>
+            <EditDivision
+              division={row}
+              onDivisionUpdated={handleEditComplete}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </ContextMenu>
   );
 };

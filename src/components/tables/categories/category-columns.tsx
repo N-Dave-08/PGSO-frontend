@@ -25,6 +25,14 @@ import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-col
 import { deleteCategory } from "@/lib/api/categories";
 import { toast } from "sonner";
 import EditCategory from "@/components/modals/edit-category";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -122,6 +130,8 @@ export const RowContextMenu = ({
   category: Category;
   onDelete: () => Promise<void>;
 }) => {
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const handleDelete = async () => {
     try {
       await deleteCategory(category.id);
@@ -131,6 +141,15 @@ export const RowContextMenu = ({
       toast.error(
         error instanceof Error ? error.message : "Failed to delete category"
       );
+    }
+  };
+
+  const handleEditComplete = async () => {
+    try {
+      setShowEditModal(false);
+      await onDelete();
+    } catch (error) {
+      console.error("Error updating category:", error);
     }
   };
 
@@ -147,16 +166,15 @@ export const RowContextMenu = ({
           Copy Category ID
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <EditCategory
-          category={category}
-          onCategoryUpdated={onDelete}
-          trigger={
-            <ContextMenuItem onSelect={(e) => e.preventDefault()}>
-              <PenSquare className="mr-2 h-4 w-4" />
-              Edit Category
-            </ContextMenuItem>
-          }
-        />
+        <ContextMenuItem
+          onSelect={(e) => {
+            e.preventDefault();
+            setShowEditModal(true);
+          }}
+        >
+          <PenSquare className="mr-2 h-4 w-4" />
+          Edit Category
+        </ContextMenuItem>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ContextMenuItem
@@ -184,6 +202,41 @@ export const RowContextMenu = ({
           </AlertDialogContent>
         </AlertDialog>
       </ContextMenuContent>
+      {showEditModal && (
+        <Dialog
+          open={showEditModal}
+          onOpenChange={(open) => {
+            setShowEditModal(open);
+            if (!open) {
+              setTimeout(() => {
+                document.body.style.pointerEvents = "";
+              }, 0);
+            }
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle>Edit Category</DialogTitle>
+              <DialogDescription>
+                Update the category details below.
+              </DialogDescription>
+            </DialogHeader>
+            <EditCategory
+              category={category}
+              onCategoryUpdated={async () => {
+                await handleEditComplete();
+                setTimeout(() => {
+                  document.body.style.pointerEvents = "";
+                }, 0);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </ContextMenu>
   );
 };

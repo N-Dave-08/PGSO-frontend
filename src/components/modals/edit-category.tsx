@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface EditCategoryProps {
   category: Category;
   onCategoryUpdated: () => Promise<void>;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
 }
 
 export default function EditCategory({
@@ -32,7 +32,6 @@ export default function EditCategory({
   onCategoryUpdated,
   trigger,
 }: EditCategoryProps) {
-  const [open, setOpen] = useState(false);
   const [categoryName, setCategoryName] = useState(category.category_name);
   const [description, setDescription] = useState(category.description || "");
   const [personnelMembers, setPersonnelMembers] = useState<User[]>([]);
@@ -49,8 +48,6 @@ export default function EditCategory({
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!open) return;
-
       try {
         setLoadingPersonnel(true);
         const personnelResponse = await getUsers(1, { role_name: "personnel" });
@@ -64,14 +61,7 @@ export default function EditCategory({
     };
 
     fetchData();
-
-    return () => {
-      if (!open) {
-        setPersonnelMembers([]);
-        setSearchQuery("");
-      }
-    };
-  }, [open]);
+  }, []); // Only fetch once when component mounts
 
   useEffect(() => {
     setCategoryName(category.category_name);
@@ -125,35 +115,50 @@ export default function EditCategory({
       const updateData = {
         category_name: categoryName,
         description: description,
-        personnel_ids: selectedPersonnel,
-        teamlead_ids: selectedTeamLeads,
+        ...(selectedPersonnel.length > 0 && {
+          personnel_ids: selectedPersonnel,
+        }),
+        ...(selectedTeamLeads.length > 0 && {
+          teamlead_ids: selectedTeamLeads,
+        }),
       };
 
-      await updateCategory(category.id, updateData);
-      toast.success("Category updated successfully");
-      setOpen(false);
-      await onCategoryUpdated();
+      const response = await updateCategory(category.id, updateData);
+
+      if (response.isSuccess) {
+        toast.success(response.message || "Category updated successfully");
+        // Ensure we cleanup any lingering modal state
+        document.body.style.pointerEvents = "";
+        await onCategoryUpdated();
+      } else {
+        throw new Error(response.message || "Failed to update category");
+      }
     } catch (err) {
       console.error("Category update error:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to update the Category"
-      );
-      toast.error(
-        err instanceof Error ? err.message : "Failed to update the Category"
-      );
+      let errorMessage = "Failed to update the Category";
+
+      if (err instanceof Error && err.message.includes("<!DOCTYPE")) {
+        errorMessage =
+          "Lost connection to server. Please check your internet connection and try again.";
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
+  return trigger ? (
+    <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Category</DialogTitle>
           <DialogDescription>
-            Update the category details below.
+            Make changes to the category details below.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -237,14 +242,6 @@ export default function EditCategory({
           </div>
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Updating..." : "Update Category"}
@@ -253,5 +250,89 @@ export default function EditCategory({
         </form>
       </DialogContent>
     </Dialog>
+  ) : (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="categoryName">Category Name</Label>
+        <Input
+          id="categoryName"
+          value={categoryName}
+          onChange={(e) => setCategoryName(e.target.value)}
+          placeholder="Enter category name"
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter category description"
+          className="min-h-[100px]"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Personnel Members</Label>
+        <Input
+          type="text"
+          placeholder="Search personnel..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {loadingPersonnel ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Loading personnel...
+          </div>
+        ) : filteredPersonnel.length === 0 ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            No personnel members found.
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-[200px] overflow-y-auto rounded-md border p-2">
+            {filteredPersonnel.map((personnel) => (
+              <div key={personnel.id} className="flex flex-col gap-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`personnel-${personnel.id}`}
+                    checked={selectedPersonnel.includes(personnel.id)}
+                    onCheckedChange={() => handlePersonnelToggle(personnel.id)}
+                  />
+                  <label
+                    htmlFor={`personnel-${personnel.id}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {personnel.first_name} {personnel.last_name}
+                  </label>
+                </div>
+                {selectedPersonnel.includes(personnel.id) && (
+                  <div className="flex items-center space-x-2 ml-6">
+                    <Checkbox
+                      id={`teamlead-${personnel.id}`}
+                      checked={selectedTeamLeads.includes(personnel.id)}
+                      onCheckedChange={() => handleTeamLeadToggle(personnel.id)}
+                    />
+                    <label
+                      htmlFor={`teamlead-${personnel.id}`}
+                      className="text-sm text-muted-foreground"
+                    >
+                      Team Lead
+                    </label>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && <div className="text-sm text-red-500">{error}</div>}
+      <div className="flex justify-end space-x-2">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? "Updating..." : "Update Category"}
+        </Button>
+      </div>
+    </form>
   );
 }

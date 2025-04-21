@@ -2,14 +2,6 @@
 
 import { useState, FormEvent, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
@@ -23,15 +15,12 @@ import { toast } from "sonner";
 interface EditDivisionProps {
   division: Division;
   onDivisionUpdated: () => Promise<void>;
-  trigger: React.ReactNode;
 }
 
 export default function EditDivision({
   division,
   onDivisionUpdated,
-  trigger,
 }: EditDivisionProps) {
-  const [open, setOpen] = useState(false);
   const [divisionName, setDivisionName] = useState<string>(
     division.division_name
   );
@@ -58,8 +47,6 @@ export default function EditDivision({
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!open) return;
-
       setLoadingStaff(true);
       setLoadingPersonnel(true);
       setLoadingDivisions(true);
@@ -89,17 +76,7 @@ export default function EditDivision({
     };
 
     fetchData();
-
-    return () => {
-      // Reset states when modal closes
-      if (!open) {
-        setStaffMembers([]);
-        setPersonnelMembers([]);
-        setAllDivisions([]);
-        setDataInitialized(false);
-      }
-    };
-  }, [open]);
+  }, []);
 
   useEffect(() => {
     setDivisionName(division.division_name);
@@ -199,7 +176,6 @@ export default function EditDivision({
 
       await updateDivision(division.id, updateData);
       toast.success("Division updated successfully");
-      setOpen(false);
       await onDivisionUpdated();
     } catch (err) {
       console.error("Division update error:", err);
@@ -215,132 +191,111 @@ export default function EditDivision({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Division</DialogTitle>
-          <DialogDescription>
-            Update the division details below.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="divisionName">Division Name</Label>
-            <Input
-              id="divisionName"
-              value={divisionName}
-              onChange={(e) => setDivisionName(e.target.value)}
-              placeholder="Enter division name"
-              required
-            />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="divisionName">Division Name</Label>
+        <Input
+          id="divisionName"
+          value={divisionName}
+          onChange={(e) => setDivisionName(e.target.value)}
+          placeholder="Enter division name"
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="officeLocation">Office Location</Label>
+        <Input
+          id="officeLocation"
+          value={officeLocation}
+          onChange={(e) => setOfficeLocation(e.target.value)}
+          placeholder="Enter office location"
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Add Staff Members</Label>
+        <Input
+          type="text"
+          placeholder="Search staff..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {!dataInitialized || loadingStaff || loadingDivisions ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Loading available staff...
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="officeLocation">Office Location</Label>
-            <Input
-              id="officeLocation"
-              value={officeLocation}
-              onChange={(e) => setOfficeLocation(e.target.value)}
-              placeholder="Enter office location"
-              required
-            />
+        ) : filteredStaff.length === 0 ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            No available staff members found.
           </div>
-          <div className="space-y-2">
-            <Label>Add Staff Members</Label>
-            <Input
-              type="text"
-              placeholder="Search staff..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {!dataInitialized || loadingStaff || loadingDivisions ? (
-              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading available staff...
+        ) : (
+          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
+            {filteredStaff.map((staff) => (
+              <div key={staff.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`staff-${staff.id}`}
+                  checked={selectedStaff.includes(staff.id)}
+                  onCheckedChange={() => handleStaffToggle(staff.id)}
+                />
+                <label
+                  htmlFor={`staff-${staff.id}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {staff.first_name} {staff.last_name}
+                </label>
               </div>
-            ) : filteredStaff.length === 0 ? (
-              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                No available staff members found.
-              </div>
-            ) : (
-              <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
-                {filteredStaff.map((staff) => (
-                  <div key={staff.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`staff-${staff.id}`}
-                      checked={selectedStaff.includes(staff.id)}
-                      onCheckedChange={() => handleStaffToggle(staff.id)}
-                    />
-                    <label
-                      htmlFor={`staff-${staff.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {staff.first_name} {staff.last_name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-          <div className="space-y-2">
-            <Label>Add Personnel Members</Label>
-            <Input
-              type="text"
-              placeholder="Search personnel..."
-              value={personnelSearchQuery}
-              onChange={(e) => setPersonnelSearchQuery(e.target.value)}
-            />
-            {!dataInitialized || loadingPersonnel || loadingDivisions ? (
-              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading available personnel...
-              </div>
-            ) : filteredPersonnel.length === 0 ? (
-              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                No available personnel members found.
-              </div>
-            ) : (
-              <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
-                {filteredPersonnel.map((personnel) => (
-                  <div
-                    key={personnel.id}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={`personnel-${personnel.id}`}
-                      checked={selectedPersonnel.includes(personnel.id)}
-                      onCheckedChange={() =>
-                        handlePersonnelToggle(personnel.id)
-                      }
-                    />
-                    <label
-                      htmlFor={`personnel-${personnel.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {personnel.first_name} {personnel.last_name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label>Add Personnel Members</Label>
+        <Input
+          type="text"
+          placeholder="Search personnel..."
+          value={personnelSearchQuery}
+          onChange={(e) => setPersonnelSearchQuery(e.target.value)}
+        />
+        {!dataInitialized || loadingPersonnel || loadingDivisions ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Loading available personnel...
           </div>
-          {error && <div className="text-sm text-red-500">{error}</div>}
-          <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? "Updating..." : "Update Division"}
-            </Button>
+        ) : filteredPersonnel.length === 0 ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            No available personnel members found.
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        ) : (
+          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
+            {filteredPersonnel.map((personnel) => (
+              <div key={personnel.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`personnel-${personnel.id}`}
+                  checked={selectedPersonnel.includes(personnel.id)}
+                  onCheckedChange={() => handlePersonnelToggle(personnel.id)}
+                />
+                <label
+                  htmlFor={`personnel-${personnel.id}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {personnel.first_name} {personnel.last_name}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && <div className="text-sm text-red-500">{error}</div>}
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? "Updating..." : "Update Division"}
+        </Button>
+      </div>
+    </form>
   );
 }
