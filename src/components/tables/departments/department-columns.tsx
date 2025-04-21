@@ -142,6 +142,9 @@ export const RowContextMenu = ({
     try {
       setShowEditModal(false);
       await onDelete();
+      setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 0);
     } catch (error) {
       console.error("Error updating department:", error);
     }

@@ -165,6 +165,9 @@ export const RowContextMenu = ({
     try {
       setShowEditModal(false);
       await onDelete();
+      setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 0);
     } catch (error) {
       console.error("Error updating division:", error);
     }
@@ -225,7 +228,6 @@ export const RowContextMenu = ({
           onOpenChange={(open) => {
             setShowEditModal(open);
             if (!open) {
-              // Force a small delay to ensure proper cleanup
               setTimeout(() => {
                 document.body.style.pointerEvents = "";
               }, 0);
@@ -234,7 +236,6 @@ export const RowContextMenu = ({
         >
           <DialogContent
             onPointerDownOutside={(e) => {
-              // Prevent pointer events from being blocked
               e.preventDefault();
             }}
           >
