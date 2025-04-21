@@ -10,22 +10,12 @@ import { DataTableViewOptions } from "./data-table-view-options";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   onSearch?: (searchTerm: string) => void;
-  filterColumns?: {
-    column: string;
-    title: string;
-    options: {
-      label: string;
-      value: string;
-      icon?: React.ComponentType<{ className?: string }>;
-    }[];
-  }[];
   children?: React.ReactNode;
 }
 
 export function DataTableToolbar<TData>({
   table,
   onSearch,
-  filterColumns = [],
   children,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;

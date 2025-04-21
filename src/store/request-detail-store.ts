@@ -24,12 +24,12 @@ interface RequestDetailState {
 
   // Actions
   setRequest: (request: Request) => void;
-  fetchUserRole: () => void;
+  fetchUserRole: () => Promise<void>;
   fetchCategories: () => Promise<void>;
   setSelectedCategory: (categoryId: string | undefined) => void;
   setSelectedPersonnel: (personnelIds: number[]) => void;
   togglePersonnel: (personnelId: number, isChecked: boolean) => void;
-  setRejectionNote: (note: string) => void;
+  setRejectionNote: (note: string) => Promise<void>;
   toggleRejectionDialog: (show: boolean) => void;
   handleStatusUpdate: (
     requestId: number,
@@ -44,16 +44,26 @@ interface RequestDetailState {
   handleMarkAsComplete: (
     requestId: number,
     callback?: () => void
-  ) => Promise<any>;
+  ) => Promise<{ isSuccess: boolean; message: string } | undefined>;
   setRating: (rating: number) => void;
   setHoverRating: (rating: number) => void;
   setFeedback: (feedback: string) => void;
   handleFeedbackSubmit: (
     requestId: number,
     callback?: () => void
-  ) => Promise<any>;
+  ) => Promise<{ isSuccess: boolean; message: string } | undefined>;
   clearRejectionNote: () => void;
   init: () => Promise<void>;
+}
+
+interface CompletionResponse {
+  isSuccess: boolean;
+  message: string;
+}
+
+interface FeedbackResponse {
+  isSuccess: boolean;
+  message: string;
 }
 
 export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
@@ -239,21 +249,23 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     set({ completionFile: file });
   },
 
-  handleMarkAsComplete: async (requestId, callback) => {
+  handleMarkAsComplete: async (
+    requestId: number,
+    callback?: () => void
+  ): Promise<CompletionResponse | undefined> => {
     const { completionFile } = get();
-
     if (!completionFile) {
-      throw new Error("Please select a completion file");
+      throw new Error("Please upload a completion file");
     }
 
     try {
       set({ isCompleting: true });
       const formData = new FormData();
-      formData.append("file_completion", completionFile);
+      formData.append("file", completionFile);
 
       const token = await secureStorage.get("token");
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/pro/request/completion/${requestId}`,
+      const response = await axios.post<CompletionResponse>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${requestId}/complete`,
         formData,
         {
           headers: {
@@ -263,11 +275,16 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
         }
       );
 
-      if (response.data) {
+      if (response.data.isSuccess) {
         callback?.();
         return response.data;
       }
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        throw new Error(
+          error.response.data.message || "Error completing request"
+        );
+      }
       throw error;
     } finally {
       set({ isCompleting: false });
@@ -286,22 +303,23 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     set({ feedback });
   },
 
-  handleFeedbackSubmit: async (requestId, callback) => {
+  handleFeedbackSubmit: async (
+    requestId: number,
+    callback?: () => void
+  ): Promise<FeedbackResponse | undefined> => {
     const { rating, feedback } = get();
-
-    if (rating === 0) {
-      throw new Error("Please provide a rating");
-    }
 
     try {
       set({ isSubmittingFeedback: true });
-
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_BASE_URL + "/requests/feedback",
+      const token = await secureStorage.get("token");
+      const response = await axios.post<FeedbackResponse>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${requestId}/feedback`,
+        { rating, feedback },
         {
-          request_id: requestId,
-          feedback,
-          rating,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -310,6 +328,11 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
         return response.data;
       }
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        throw new Error(
+          error.response.data.message || "Error submitting feedback"
+        );
+      }
       throw error;
     } finally {
       set({ isSubmittingFeedback: false });

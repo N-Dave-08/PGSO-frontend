@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
-import { Users } from "lucide-react";
 import {
   columns,
   RowContextMenu,
@@ -56,9 +55,6 @@ export function CategoryTable({
     <DataTable
       data={data}
       columns={columns}
-      pagination={pagination}
-      onPageChange={onPageChange}
-      onPerPageChange={onPerPageChange}
       renderToolbar={renderToolbar}
       renderPagination={renderPagination}
       rowContextMenu={(row, data) => (

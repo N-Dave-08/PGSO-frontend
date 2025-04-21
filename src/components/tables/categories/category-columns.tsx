@@ -1,6 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, PenSquare, Trash } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PenSquare, Trash } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   ContextMenu,

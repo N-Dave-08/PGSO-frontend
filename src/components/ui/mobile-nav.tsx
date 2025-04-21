@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -12,7 +12,6 @@ import {
   FileText,
   Settings,
   ChartBarStacked,
-  User,
   ListTodo,
   Calendar,
   MessageSquare,
@@ -61,7 +60,6 @@ export function MobileNav() {
   const pathname = usePathname();
   const [user, setUser] = React.useState<LoginUser | null>(null);
   const [role, setRole] = React.useState<string>("");
-  const router = useRouter();
 
   React.useEffect(() => {
     const fetchUserData = async () => {

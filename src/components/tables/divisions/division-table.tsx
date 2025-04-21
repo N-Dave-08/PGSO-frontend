@@ -61,9 +61,6 @@ export function DivisionTable({
     <DataTable
       data={data}
       columns={columns}
-      pagination={pagination}
-      onPageChange={onPageChange}
-      onPerPageChange={onPerPageChange}
       renderToolbar={renderToolbar}
       renderPagination={renderPagination}
       rowContextMenu={(row, data) => (

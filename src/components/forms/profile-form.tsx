@@ -8,14 +8,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -36,20 +34,6 @@ import {
 } from "@/components/ui/select";
 import { profileFormSchema, ProfileFormValues } from "@/schemas";
 import { toast } from "sonner";
-
-// Create a type that includes only the fields we need from either User or LoginUser
-type ProfileUser = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  avatar?: string | null;
-  role_name?: string;
-  department_name?: string;
-  number?: number;
-  age?: string;
-  gender?: string;
-};
 
 interface ProfileFormProps {
   user: User | LoginUser;
@@ -287,9 +271,6 @@ export function ProfileForm({ user, onSave }: ProfileFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Your current password is required to update your profile.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

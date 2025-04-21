@@ -30,7 +30,6 @@ export default function CreateRequest({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
-  const [priority, setPriority] = useState<string>("Low");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +49,6 @@ export default function CreateRequest({
         setTitle("");
         setDescription("");
         setSelectedCategory(0);
-        setPriority("Low");
         onRequestCreated?.();
       } else {
         toast.error(response.message);

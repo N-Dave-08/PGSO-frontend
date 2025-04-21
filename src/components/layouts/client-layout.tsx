@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import UserSidebar from "@/components/sidebars/user-sidebar";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader } from "@/components/loaders/loader";
 import MobileNav from "@/components/ui/mobile-nav";
 
 interface ClientLayoutProps {

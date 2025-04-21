@@ -16,7 +16,10 @@ export class ApiService {
   /**
    * Get resource with optional query params
    */
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+  async get<
+    T,
+    P extends Record<string, string | number | boolean> = Record<string, never>
+  >(endpoint: string, params?: P): Promise<T> {
     try {
       const url = this.buildUrl(endpoint);
       const response = await api.get(url, {
@@ -32,7 +35,7 @@ export class ApiService {
   /**
    * Post data to endpoint
    */
-  async post<T>(endpoint: string, data?: any): Promise<T> {
+  async post<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     try {
       const url = this.buildUrl(endpoint);
       const response = await api.post(url, data, {
@@ -47,7 +50,7 @@ export class ApiService {
   /**
    * Put data to endpoint
    */
-  async put<T>(endpoint: string, data?: any): Promise<T> {
+  async put<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     try {
       const url = this.buildUrl(endpoint);
       const response = await api.put(url, data, {

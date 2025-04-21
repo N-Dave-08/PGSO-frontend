@@ -9,7 +9,6 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Badge } from "@/components/ui/badge";
 import { Staff } from "@/helpers/table-data/staff-data";
 
 export const columns: ColumnDef<Staff>[] = [

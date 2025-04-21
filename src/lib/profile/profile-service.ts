@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import { LoginUser } from "@/types/auth";
 
@@ -12,16 +12,24 @@ interface ProfileUpdatePayload {
   current_password: string;
 }
 
+interface ProfileFormValues extends Omit<ProfileUpdatePayload, "number"> {
+  number: string | number;
+}
+
 export interface ProfileUpdateResponse {
   isSuccess: boolean;
   message: string;
   user?: Partial<LoginUser>;
 }
 
+interface ApiErrorResponse {
+  message: string;
+}
+
 export async function updateUserProfile(
-  values: any,
-  updateUserFn: (userData: Partial<LoginUser>) => Promise<any>
-) {
+  values: ProfileFormValues,
+  updateUserFn: (userData: Partial<LoginUser>) => Promise<void>
+): Promise<void> {
   try {
     // Get token from storage
     const token = await secureStorage.get("token");
@@ -58,18 +66,22 @@ export async function updateUserProfile(
     if (isSuccess && user) {
       // Update the user in the auth context using the updateUser method
       await updateUserFn(user);
-      return Promise.resolve();
+      return;
     } else {
       // Return the specific error message from the API
-      return Promise.reject(new Error(message || "Unknown error occurred"));
+      throw new Error(message || "Unknown error occurred");
     }
-  } catch (error: any) {
+  } catch (error) {
     // Handle Axios error responses
-    if (error.response && error.response.data) {
-      const { message } = error.response.data;
-      return Promise.reject(new Error(message || "Error updating profile"));
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      if (axiosError.response?.data) {
+        throw new Error(
+          axiosError.response.data.message || "Error updating profile"
+        );
+      }
     }
 
-    return Promise.reject(error);
+    throw error;
   }
 }

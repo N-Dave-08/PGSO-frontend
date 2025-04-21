@@ -27,14 +27,6 @@ import {
 interface DataTableProps<TData> {
   data: TData[];
   columns: ColumnDef<TData>[];
-  pagination?: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
-  };
-  onPageChange?: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
   renderToolbar?: (table: TanstackTable<TData>) => React.ReactNode;
   renderPagination?: (table: TanstackTable<TData>) => React.ReactNode;
   rowContextMenu?: (row: React.ReactNode, data: TData) => React.ReactNode;
@@ -43,9 +35,6 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({
   data,
   columns,
-  pagination,
-  onPageChange,
-  onPerPageChange,
   renderToolbar,
   renderPagination,
   rowContextMenu,

@@ -13,7 +13,6 @@ interface RequestMediaProps {
 export function RequestMedia({ request }: RequestMediaProps) {
   const {
     userRole,
-    completionFile,
     setCompletionFile,
     rating,
     hoverRating,
