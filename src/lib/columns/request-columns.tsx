@@ -41,10 +41,12 @@ export type Request = {
   file_completion_url: string | null;
   category_id: number | null;
   category_name: string | null;
-  team_lead: string | null;
+  team_lead: { id: number; first_name: string; last_name: string } | null;
   personnel: {
     id: number;
     name: string;
+    is_team_lead: boolean;
+    team_lead_id?: number;
   }[];
   feedback: string | null;
   rating: number | null;
