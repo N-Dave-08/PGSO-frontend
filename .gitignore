@@ -48,6 +48,8 @@ request.http
 .env.test.local
 .env.production.local
 
+.cursorrules
+
 
 
 
