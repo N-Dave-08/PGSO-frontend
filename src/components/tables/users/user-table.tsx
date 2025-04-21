@@ -96,9 +96,6 @@ export function UserTable({
     <DataTable
       data={data}
       columns={columns}
-      pagination={pagination}
-      onPageChange={onPageChange}
-      onPerPageChange={onPerPageChange}
       renderToolbar={renderToolbar}
       renderPagination={renderPagination}
       rowContextMenu={(row, data) => <RowContextMenu row={row} user={data} />}
