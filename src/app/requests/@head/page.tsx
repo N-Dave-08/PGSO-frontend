@@ -43,6 +43,7 @@ export default function Page() {
           file_completion_url: request.file_completion_url,
           category_id: request.category_id,
           category_name: request.category_name,
+          team_lead: request.team_lead,
           personnel: request.personnel || [],
           feedback: request.feedback,
           rating: request.rating,

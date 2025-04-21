@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { Request, RequestStatusResponse } from "@/types";
-import { updateRequestStatus, assessRequest } from "@/lib/api/requests";
+import { updateRequestStatus } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import { Category } from "@/types/categories";
+import api, { getAuthHeaders } from "@/lib/api/axios";
 
 interface RequestDetailState {
   request: Request | null;
@@ -121,7 +122,10 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   setSelectedCategory: (categoryId) => {
-    set({ selectedCategory: categoryId });
+    set({
+      selectedCategory: categoryId,
+      selectedPersonnel: [], // Reset selected personnel when category changes
+    });
   },
 
   setSelectedPersonnel: (personnelIds) => {
@@ -129,7 +133,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   togglePersonnel: (personnelId, isChecked) => {
-    const { selectedPersonnel } = get();
+    const { selectedPersonnel, categories, selectedCategory } = get();
 
     // Ensure the ID is a number
     const idAsNumber =
@@ -140,9 +144,28 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       return;
     }
 
+    // Find the selected category
+    const category = categories.find(
+      (cat) => cat.id.toString() === selectedCategory
+    );
+    if (!category) {
+      console.error("Selected category not found");
+      return;
+    }
+
+    // Find if the personnel is a team lead in the selected category
+    const isTeamLead = category.personnel.find(
+      (p) => p.id === idAsNumber
+    )?.is_team_lead;
+
     if (isChecked) {
       set({ selectedPersonnel: [...selectedPersonnel, idAsNumber] });
     } else {
+      // If unchecking a team lead, show error or handle appropriately
+      if (isTeamLead) {
+        console.error("Cannot unselect team lead");
+        return;
+      }
       set({
         selectedPersonnel: selectedPersonnel.filter((id) => id !== idAsNumber),
       });
@@ -209,11 +232,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   handleAssessRequest: async (requestId, callback) => {
-    const { selectedCategory, selectedPersonnel } = get();
-
-    if (!selectedCategory) {
-      throw new Error("Please select a category");
-    }
+    const { selectedPersonnel } = get();
 
     if (selectedPersonnel.length === 0) {
       throw new Error("Please select at least one personnel");
@@ -222,21 +241,19 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     try {
       set({ isAssessing: true });
 
-      // Make sure category_id is a valid number
-      const categoryId = parseInt(selectedCategory, 10);
+      const response = await api.post(
+        `/request/assess/${requestId}`,
+        {
+          personnel_ids: selectedPersonnel,
+        },
+        {
+          headers: await getAuthHeaders(),
+        }
+      );
 
-      if (isNaN(categoryId)) {
-        throw new Error("Invalid category ID");
-      }
-
-      const response = await assessRequest(requestId, {
-        category_id: categoryId,
-        personnel_ids: selectedPersonnel,
-      });
-
-      if (response.isSuccess) {
+      if (response.data.isSuccess) {
         callback?.();
-        return response;
+        return response.data;
       }
     } catch (error) {
       throw error;

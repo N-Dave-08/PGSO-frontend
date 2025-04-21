@@ -150,3 +150,42 @@ export const assessRequest = async (
     throw handleApiError(error);
   }
 };
+
+/**
+ * Assigns a request to a team lead and category
+ */
+export const assignRequest = async (
+  requestId: number,
+  data: { category_id: number; team_lead_id: number }
+): Promise<{ isSuccess: boolean; message: string }> => {
+  try {
+    if (!requestId || isNaN(Number(requestId))) {
+      throw new Error("Invalid request ID");
+    }
+
+    const response = await api.post(
+      `/request/assign/${requestId}`,
+      {
+        category_id: Number(data.category_id),
+        team_lead_id: Number(data.team_lead_id),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${await secureStorage.get("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.data) {
+      throw new Error("No response data received from server");
+    }
+
+    return {
+      isSuccess: response.data.isSuccess || true,
+      message: response.data.message || "Request assigned successfully",
+    };
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};

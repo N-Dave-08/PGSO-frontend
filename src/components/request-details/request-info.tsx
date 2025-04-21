@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { useEffect } from "react";
 
 // Initialize dayjs plugins
 dayjs.extend(utc);
@@ -31,8 +32,13 @@ export function RequestInfo({ request }: RequestInfoProps) {
     selectedCategory,
     selectedPersonnel,
     setSelectedCategory,
-    togglePersonnel,
+    setSelectedPersonnel,
+    fetchCategories,
   } = useRequestDetailStore();
+
+  useEffect(() => {
+    fetchCategories().catch(console.error);
+  }, [fetchCategories]);
 
   const formatDate = (date: string) => {
     return dayjs(date).format("MMM D, YYYY");
@@ -50,7 +56,7 @@ export function RequestInfo({ request }: RequestInfoProps) {
       </div>
       <div className="flex flex-col space-y-1">
         <span className="font-medium text-sm">Location:</span>
-        <span>{request.requested_by.office_location}</span>
+        <span>{request.requested_by.division_location}</span>
       </div>
       <div className="flex flex-col space-y-1">
         <span className="font-medium text-sm">Category:</span>
@@ -90,41 +96,181 @@ export function RequestInfo({ request }: RequestInfoProps) {
         <div className="space-y-2">
           {userRole === "admin" && request.status === "For Process" ? (
             selectedCategory ? (
-              categories
-                .find((cat) => cat.id.toString() === selectedCategory)
-                ?.personnel.map((person) => (
-                  <div key={person.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`person-${person.id}`}
-                      checked={selectedPersonnel.includes(person.id)}
-                      onCheckedChange={(checked) => {
-                        if (typeof person.id === "number") {
-                          togglePersonnel(person.id, checked === true);
-                        } else {
-                          const personId = parseInt(String(person.id), 10);
-                          if (!isNaN(personId)) {
-                            togglePersonnel(personId, checked === true);
-                          }
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor={`person-${person.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              <div className="space-y-4">
+                {/* Team Lead Section */}
+                {categories
+                  .find((cat) => cat.id.toString() === selectedCategory)
+                  ?.personnel.filter((person) => person.is_team_lead)
+                  .map((teamLead) => (
+                    <div
+                      key={teamLead.id}
+                      className="border-l-2 border-primary pl-3 mb-2"
                     >
-                      {person.name}
-                    </label>
-                  </div>
-                )) || "No personnel in this category"
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`person-${teamLead.id}`}
+                          checked={selectedPersonnel.includes(teamLead.id)}
+                          onCheckedChange={(checked) => {
+                            const category = categories.find(
+                              (cat) => cat.id.toString() === selectedCategory
+                            );
+                            if (category) {
+                              if (checked) {
+                                // When checking a team lead, select them and their personnel
+                                const teamPersonnel = category.personnel
+                                  .filter((p) => !p.is_team_lead)
+                                  .filter((p) => p.team_lead_id === teamLead.id)
+                                  .map((p) => p.id);
+                                setSelectedPersonnel([
+                                  ...selectedPersonnel,
+                                  teamLead.id,
+                                  ...teamPersonnel,
+                                ]);
+                              } else {
+                                // When unchecking, deselect them and their personnel
+                                const teamPersonnel = category.personnel
+                                  .filter((p) => !p.is_team_lead)
+                                  .filter((p) => p.team_lead_id === teamLead.id)
+                                  .map((p) => p.id);
+                                setSelectedPersonnel(
+                                  selectedPersonnel.filter(
+                                    (id) =>
+                                      id !== teamLead.id &&
+                                      !teamPersonnel.includes(id)
+                                  )
+                                );
+                              }
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor={`person-${teamLead.id}`}
+                          className="text-sm font-semibold text-primary flex items-center space-x-2"
+                        >
+                          <span>{teamLead.name}</span>
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                            Team Lead
+                          </span>
+                        </label>
+                      </div>
+
+                      {/* Show only this team lead's personnel when selected */}
+                      {selectedPersonnel.includes(teamLead.id) && (
+                        <div className="pl-6 mt-2 space-y-2">
+                          {categories
+                            .find(
+                              (cat) => cat.id.toString() === selectedCategory
+                            )
+                            ?.personnel.filter(
+                              (p) =>
+                                !p.is_team_lead &&
+                                p.team_lead_id === teamLead.id
+                            )
+                            .map((member) => (
+                              <div
+                                key={member.id}
+                                className="flex items-center space-x-2"
+                              >
+                                <label className="text-sm font-medium leading-none">
+                                  {member.name}
+                                </label>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
             ) : (
               "Select a category to view personnel"
             )
           ) : (
-            <p className="text-sm">
-              {Array.isArray(request.personnel) && request.personnel.length > 0
-                ? request.personnel.map((p) => p.name).join(", ")
-                : "No personnel assigned"}
-            </p>
+            <div className="space-y-2">
+              {/* Display Team Lead */}
+              {request.team_lead && (
+                <div className="border-l-2 border-primary pl-3">
+                  <span className="font-semibold text-primary">
+                    {`${request.team_lead.first_name} ${request.team_lead.last_name}`}
+                  </span>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded ml-2">
+                    Team Lead
+                  </span>
+                </div>
+              )}
+
+              {/* Display Regular Personnel with Checkboxes for Team Lead */}
+              {userRole === "personnel" && request.status === "For Assign" && (
+                <div className="pl-3 mt-4 space-y-3">
+                  <span className="text-sm font-medium">
+                    Select Personnel to Assign:
+                  </span>
+                  {categories.find((cat) => cat.id === request.category_id)
+                    ?.personnel ? (
+                    <div className="space-y-2">
+                      {categories
+                        .find((cat) => cat.id === request.category_id)
+                        ?.personnel.filter((p) => !p.is_team_lead) // Only show non-team-lead personnel
+                        .map((p) => (
+                          <div
+                            key={p.id}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={`assign-personnel-${p.id}`}
+                              checked={selectedPersonnel.includes(p.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setSelectedPersonnel([
+                                    ...selectedPersonnel,
+                                    p.id,
+                                  ]);
+                                } else {
+                                  setSelectedPersonnel(
+                                    selectedPersonnel.filter(
+                                      (id) => id !== p.id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={`assign-personnel-${p.id}`}
+                              className="text-sm text-muted-foreground"
+                            >
+                              {p.name}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No personnel available in this category
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Display Regular Personnel (Read-only view) */}
+              {(userRole !== "personnel" || request.status !== "For Assign") &&
+                Array.isArray(request.personnel) &&
+                request.personnel.length > 0 && (
+                  <div className="pl-3">
+                    {request.personnel.map((p) => (
+                      <div key={p.id} className="text-muted-foreground">
+                        {p.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              {!request.team_lead &&
+                (!Array.isArray(request.personnel) ||
+                  request.personnel.length === 0) && (
+                  <p className="text-sm text-muted-foreground">
+                    No personnel assigned
+                  </p>
+                )}
+            </div>
           )}
         </div>
       </div>

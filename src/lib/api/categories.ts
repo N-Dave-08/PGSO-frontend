@@ -6,6 +6,13 @@ import {
   CategoriesResponse,
 } from "@/types/categories";
 import axios from "axios";
+
+export interface Category {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 /**
  * Creates a new category
  */

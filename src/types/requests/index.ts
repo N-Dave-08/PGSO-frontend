@@ -2,14 +2,17 @@ export interface RequestedBy {
   id: number;
   first_name: string;
   last_name: string;
-  division: string;
-  department: string;
-  office_location: string;
+  division_location: string;
+  division?: string;
+  department?: string;
+  office_location?: string;
 }
 
 export interface RequestPersonnel {
   id: number;
   name: string;
+  is_team_lead: boolean;
+  team_lead_id?: number;
 }
 
 export interface Request {
@@ -23,6 +26,7 @@ export interface Request {
   file_completion_url: string | null;
   category_id: number | null;
   category_name: string | null;
+  team_lead: { id: number; first_name: string; last_name: string } | null;
   note: string | null;
   personnel: RequestPersonnel[];
   feedback: string | null;

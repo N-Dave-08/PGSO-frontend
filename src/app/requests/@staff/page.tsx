@@ -1,103 +1,115 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import RequestCards from "@/components/cards/request-cards";
+import { useEffect, useState } from "react";
 import { getRequests } from "@/lib/api/requests";
-import { Request } from "@/types";
-import { Loader } from "@/components/loaders/loader";
+import RequestCards from "@/components/cards/request-cards";
+import { Request, Pagination } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import CreateRequest from "@/components/modals/create-request";
 
-export default function Page() {
+export default function AdminPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    last_page: 1,
-    per_page: 10,
-    total: 0,
-  });
+  const [pagination, setPagination] = useState<Pagination | null>(null);
 
-  const fetchRequests = useCallback(
-    async (page = 1) => {
-      try {
-        if (page > 1) {
-          setLoadingMore(true);
-        } else {
-          setLoading(true);
-        }
+  const fetchRequests = async (page: number = 1) => {
+    try {
+      const isInitialLoad = page === 1;
 
-        const response = await getRequests(page);
-        const requestData = response.requests || [];
-
-        const formattedData = requestData.map((request: Request): Request => {
-          // console.log('Individual Request:', JSON.stringify(request, null, 2));
-          // console.log('Requested By:', request.requested_by);
-          // console.log("REQUESTERRRR", request.requested_by_name)
-
-          return {
-            id: request.id,
-            control_no: request.control_no,
-            request_title: request.request_title,
-            description: request.description,
-            file_path: request.file_path,
-            file_url: request.file_url,
-            file_completion: request.file_completion,
-            file_completion_url: request.file_completion_url,
-            category_id: request.category_id,
-            category_name: request.category_name,
-            personnel: request.personnel || [],
-            feedback: request.feedback,
-            rating: request.rating,
-            status: request.status,
-            date_requested: request.date_requested,
-            date_completed: request.date_completed,
-            requested_by: request.requested_by,
-            note: request.note || null,
-          };
-        });
-
-        // console.log("Formatted Data:", formattedData);
-        // If loading more, append to existing data, otherwise replace
-        if (page > 1) {
-          // Deduplicate by ID to avoid duplicate key errors
-          const existingIds = new Set(requests.map((r) => r.id));
-          const newRequests = formattedData.filter(
-            (r) => !existingIds.has(r.id)
-          );
-          setRequests((prev) => [...prev, ...newRequests]);
-        } else {
-          setRequests(formattedData);
-        }
-
-        setPagination(response.pagination);
-        setError(null);
-      } catch (error) {
-        console.error("Failed to fetch requests:", error);
-        setError("Failed to load requests. Please try again.");
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
       }
-    },
-    [requests]
-  );
 
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+      const response = await getRequests(page, 6); // Fetch 6 items per page
+      const requestData = response.requests || [];
+      const paginationData = response.pagination;
+
+      const formattedData = requestData.map((request: Request): Request => {
+        return {
+          id: request.id,
+          control_no: request.control_no,
+          request_title: request.request_title,
+          description: request.description,
+          file_path: request.file_path,
+          file_url: request.file_url,
+          file_completion: request.file_completion,
+          file_completion_url: request.file_completion_url,
+          category_id: request.category_id,
+          category_name: request.category_name,
+          team_lead: request.team_lead,
+          personnel: request.personnel || [],
+          feedback: request.feedback,
+          rating: request.rating,
+          status: request.status,
+          date_requested: request.date_requested,
+          date_completed: request.date_completed,
+          requested_by: request.requested_by,
+          note: request.note || null,
+        };
+      });
+
+      if (isInitialLoad) {
+        setRequests(formattedData);
+      } else {
+        setRequests((prev) => [...prev, ...formattedData]);
+      }
+
+      setPagination(paginationData);
+      setError(null);
+    } catch (error) {
+      console.error("Failed to fetch requests:", error);
+      setError("Failed to load requests. Please try again.");
+      // Don't redirect here, just show an error message
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
   const handleLoadMore = () => {
-    if (!loadingMore && pagination.current_page < pagination.last_page) {
+    if (
+      pagination &&
+      pagination.current_page < pagination.last_page &&
+      !loadingMore
+    ) {
       fetchRequests(pagination.current_page + 1);
     }
   };
 
-  if (loading && !loadingMore) {
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  if (loading) {
     return (
-      <div>
-        <Loader />
+      <div className="container mx-auto py-10">
+        <div className="space-y-4">
+          <Skeleton className="h-12 w-3/4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="border rounded-lg p-4 shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <Skeleton className="h-6 w-1/2" />
+                  <Skeleton className="h-5 w-24 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-3/4 mb-1" />
+                <Skeleton className="h-4 w-full mb-3" />
+                <div className="flex items-center gap-2 mb-3">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-4 w-1/3" />
+                </div>
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-8 w-24 rounded-md" />
+                  <Skeleton className="h-8 w-24 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -116,14 +128,13 @@ export default function Page() {
     );
   }
 
-  // console.log("REQUEST DATA", requests);
   return (
-    <div className="container mx-auto py-10">
+    <div className="">
       <CreateRequest onRequestCreated={() => fetchRequests(1)} />
       <RequestCards
         requests={requests}
         onRequestUpdate={() => fetchRequests(1)}
-        pagination={pagination}
+        pagination={pagination || undefined}
         onLoadMore={handleLoadMore}
         loading={loadingMore}
       />

@@ -41,6 +41,7 @@ export type Request = {
   file_completion_url: string | null;
   category_id: number | null;
   category_name: string | null;
+  team_lead: string | null;
   personnel: {
     id: number;
     name: string;
@@ -61,6 +62,7 @@ export type RequestedBy = {
   division: string;
   office_location: string;
   department: string;
+  division_location: string;
 };
 
 interface RequestColumnProps {
@@ -165,18 +167,10 @@ export const columns = ({
             <HoverCardContent className="w-fit">
               <div className="space-y-1">
                 <p className="text-sm font-semibold">Additional Information</p>
-                {typedRequester.division && (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Division:</span>{" "}
-                    {typedRequester.division}
-                  </div>
-                )}
-                {typedRequester.department && (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Department:</span>{" "}
-                    {typedRequester.department}
-                  </div>
-                )}
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Location:</span>{" "}
+                  {typedRequester.division_location}
+                </div>
               </div>
             </HoverCardContent>
           </HoverCard>
@@ -191,8 +185,8 @@ export const columns = ({
     header: "Location",
     cell: ({ row }) => {
       const requester = row.getValue("requested_by") as RequestedBy;
-      return requester?.office_location ? (
-        <div>{requester.office_location}</div>
+      return requester?.division_location ? (
+        <div>{requester.division_location}</div>
       ) : (
         <div className="text-muted-foreground">-</div>
       );

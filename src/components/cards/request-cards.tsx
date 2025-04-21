@@ -37,7 +37,7 @@ export default function RequestCards({
   // First deduplicate the requests array by ID
   const uniqueRequests = React.useMemo(() => {
     const uniqueMap = new Map();
-    requests.forEach(request => {
+    requests.forEach((request) => {
       if (!uniqueMap.has(request.id)) {
         uniqueMap.set(request.id, request);
       }
@@ -130,7 +130,7 @@ export default function RequestCards({
                         {request.requested_by.last_name}
                       </p>
                       <p className="text-muted-foreground">
-                        Department: {request.requested_by.department}
+                        Location: {request.requested_by.division_location}
                       </p>
                     </div>
                   </div>

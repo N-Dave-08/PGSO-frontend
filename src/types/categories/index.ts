@@ -1,7 +1,8 @@
 export interface CategoryPersonnel {
   id: number;
   name: string;
-  email: string;
+  is_team_lead: boolean;
+  team_lead_id?: number;
 }
 
 export interface Category {
@@ -10,11 +11,7 @@ export interface Category {
   description: string;
   created_at: string;
   updated_at: string;
-  personnel: {
-    id: number;
-    name: string;
-    is_team_lead: number;
-  }[];
+  personnel: CategoryPersonnel[];
 }
 
 export interface CreateCategoryData {

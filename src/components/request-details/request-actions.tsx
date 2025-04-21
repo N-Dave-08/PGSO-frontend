@@ -30,6 +30,7 @@ export function RequestActions({
     handleAssessRequest,
     handleMarkAsComplete,
     handleFeedbackSubmit,
+    selectedPersonnel,
   } = useRequestDetailStore();
 
   const onStatusUpdate = async (status: "Approved" | "Rejected") => {
@@ -44,22 +45,16 @@ export function RequestActions({
 
   const onAssessRequest = async () => {
     try {
-      await handleAssessRequest(request.id, onRequestUpdate);
-      toast.success("Request assigned successfully");
-      onClose();
+      await handleAssessRequest(request.id, () => {
+        toast.success("Request assigned successfully");
+        onClose();
+      });
     } catch (error) {
-      console.error("Error assessing request:", error);
-
-      // Show a more specific error message if available
-      let errorMessage = "An error occurred while assigning the request";
-
       if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === "string") {
-        errorMessage = error;
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to assign request");
       }
-
-      toast.error(errorMessage);
     }
   };
 
@@ -133,6 +128,20 @@ export function RequestActions({
             </div>
           )}
         </>
+      )}
+      {userRole === "personnel" && request.status === "For Assign" && (
+        <Button
+          onClick={() => {
+            if (selectedPersonnel.length === 0) {
+              toast.error("Please select at least one personnel");
+              return;
+            }
+            onAssessRequest();
+          }}
+          disabled={isAssessing}
+        >
+          {isAssessing ? "Loading..." : "Assign Personnel"}
+        </Button>
       )}
       {userRole === "personnel" && request.status === "For Completion" && (
         <Button onClick={onMarkAsComplete} disabled={isCompleting}>
