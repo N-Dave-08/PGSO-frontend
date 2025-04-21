@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Request, RequestStatusResponse } from "@/types";
-import { updateRequestStatus } from "@/lib/api/requests";
+import { updateRequestStatus, assignRequest } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import { Category } from "@/types/categories";
@@ -235,28 +235,57 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   handleAssessRequest: async (requestId, callback) => {
-    const { selectedPersonnel } = get();
+    const { selectedCategory, categories, selectedPersonnel } = get();
 
-    if (selectedPersonnel.length === 0) {
-      throw new Error("Please select at least one personnel");
+    if (!selectedCategory) {
+      throw new Error("Please select a category");
+    }
+
+    const category = categories.find(
+      (cat) => cat.id.toString() === selectedCategory
+    );
+    if (!category) {
+      throw new Error("Selected category not found");
+    }
+
+    // Find the selected team lead from the selected personnel
+    const selectedTeamLead = category.personnel.find(
+      (p) => p.is_team_lead && selectedPersonnel.includes(p.id)
+    );
+
+    if (!selectedTeamLead) {
+      throw new Error("Please select a team lead");
     }
 
     try {
       set({ isAssessing: true });
 
-      const response = await api.post(
-        `/request/assess/${requestId}`,
-        {
-          personnel_ids: selectedPersonnel,
-        },
-        {
-          headers: await getAuthHeaders(),
-        }
-      );
+      const response = await assignRequest(requestId, {
+        category_id: Number(selectedCategory),
+        team_lead_id: selectedTeamLead.id,
+      });
 
-      if (response.data.isSuccess) {
+      if (response.isSuccess) {
+        // Update local request state
+        const { request } = get();
+        if (request) {
+          set({
+            request: {
+              ...request,
+              category_id: Number(selectedCategory),
+              category_name: category.category_name,
+              team_lead: {
+                id: selectedTeamLead.id,
+                first_name: selectedTeamLead.name.split(" ")[0],
+                last_name: selectedTeamLead.name.split(" ")[1] || "",
+              },
+              status: "For Assign",
+            },
+          });
+        }
+
         callback?.();
-        return response.data;
+        return response;
       }
     } catch (error) {
       throw error;
