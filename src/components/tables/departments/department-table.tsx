@@ -21,7 +21,6 @@ interface DepartmentTableProps {
     last_page: number;
   };
   onPageChange?: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
   onFilterChange?: (filters: { division_id?: number; search?: string }) => void;
 }
@@ -30,7 +29,6 @@ export function DepartmentTable({
   data,
   pagination,
   onPageChange,
-  onPerPageChange,
   onDelete,
   onFilterChange,
 }: DepartmentTableProps) {
@@ -91,7 +89,7 @@ export function DepartmentTable({
           onPageChange={onPageChange}
         />
       ),
-    [pagination, onPageChange, onPerPageChange]
+    [pagination, onPageChange]
   );
 
   const tableData = React.useMemo(
