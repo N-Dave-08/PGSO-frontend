@@ -21,7 +21,6 @@ interface DivisionTableProps {
     last_page: number;
   };
   onPageChange?: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
   onSearch?: (searchTerm: string) => void;
 }
@@ -30,7 +29,6 @@ export function DivisionTable({
   data,
   pagination,
   onPageChange,
-  onPerPageChange,
   onDelete,
   onSearch,
 }: DivisionTableProps) {
@@ -51,10 +49,9 @@ export function DivisionTable({
           total={pagination.total}
           tableName="division"
           onPageChange={(page) => onPageChange?.(page)}
-          onPerPageChange={(perPage) => onPerPageChange?.(perPage)}
         />
       ),
-    [pagination, onPageChange, onPerPageChange]
+    [pagination, onPageChange]
   );
 
   return (

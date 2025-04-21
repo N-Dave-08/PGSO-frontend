@@ -20,7 +20,6 @@ interface UserTableProps {
     last_page: number;
   };
   onPageChange: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
   onFilterChange?: (filters: { role_name?: string }) => void;
   onSearch?: (searchTerm: string) => void;
 }
@@ -58,7 +57,6 @@ export function UserTable({
   data,
   pagination,
   onPageChange,
-  onPerPageChange,
   onFilterChange,
   onSearch,
 }: UserTableProps) {
@@ -86,10 +84,9 @@ export function UserTable({
         total={pagination.total}
         tableName="user"
         onPageChange={onPageChange}
-        onPerPageChange={onPerPageChange}
       />
     ),
-    [pagination, onPageChange, onPerPageChange]
+    [pagination, onPageChange]
   );
 
   return (

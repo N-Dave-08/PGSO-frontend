@@ -37,7 +37,10 @@ export const createDivision = async (data: CreateDivisionRequest) => {
   }
 };
 
-export const getDivisions = async (filters?: { search?: string }) => {
+export const getDivisions = async (
+  page: number = 1,
+  filters?: { search?: string }
+) => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {
@@ -45,7 +48,7 @@ export const getDivisions = async (filters?: { search?: string }) => {
     }
 
     const response = await axios.post(
-      process.env.NEXT_PUBLIC_API_BASE_URL + "/divisions",
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/divisions?page=${page}`,
       filters || {},
       {
         headers: {

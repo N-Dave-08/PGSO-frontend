@@ -16,7 +16,6 @@ interface CategoryTableProps {
   data: Category[];
   pagination: Pagination;
   onPageChange: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
   onSearch?: (searchTerm: string) => void;
 }
@@ -25,7 +24,6 @@ export function CategoryTable({
   data,
   pagination,
   onPageChange,
-  onPerPageChange,
   onDelete,
   onSearch,
 }: CategoryTableProps) {
@@ -45,10 +43,9 @@ export function CategoryTable({
         total={pagination.total}
         tableName="category"
         onPageChange={onPageChange}
-        onPerPageChange={onPerPageChange}
       />
     ),
-    [pagination, onPageChange, onPerPageChange]
+    [pagination, onPageChange]
   );
 
   return (

@@ -78,10 +78,18 @@ export default function Page() {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: 1,
+    }));
   };
 
   const handleFilterChange = (filters: { role_name?: string }) => {
     setRoleFilter(filters.role_name);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: 1,
+    }));
   };
 
   const handlePageChange = (page: number) => {

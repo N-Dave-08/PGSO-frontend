@@ -5,13 +5,6 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const pluralize = (word: string, count: number) => {
   if (count === 1) return word;
@@ -25,7 +18,6 @@ interface DataTablePaginationProps {
   total: number;
   tableName: string;
   onPageChange: (page: number) => void;
-  onPerPageChange?: (perPage: number) => void;
 }
 
 export function DataTablePagination({
@@ -35,7 +27,6 @@ export function DataTablePagination({
   total,
   tableName,
   onPageChange,
-  onPerPageChange,
 }: DataTablePaginationProps) {
   return (
     <div className="flex items-center justify-between px-2">
@@ -45,23 +36,7 @@ export function DataTablePagination({
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
-          <Select
-            value={`${perPage}`}
-            onValueChange={(value) => {
-              onPerPageChange?.(Number(value));
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={perPage} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[5, 10].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <span className="text-sm">{perPage}</span>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {currentPage} of {pageCount}

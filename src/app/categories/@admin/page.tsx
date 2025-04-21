@@ -76,6 +76,10 @@ export default function Page() {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: 1,
+    }));
   };
 
   const formattedPersonnel = users

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { getDepartments } from "@/lib/api/department";
 import { DepartmentTable } from "@/components/tables/departments/department-table";
 import { Department } from "@/types";
+import { Pagination } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 import CreateDepartment from "@/components/modals/create-department";
 
@@ -13,11 +14,17 @@ export default function Page() {
   const [currentFilters, setCurrentFilters] = useState<{
     division_id?: number;
   }>();
+  const [pagination, setPagination] = useState<Pagination>({
+    total: 0,
+    per_page: 10,
+    current_page: 1,
+    last_page: 1,
+  });
 
   const fetchDepartments = useCallback(
-    async (filters?: { division_id?: number }) => {
+    async (page: number = 1, filters?: { division_id?: number }) => {
       try {
-        const response = await getDepartments(filters);
+        const response = await getDepartments(page, filters);
         const departmentsData = response.departments || [];
         const formattedData = departmentsData.map(
           (department: Department): Department => ({
@@ -30,6 +37,7 @@ export default function Page() {
           })
         );
         setDepartments(formattedData);
+        setPagination(response.pagination);
       } catch (error) {
         console.error("Failed to fetch departments:", error);
       }
@@ -39,14 +47,22 @@ export default function Page() {
 
   useEffect(() => {
     const initialFetch = async () => {
-      await fetchDepartments(currentFilters);
+      await fetchDepartments(pagination.current_page, currentFilters);
       setLoading(false);
     };
     initialFetch();
-  }, [fetchDepartments, currentFilters]);
+  }, [fetchDepartments, currentFilters, pagination.current_page]);
 
   const handleFilterChange = (filters: { division_id?: number }) => {
     setCurrentFilters(filters);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: 1,
+    }));
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchDepartments(page, currentFilters);
   };
 
   if (loading) {
@@ -56,11 +72,17 @@ export default function Page() {
   return (
     <div className="space-y-4">
       <CreateDepartment
-        onDepartmentCreated={() => fetchDepartments(currentFilters)}
+        onDepartmentCreated={() =>
+          fetchDepartments(pagination.current_page, currentFilters)
+        }
       />
       <DepartmentTable
         data={departments}
-        onDelete={() => fetchDepartments(currentFilters)}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onDelete={() =>
+          fetchDepartments(pagination.current_page, currentFilters)
+        }
         onFilterChange={handleFilterChange}
       />
     </div>

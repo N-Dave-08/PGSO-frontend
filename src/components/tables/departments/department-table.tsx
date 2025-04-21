@@ -10,15 +10,27 @@ import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-fa
 import { columns, RowContextMenu } from "./department-columns";
 import { Department, Division } from "@/types";
 import { getDivisions } from "@/lib/api/divisions";
+import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 
 interface DepartmentTableProps {
   data: Department[];
+  pagination?: {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+  };
+  onPageChange?: (page: number) => void;
+  onPerPageChange?: (perPage: number) => void;
   onDelete: () => Promise<void>;
   onFilterChange?: (filters: { division_id?: number; search?: string }) => void;
 }
 
 export function DepartmentTable({
   data,
+  pagination,
+  onPageChange,
+  onPerPageChange,
   onDelete,
   onFilterChange,
 }: DepartmentTableProps) {
@@ -66,6 +78,22 @@ export function DepartmentTable({
     [divisions, onFilterChange, handleSearch]
   );
 
+  const renderPagination = React.useCallback(
+    () =>
+      pagination &&
+      onPageChange && (
+        <DataTablePagination
+          currentPage={pagination.current_page}
+          pageCount={pagination.last_page}
+          perPage={pagination.per_page}
+          total={pagination.total}
+          tableName="department"
+          onPageChange={onPageChange}
+        />
+      ),
+    [pagination, onPageChange, onPerPageChange]
+  );
+
   const tableData = React.useMemo(
     () =>
       data.map((department) => ({
@@ -80,6 +108,7 @@ export function DepartmentTable({
       data={tableData}
       columns={columns}
       renderToolbar={renderToolbar}
+      renderPagination={renderPagination}
       rowContextMenu={(row, data) => (
         <RowContextMenu row={row} department={data} onDelete={data.onDelete} />
       )}

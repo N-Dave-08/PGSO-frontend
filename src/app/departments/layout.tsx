@@ -1,64 +1,27 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { getDepartments } from "@/lib/api/department";
-import { DepartmentTable } from "@/components/tables/departments/department-table";
-import { Department } from "@/types";
-import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAccess } from "@/lib/auth/roles";
 
-export default function Page() {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentFilters, setCurrentFilters] = useState<{
-    division_id?: number;
-  }>();
+interface LayoutProps {
+  children: React.ReactNode;
+  admin: React.ReactNode;
+  head: React.ReactNode;
+}
 
-  const fetchDepartments = useCallback(
-    async (filters?: { division_id?: number }) => {
-      try {
-        const response = await getDepartments(filters);
-        const departmentsData = response.departments || [];
-        const formattedData = departmentsData.map(
-          (department: Department): Department => ({
-            department_name: department.department_name,
-            acronym: department.acronym,
-            divisions: department.divisions || [],
-            id: department.id,
-            staff: department.staff || [],
-            head: department.head || {},
-          })
-        );
-        setDepartments(formattedData);
-      } catch (error) {
-        console.error("Failed to fetch departments:", error);
-      }
-    },
-    []
-  );
+export default function Layout({ children, admin, head }: LayoutProps) {
+  const { role } = useAuth();
 
-  useEffect(() => {
-    const initialFetch = async () => {
-      await fetchDepartments(currentFilters);
-      setLoading(false);
-    };
-    initialFetch();
-  }, [fetchDepartments, currentFilters]);
-
-  const handleFilterChange = (filters: { division_id?: number }) => {
-    setCurrentFilters(filters);
+  const renderContent = () => {
+    if (hasAccess(role, ["admin"])) return admin;
+    if (hasAccess(role, ["head"])) return head;
+    return null;
   };
 
-  if (loading) {
-    return <DataTableSkeleton />;
-  }
-
   return (
-    <div className="space-y-4">
-      <DepartmentTable
-        data={departments}
-        onDelete={() => fetchDepartments(currentFilters)}
-        onFilterChange={handleFilterChange}
-      />
-    </div>
+    <main className="w-full">
+      {children}
+      {renderContent()}
+    </main>
   );
 }

@@ -2,21 +2,28 @@ import api from "./axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import axios from "axios";
 
-export const getDepartments = async (filters?: {
-  division_id?: number;
-  search?: string;
-}) => {
+export const getDepartments = async (
+  page: number = 1,
+  filters?: {
+    division_id?: number;
+    search?: string;
+  }
+) => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.post("/admin/department", filters, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.post(
+      `/admin/department?page=${page}`,
+      filters || {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
