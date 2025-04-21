@@ -37,13 +37,6 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
-    cell: ({ row }) => <div>{row.getValue("id")}</div>,
-  },
-  {
     accessorKey: "avatar",
     header: "Profile",
     cell: ({ row }) => {

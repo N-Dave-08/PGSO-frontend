@@ -24,6 +24,7 @@ import { Category } from "@/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { deleteCategory } from "@/lib/api/categories";
 import { toast } from "sonner";
+import EditCategory from "@/components/modals/edit-category";
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -47,12 +48,6 @@ export const columns: ColumnDef<Category>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },
-  {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
   },
   {
     accessorKey: "category",
@@ -152,10 +147,16 @@ export const RowContextMenu = ({
           Copy Category ID
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem>
-          <PenSquare className="mr-2 h-4 w-4" />
-          Edit Category
-        </ContextMenuItem>
+        <EditCategory
+          category={category}
+          onCategoryUpdated={onDelete}
+          trigger={
+            <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+              <PenSquare className="mr-2 h-4 w-4" />
+              Edit Category
+            </ContextMenuItem>
+          }
+        />
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ContextMenuItem

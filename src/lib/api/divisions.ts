@@ -127,3 +127,69 @@ export const deleteDivision = async (id: number) => {
     throw error;
   }
 };
+
+export const updateDivision = async (
+  id: number,
+  data: {
+    division_name: string;
+    office_location: string;
+    staff_id: number[];
+    personnel_id: number[];
+  }
+) => {
+  try {
+    const token = await secureStorage.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    console.log("Updating division with data:", {
+      id,
+      ...data,
+    });
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/division/update/${id}`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.data) {
+      throw new Error("No response data received");
+    }
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("Division update error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        data: data,
+      });
+
+      // If there's a specific error message from the API, use it
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+
+      // If there's validation errors
+      if (error.response?.data?.errors) {
+        const validationErrors = Object.values(
+          error.response.data.errors
+        ).flat();
+        throw new Error(validationErrors.join(", "));
+      }
+
+      throw new Error(error.message || "Failed to update division");
+    }
+    // Handle non-axios errors
+    const err = error as Error;
+    throw new Error(`Division update failed: ${err.message}`);
+  }
+};

@@ -93,3 +93,32 @@ export const deleteCategory = async (id: number) => {
     throw error;
   }
 };
+
+export const updateCategory = async (
+  categoryId: number,
+  data: {
+    category_name: string;
+    description: string;
+    personnel_ids: number[];
+    teamlead_ids: number[];
+  }
+) => {
+  try {
+    const response = await fetch(`/category/update/${categoryId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update category");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};

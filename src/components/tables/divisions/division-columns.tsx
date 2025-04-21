@@ -29,6 +29,7 @@ import {
 import { Division } from "@/types";
 import { deleteDivision } from "@/lib/api/divisions";
 import { toast } from "sonner";
+import EditDivision from "@/components/modals/edit-division";
 
 export const columns: ColumnDef<Division>[] = [
   {
@@ -163,10 +164,16 @@ export const RowContextMenu = ({
           Copy Division ID
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem>
-          <PenSquare className="mr-2 h-4 w-4" />
-          Edit Division
-        </ContextMenuItem>
+        <EditDivision
+          division={row}
+          onDivisionUpdated={onDelete}
+          trigger={
+            <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+              <PenSquare className="mr-2 h-4 w-4" />
+              <span>Edit Division</span>
+            </ContextMenuItem>
+          }
+        />
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <ContextMenuItem
