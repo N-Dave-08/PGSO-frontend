@@ -8,6 +8,7 @@ export const getUsers = async (
   filters?: {
     role_name?: string;
     search?: string;
+    gender?: string;
   }
 ): Promise<UsersResponse> => {
   try {

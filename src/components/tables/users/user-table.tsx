@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
-import { Shield, UserCog, Users2, UserCircle } from "lucide-react";
+import {
+  Shield,
+  UserCog,
+  Users2,
+  UserCircle,
+  User as UserIcon,
+  UserRound,
+} from "lucide-react";
 
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
@@ -20,7 +27,7 @@ interface UserTableProps {
     last_page: number;
   };
   onPageChange: (page: number) => void;
-  onFilterChange?: (filters: { role_name?: string }) => void;
+  onFilterChange?: (filters: { role_name?: string; gender?: string }) => void;
   onSearch?: (searchTerm: string) => void;
 }
 
@@ -48,8 +55,22 @@ function generateFilterOptions() {
     },
   ];
 
+  const genderOptions = [
+    {
+      value: "Male",
+      label: "Male",
+      icon: UserIcon,
+    },
+    {
+      value: "Female",
+      label: "Female",
+      icon: UserRound,
+    },
+  ];
+
   return {
     roleOptions,
+    genderOptions,
   };
 }
 
@@ -60,7 +81,23 @@ export function UserTable({
   onFilterChange,
   onSearch,
 }: UserTableProps) {
-  const { roleOptions } = generateFilterOptions();
+  const { roleOptions, genderOptions } = generateFilterOptions();
+  const [filters, setFilters] = React.useState<{
+    role_name?: string;
+    gender?: string;
+  }>({});
+
+  const handleFilterChange = React.useCallback(
+    (key: "role_name" | "gender", value: string | undefined) => {
+      const newFilters = {
+        ...filters,
+        [key]: value,
+      };
+      setFilters(newFilters);
+      onFilterChange?.(newFilters);
+    },
+    [filters, onFilterChange]
+  );
 
   const renderToolbar = React.useCallback(
     (table: Table<User>) => (
@@ -68,11 +105,16 @@ export function UserTable({
         <DataTableFacetedFilter
           title="Role"
           options={roleOptions}
-          onFilterChange={(value) => onFilterChange?.({ role_name: value })}
+          onFilterChange={(value) => handleFilterChange("role_name", value)}
+        />
+        <DataTableFacetedFilter
+          title="Gender"
+          options={genderOptions}
+          onFilterChange={(value) => handleFilterChange("gender", value)}
         />
       </DataTableToolbar>
     ),
-    [roleOptions, onFilterChange, onSearch]
+    [roleOptions, genderOptions, handleFilterChange, onSearch]
   );
 
   const renderPagination = React.useCallback(

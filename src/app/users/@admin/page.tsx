@@ -16,6 +16,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | undefined>();
+  const [genderFilter, setGenderFilter] = useState<string | undefined>();
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     per_page: 10,
@@ -24,11 +25,21 @@ export default function Page() {
   });
 
   const fetchUsers = useCallback(
-    async (page: number = 1, search?: string, role?: string) => {
+    async (
+      page: number = 1,
+      search?: string,
+      role?: string,
+      gender?: string
+    ) => {
       try {
-        const filters: { search?: string; role_name?: string } = {};
+        const filters: {
+          search?: string;
+          role_name?: string;
+          gender?: string;
+        } = {};
         if (search) filters.search = search;
         if (role) filters.role_name = role;
+        if (gender) filters.gender = gender;
 
         const response = await getUsers(page, filters);
         const usersData = response.user || [];
@@ -70,11 +81,22 @@ export default function Page() {
 
   useEffect(() => {
     const initialFetch = async () => {
-      await fetchUsers(pagination.current_page, searchTerm, roleFilter);
+      await fetchUsers(
+        pagination.current_page,
+        searchTerm,
+        roleFilter,
+        genderFilter
+      );
       setLoading(false);
     };
     initialFetch();
-  }, [fetchUsers, searchTerm, roleFilter, pagination.current_page]);
+  }, [
+    fetchUsers,
+    searchTerm,
+    roleFilter,
+    genderFilter,
+    pagination.current_page,
+  ]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -84,8 +106,12 @@ export default function Page() {
     }));
   };
 
-  const handleFilterChange = (filters: { role_name?: string }) => {
+  const handleFilterChange = (filters: {
+    role_name?: string;
+    gender?: string;
+  }) => {
     setRoleFilter(filters.role_name);
+    setGenderFilter(filters.gender);
     setPagination((prev) => ({
       ...prev,
       current_page: 1,
@@ -93,7 +119,7 @@ export default function Page() {
   };
 
   const handlePageChange = (page: number) => {
-    fetchUsers(page, searchTerm, roleFilter);
+    fetchUsers(page, searchTerm, roleFilter, genderFilter);
   };
 
   if (loading) {
