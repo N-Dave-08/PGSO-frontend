@@ -6,7 +6,7 @@ import { DepartmentTable } from "@/components/tables/departments/department-tabl
 import { Department } from "@/types";
 import { Pagination } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
-import CreateDepartment from "@/components/modals/create-department";
+import CreateDepartment from "@/components/modals/department/create-department";
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);

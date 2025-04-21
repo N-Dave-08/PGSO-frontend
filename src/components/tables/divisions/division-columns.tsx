@@ -29,7 +29,7 @@ import {
 import { Division } from "@/types";
 import { deleteDivision } from "@/lib/api/divisions";
 import { toast } from "sonner";
-import EditDivision from "@/components/modals/edit-division";
+import EditDivision from "@/components/modals/division/edit-division";
 import { useState } from "react";
 import {
   Dialog,

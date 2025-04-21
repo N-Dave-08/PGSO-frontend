@@ -14,12 +14,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { updateCategory, getCategories } from "@/lib/api/categories";
+import { updateCategory } from "@/lib/api/categories";
 import { Category } from "@/types";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { getCategories } from "@/lib/api/categories";
 
 interface EditCategoryProps {
   category: Category;
@@ -114,15 +115,11 @@ export default function EditCategory({
 
   const handlePersonnelToggle = (personnelId: number) => {
     setSelectedPersonnel((prev) => {
-      if (prev.includes(personnelId)) {
-        // If removing personnel, also remove from team leads if they are one
-        setSelectedTeamLeads((current) =>
-          current.filter((id) => id !== personnelId)
-        );
-        return prev.filter((id) => id !== personnelId);
-      } else {
-        return [...prev, personnelId];
-      }
+      const newSelected = prev.includes(personnelId)
+        ? prev.filter((id) => id !== personnelId)
+        : [...prev, personnelId];
+      console.log("Selected Personnel after toggle:", newSelected);
+      return newSelected;
     });
   };
 
@@ -146,18 +143,19 @@ export default function EditCategory({
     setError(null);
 
     try {
+      console.log("Current selected personnel:", selectedPersonnel);
+
       const updateData = {
         category_name: categoryName,
         description: description,
-        ...(selectedPersonnel.length > 0 && {
-          personnel_ids: selectedPersonnel,
-        }),
-        ...(selectedTeamLeads.length > 0 && {
-          teamlead_ids: selectedTeamLeads,
-        }),
+        personnel_ids: selectedPersonnel || [],
+        teamlead_ids: selectedTeamLeads || [],
       };
 
+      console.log("Update data being sent:", updateData);
+
       const response = await updateCategory(category.id, updateData);
+      console.log("API Response:", response);
 
       if (response.isSuccess) {
         toast.success(response.message || "Category updated successfully");
@@ -286,7 +284,87 @@ export default function EditCategory({
     </Dialog>
   ) : (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* ... same form content as above ... */}
+      <div className="space-y-2">
+        <Label htmlFor="categoryName">Category Name</Label>
+        <Input
+          id="categoryName"
+          value={categoryName}
+          onChange={(e) => setCategoryName(e.target.value)}
+          placeholder="Enter category name"
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter category description"
+          className="min-h-[100px]"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Personnel Members</Label>
+        <Input
+          type="text"
+          placeholder="Search personnel..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {loadingPersonnel || loadingCategories ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Loading personnel...
+          </div>
+        ) : filteredPersonnel.length === 0 ? (
+          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+            No unassigned personnel available
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-[200px] overflow-y-auto rounded-md border p-2">
+            {filteredPersonnel.map((personnel) => (
+              <div key={personnel.id} className="flex flex-col gap-1">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`personnel-${personnel.id}`}
+                    checked={selectedPersonnel.includes(personnel.id)}
+                    onCheckedChange={() => handlePersonnelToggle(personnel.id)}
+                  />
+                  <label
+                    htmlFor={`personnel-${personnel.id}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {personnel.first_name} {personnel.last_name}
+                  </label>
+                </div>
+                {selectedPersonnel.includes(personnel.id) && (
+                  <div className="flex items-center space-x-2 ml-6">
+                    <Checkbox
+                      id={`teamlead-${personnel.id}`}
+                      checked={selectedTeamLeads.includes(personnel.id)}
+                      onCheckedChange={() => handleTeamLeadToggle(personnel.id)}
+                    />
+                    <label
+                      htmlFor={`teamlead-${personnel.id}`}
+                      className="text-sm text-muted-foreground"
+                    >
+                      Team Lead
+                    </label>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && <div className="text-sm text-red-500">{error}</div>}
+      <div className="flex justify-end space-x-2">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading ? "Updating..." : "Update Category"}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { CategoryTable } from "@/components/tables/categories/category-table";
 import { getCategories } from "@/lib/api/categories";
 import { getUsers } from "@/lib/api/users";
-import CreateCategory from "@/components/modals/create-category";
+import CreateCategory from "@/components/modals/category/create-category";
 import { User } from "@/types/users";
 import { Category } from "@/types/categories";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";

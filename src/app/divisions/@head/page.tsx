@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { DivisionTable } from "@/components/tables/divisions/division-table";
 import { getDivisions } from "@/lib/api/divisions";
-import CreateDivision from "@/components/modals/create-division";
+import CreateDivision from "@/components/modals/division/create-division";
 import { Division } from "@/types";
 import { Pagination } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";

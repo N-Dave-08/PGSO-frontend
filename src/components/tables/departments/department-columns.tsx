@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Division, Department, Head } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
-import EditDepartment from "@/components/modals/edit-department";
+import EditDepartment from "@/components/modals/department/edit-department";
 import { useState } from "react";
 import {
   Dialog,

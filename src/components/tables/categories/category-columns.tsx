@@ -24,7 +24,7 @@ import { Category } from "@/types";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { deleteCategory } from "@/lib/api/categories";
 import { toast } from "sonner";
-import EditCategory from "@/components/modals/edit-category";
+import EditCategory from "@/components/modals/category/edit-category";
 import { useState } from "react";
 import {
   Dialog,

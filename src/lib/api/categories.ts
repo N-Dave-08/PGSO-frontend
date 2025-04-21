@@ -114,14 +114,11 @@ export const updateCategory = async (
       throw new Error("Authentication token not found");
     }
 
-    // Only include personnel_ids and teamlead_ids if they are not empty
     const requestData = {
       category_name: data.category_name,
       description: data.description,
-      ...(data.personnel_ids?.length
-        ? { personnel_ids: data.personnel_ids }
-        : {}),
-      ...(data.teamlead_ids?.length ? { teamlead_ids: data.teamlead_ids } : {}),
+      personnel_ids: data.personnel_ids || [],
+      teamlead_ids: data.teamlead_ids || [],
     };
 
     const response = await api.post(
