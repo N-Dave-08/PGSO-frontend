@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getDivisions } from "@/lib/api/divisions";
-import { updateDepartment } from "@/lib/api/department";
+import { updateDepartment, getDepartments } from "@/lib/api/department";
 import { Division, Department } from "@/types";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
@@ -47,9 +47,42 @@ export default function EditDepartment({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch divisions
+        // Fetch all divisions
         const divisionsResponse = await getDivisions();
-        setDivisions(divisionsResponse.divisions.data || []);
+        const allDivisions = divisionsResponse?.divisions?.data || [];
+
+        // Fetch all departments to check which divisions are already assigned
+        const departmentsResponse = await getDepartments();
+        const departments = departmentsResponse?.departments || [];
+
+        // Create a set of assigned division IDs (excluding current department's divisions)
+        const assignedDivisionIds = new Set();
+        departments.forEach((dept: Department) => {
+          // Skip the current department being edited
+          if (dept.id !== department.id) {
+            if (dept.divisions && Array.isArray(dept.divisions)) {
+              dept.divisions.forEach((division) => {
+                assignedDivisionIds.add(division.id);
+              });
+            }
+          }
+        });
+
+        console.log("All Divisions:", allDivisions);
+        console.log(
+          "Assigned Division IDs (excluding current dept):",
+          Array.from(assignedDivisionIds)
+        );
+
+        // Filter to show only unassigned divisions plus current department's divisions
+        const availableDivisions = allDivisions.filter(
+          (division: Division) =>
+            !assignedDivisionIds.has(division.id) ||
+            department.divisions.some((dept_div) => dept_div.id === division.id)
+        );
+
+        console.log("Available Divisions:", availableDivisions);
+        setDivisions(availableDivisions);
 
         // Fetch users with head role
         const usersResponse = await getUsers(1, { role_name: "head" });
@@ -61,7 +94,7 @@ export default function EditDepartment({
     };
 
     fetchData();
-  }, []); // Only fetch once when component mounts
+  }, [department.id]); // Add department.id as dependency since we use it in filtering
 
   useEffect(() => {
     setDepartmentName(department.department_name);
