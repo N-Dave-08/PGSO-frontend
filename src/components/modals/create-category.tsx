@@ -169,31 +169,39 @@ export default function CreateCategory({
               <Label className="text-base">Personnel</Label>
               <ScrollArea className="h-[200px] w-full border p-4">
                 <div className="space-y-4">
-                  {personnel.map((person) => (
-                    <div
-                      key={person.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <Checkbox
-                        id={`personnel-${person.id}`}
-                        checked={selectedPersonnel.includes(person.id)}
-                        onCheckedChange={() => handlePersonnelChange(person.id)}
-                        disabled={selectedTeamLeads.includes(person.id)}
-                      />
-                      <label
-                        htmlFor={`personnel-${person.id}`}
-                        className={`text-sm font-medium leading-none ${
-                          selectedTeamLeads.includes(person.id)
-                            ? "text-muted-foreground"
-                            : ""
-                        }`}
+                  {personnel.length > 0 ? (
+                    personnel.map((person) => (
+                      <div
+                        key={person.id}
+                        className="flex items-center space-x-2"
                       >
-                        {person.first_name} {person.last_name}
-                        {selectedTeamLeads.includes(person.id) &&
-                          " (Team Lead)"}
-                      </label>
+                        <Checkbox
+                          id={`personnel-${person.id}`}
+                          checked={selectedPersonnel.includes(person.id)}
+                          onCheckedChange={() =>
+                            handlePersonnelChange(person.id)
+                          }
+                          disabled={selectedTeamLeads.includes(person.id)}
+                        />
+                        <label
+                          htmlFor={`personnel-${person.id}`}
+                          className={`text-sm font-medium leading-none ${
+                            selectedTeamLeads.includes(person.id)
+                              ? "text-muted-foreground"
+                              : ""
+                          }`}
+                        >
+                          {person.first_name} {person.last_name}
+                          {selectedTeamLeads.includes(person.id) &&
+                            " (Team Lead)"}
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      No unassigned personnel available
                     </div>
-                  ))}
+                  )}
                 </div>
               </ScrollArea>
             </div>

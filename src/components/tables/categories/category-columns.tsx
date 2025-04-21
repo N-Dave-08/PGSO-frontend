@@ -81,16 +81,35 @@ export const columns: ColumnDef<Category>[] = [
     accessorKey: "personnel",
     header: "Personnel",
     filterFn: (row, id, filterValue: string[]) => {
-      const personnel = row.getValue("personnel") as { name: string }[];
+      const personnel = row.getValue("personnel") as {
+        name: string;
+        is_team_lead: number;
+      }[];
       return personnel.some((person) => filterValue.includes(person.name));
     },
     cell: ({ row }) => {
-      const personnel = row.getValue("personnel") as { name: string }[];
+      const personnel = row.getValue("personnel") as {
+        name: string;
+        is_team_lead: number;
+      }[];
+
+      // Sort personnel array to put team leads first
+      const sortedPersonnel = [...personnel].sort((a, b) => {
+        if (a.is_team_lead === b.is_team_lead) {
+          return a.name.localeCompare(b.name); // If same role, sort by name
+        }
+        return b.is_team_lead - a.is_team_lead; // Team leads first
+      });
+
       return (
         <div className="flex flex-wrap gap-1">
-          {personnel.map((person, index) => (
-            <Badge key={index} variant="secondary">
+          {sortedPersonnel.map((person, index) => (
+            <Badge
+              key={index}
+              variant={person.is_team_lead ? "default" : "secondary"}
+            >
               {person.name}
+              {person.is_team_lead ? " (Team Lead)" : ""}
             </Badge>
           ))}
         </div>

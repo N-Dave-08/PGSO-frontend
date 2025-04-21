@@ -80,6 +80,12 @@ export default function Page() {
 
   const formattedPersonnel = users
     .filter((user) => user.role_name === "personnel")
+    .filter((user) => {
+      // Check if the personnel is already assigned to any category
+      return !categories.some((category) =>
+        category.personnel.some((p) => p.id === user.id)
+      );
+    })
     .map((user) => ({
       id: user.id,
       first_name: user.first_name,
