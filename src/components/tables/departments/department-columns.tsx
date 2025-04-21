@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { PenSquare, Trash } from "lucide-react";
+import { PenSquare, Trash, UserRoundIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
@@ -76,7 +76,7 @@ export const columns: ColumnDef<
     cell: ({ row }) => {
       const divisions = row.getValue("divisions") as Division[];
       return (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 max-w-[550px]">
           {divisions.map((division) => (
             <Badge key={division.id} variant="secondary">
               {division.division_name}
@@ -88,13 +88,21 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "head",
-    header: "Head",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Head" />
+    ),
     cell: ({ row }) => {
       const head = row.getValue("head") as Head;
+      if (!head?.first_name) {
+        return <div className="text-muted-foreground">No head assigned</div>;
+      }
       return (
-        <div>
-          {head.first_name} {head.last_name}
-        </div>
+        <Badge variant="outline">
+          <UserRoundIcon className="w-4 h-4" />
+          {head.first_name.charAt(0).toUpperCase() +
+            head.first_name.slice(1)}{" "}
+          {head.last_name.charAt(0).toUpperCase() + head.last_name.slice(1)}
+        </Badge>
       );
     },
   },

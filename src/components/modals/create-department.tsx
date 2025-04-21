@@ -17,6 +17,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getDivisions } from "@/lib/api/divisions";
 import { createDepartment } from "@/lib/api/department";
 import { Division } from "@/types";
+import { getUsers } from "@/lib/api/users";
+import { User } from "@/types/users";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import axios from "axios";
 
 interface CreateDepartmentProps {
@@ -31,23 +40,30 @@ export default function CreateDepartment({
   const [acronym, setAcronym] = useState<string>("");
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [selectedDivisions, setSelectedDivisions] = useState<number[]>([]);
+  const [heads, setHeads] = useState<User[]>([]);
+  const [selectedHead, setSelectedHead] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    const fetchDivisions = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getDivisions();
-        setDivisions(response.divisions || []);
+        // Fetch divisions
+        const divisionsResponse = await getDivisions();
+        setDivisions(divisionsResponse.divisions || []);
+
+        // Fetch users with head role
+        const usersResponse = await getUsers(1, { role_name: "head" });
+        setHeads(usersResponse.user || []);
       } catch (error) {
-        console.error("Failed to fetch divisions:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
 
     if (open) {
-      fetchDivisions();
+      fetchData();
     }
   }, [open]);
 
@@ -72,11 +88,17 @@ export default function CreateDepartment({
     setGeneralError(null);
 
     try {
-      await createDepartment(departmentName, acronym, selectedDivisions);
+      await createDepartment(
+        departmentName,
+        acronym,
+        selectedDivisions,
+        selectedHead ? parseInt(selectedHead) : undefined
+      );
       setOpen(false);
       setDepartmentName("");
       setAcronym("");
       setSelectedDivisions([]);
+      setSelectedHead("");
       await onDepartmentCreated();
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.data?.error) {
@@ -146,6 +168,29 @@ export default function CreateDepartment({
             {errors.acronym && (
               <div className="text-sm text-red-500 mt-1">
                 {errors.acronym[0]}
+              </div>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="head">Department Head</Label>
+            <Select value={selectedHead} onValueChange={setSelectedHead}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a head" />
+              </SelectTrigger>
+              <SelectContent>
+                {heads.map((head) => (
+                  <SelectItem key={head.id} value={head.id.toString()}>
+                    {head.first_name.charAt(0).toUpperCase() +
+                      head.first_name.slice(1)}{" "}
+                    {head.last_name.charAt(0).toUpperCase() +
+                      head.last_name.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.head_id && (
+              <div className="text-sm text-red-500 mt-1">
+                {errors.head_id[0]}
               </div>
             )}
           </div>

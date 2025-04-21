@@ -1,27 +1,64 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
-import { hasAccess } from "@/lib/auth/roles";
+import React, { useEffect, useState, useCallback } from "react";
+import { getDepartments } from "@/lib/api/department";
+import { DepartmentTable } from "@/components/tables/departments/department-table";
+import { Department } from "@/types";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  admin: React.ReactNode;
-  head: React.ReactNode;
-}
+export default function Page() {
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentFilters, setCurrentFilters] = useState<{
+    division_id?: number;
+  }>();
 
-export default function Layout({ children, admin, head }: LayoutProps) {
-  const { role } = useAuth();
+  const fetchDepartments = useCallback(
+    async (filters?: { division_id?: number }) => {
+      try {
+        const response = await getDepartments(filters);
+        const departmentsData = response.departments || [];
+        const formattedData = departmentsData.map(
+          (department: Department): Department => ({
+            department_name: department.department_name,
+            acronym: department.acronym,
+            divisions: department.divisions || [],
+            id: department.id,
+            staff: department.staff || [],
+            head: department.head || {},
+          })
+        );
+        setDepartments(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+      }
+    },
+    []
+  );
 
-  const renderContent = () => {
-    if (hasAccess(role, ["admin"])) return admin;
-    if (hasAccess(role, ["head"])) return head;
-    return null;
+  useEffect(() => {
+    const initialFetch = async () => {
+      await fetchDepartments(currentFilters);
+      setLoading(false);
+    };
+    initialFetch();
+  }, [fetchDepartments, currentFilters]);
+
+  const handleFilterChange = (filters: { division_id?: number }) => {
+    setCurrentFilters(filters);
   };
 
+  if (loading) {
+    return <DataTableSkeleton />;
+  }
+
   return (
-    <main className="w-full">
-      {children}
-      {renderContent()}
-    </main>
+    <div className="space-y-4">
+      <DepartmentTable
+        data={departments}
+        onDelete={() => fetchDepartments(currentFilters)}
+        onFilterChange={handleFilterChange}
+      />
+    </div>
   );
 }

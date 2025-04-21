@@ -17,6 +17,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getDivisions } from "@/lib/api/divisions";
 import { updateDepartment } from "@/lib/api/department";
 import { Division, Department } from "@/types";
+import { getUsers } from "@/lib/api/users";
+import { User } from "@/types/users";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditDepartmentProps {
   department: Department;
@@ -38,22 +47,31 @@ export default function EditDepartment({
   const [selectedDivisions, setSelectedDivisions] = useState<number[]>(
     department.divisions.map((div) => div.id)
   );
+  const [heads, setHeads] = useState<User[]>([]);
+  const [selectedHead, setSelectedHead] = useState<string>(
+    department.head?.id ? department.head.id.toString() : ""
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    const fetchDivisions = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getDivisions();
-        setDivisions(response.divisions || []);
+        // Fetch divisions
+        const divisionsResponse = await getDivisions();
+        setDivisions(divisionsResponse.divisions || []);
+
+        // Fetch users with head role
+        const usersResponse = await getUsers(1, { role_name: "head" });
+        setHeads(usersResponse.user || []);
       } catch (error) {
-        console.error("Failed to fetch divisions:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
 
     if (open) {
-      fetchDivisions();
+      fetchData();
     }
   }, [open]);
 
@@ -61,6 +79,7 @@ export default function EditDepartment({
     setDepartmentName(department.department_name);
     setAcronym(department.acronym);
     setSelectedDivisions(department.divisions.map((div) => div.id));
+    setSelectedHead(department.head?.id ? department.head.id.toString() : "");
   }, [department]);
 
   const filteredDivisions = divisions.filter((division) =>
@@ -87,7 +106,8 @@ export default function EditDepartment({
         department.id,
         departmentName,
         acronym,
-        selectedDivisions
+        selectedDivisions,
+        selectedHead ? parseInt(selectedHead) : undefined
       );
       setOpen(false);
       await onDepartmentUpdated();
@@ -128,6 +148,24 @@ export default function EditDepartment({
               placeholder="Enter acronym"
               required
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="head">Department Head</Label>
+            <Select value={selectedHead} onValueChange={setSelectedHead}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a head" />
+              </SelectTrigger>
+              <SelectContent>
+                {heads.map((head) => (
+                  <SelectItem key={head.id} value={head.id.toString()}>
+                    {head.first_name.charAt(0).toUpperCase() +
+                      head.first_name.slice(1)}{" "}
+                    {head.last_name.charAt(0).toUpperCase() +
+                      head.last_name.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Divisions</Label>

@@ -40,7 +40,8 @@ export const getDepartments = async (filters?: {
 export const createDepartment = async (
   departmentName: string,
   acronym: string,
-  divisionIds: number[]
+  divisionIds: number[],
+  head_id?: number
 ) => {
   try {
     const token = await secureStorage.get("token");
@@ -54,6 +55,7 @@ export const createDepartment = async (
         department_name: departmentName,
         acronym,
         division_id: divisionIds,
+        head_id,
       },
       {
         headers: {
@@ -124,7 +126,8 @@ export const updateDepartment = async (
   id: number,
   departmentName: string,
   acronym: string,
-  divisionIds: number[]
+  divisionIds: number[],
+  head_id?: number
 ) => {
   try {
     const token = await secureStorage.get("token");
@@ -138,6 +141,7 @@ export const updateDepartment = async (
         department_name: departmentName,
         acronym,
         division_id: divisionIds,
+        head_id,
       },
       {
         headers: {
