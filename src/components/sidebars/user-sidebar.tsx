@@ -66,7 +66,7 @@ export default function UserSidebar() {
   const routeCategories = {
     main: ["DASHBOARD", "PROFILE"],
     management: ["USERS", "STAFFS", "DEPARTMENTS", "DIVISIONS", "CATEGORIES"],
-    operations: ["REQUESTS", "TASKS", "CALENDAR"],
+    operations: ["REQUESTS", "TASKS", "CALENDAR", "REPORTS"],
     feedback: ["FEEDBACK", "AUDIT_LOGS"],
     settings: ["SETTINGS"],
   };
@@ -97,6 +97,7 @@ export default function UserSidebar() {
       "STAFFS",
       "SETTINGS",
       "PROFILE",
+      "REPORTS",
     ];
     const staffRoutes = ["REQUESTS", "PROFILE", "SETTINGS"];
 

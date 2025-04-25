@@ -70,18 +70,14 @@ export const columns: ColumnDef<Division>[] = [
   },
   {
     accessorKey: "office_location",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Office Location" />
-    ),
+    header: "Office Location",
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("office_location")}</div>
     ),
   },
   {
     accessorKey: "staff",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Staff" />
-    ),
+    header: "Staff",
     cell: ({ row }) => {
       const staff = row.getValue("staff") as Division["staff"];
       return (
@@ -108,9 +104,7 @@ export const columns: ColumnDef<Division>[] = [
   },
   {
     accessorKey: "personnel",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Personnel" />
-    ),
+    header: "Personnel",
     cell: ({ row }) => {
       const personnel =
         (row.getValue("personnel") as Division["personnel"]) || [];

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import RequestCards from "@/components/cards/request-cards";
 import { getRequests } from "@/lib/api/requests";
 import { Request, Pagination } from "@/types";
-import { Loader } from "@/components/loaders/loader";
+import RequestCardSkeleton from "@/components/loaders/request-card-sekeleton";
 
 export default function Page() {
   const [requests, setRequests] = useState<Request[]>([]);
@@ -89,22 +89,8 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div>
-        <Loader />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto py-10 text-center">
-        <p className="text-red-500">{error}</p>
-        <button
-          onClick={() => fetchRequests()}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Try Again
-        </button>
+      <div className="container mx-auto py-10">
+        <RequestCardSkeleton />
       </div>
     );
   }

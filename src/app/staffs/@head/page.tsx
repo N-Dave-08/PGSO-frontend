@@ -1,12 +1,8 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { StaffTable } from '@/components/tables/staff-table'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StaffTable } from "@/components/tables/staff/staff-table";
 
-export default function page() {
-  return (
-    <div>
-      <StaffTable />
-    </div>
-  )
+export default function StaffsPage() {
+  return <StaffTable />;
 }
