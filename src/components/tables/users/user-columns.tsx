@@ -96,22 +96,6 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "age",
-    header: "Age",
-    cell: ({ row }) => {
-      const age = row.getValue("age") as string;
-      return <div>{age || "N/A"}</div>;
-    },
-  },
-  {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => {
-      const gender = row.getValue("gender") as string;
-      return <div className="capitalize">{gender || "N/A"}</div>;
-    },
-  },
-  {
     accessorKey: "number",
     header: "Number",
     cell: ({ row }) => <div>{row.getValue("number")}</div>,

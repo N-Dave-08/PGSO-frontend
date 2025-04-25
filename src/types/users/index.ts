@@ -6,8 +6,6 @@ export interface User {
   role_name: string;
   avatar: string | null;
   is_archived: string;
-  age: string;
-  gender: string;
   number: number;
   status: string;
 }
