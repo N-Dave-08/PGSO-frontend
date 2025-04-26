@@ -36,18 +36,5 @@ export default function AccomplishmentPage() {
     return <DataTableSkeleton />;
   }
 
-  return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Accomplishments</h1>
-      </div>
-      <AccomplishmentTable
-        data={accomplishments}
-        onFilterChange={(filters) => {
-          console.log("Filters changed:", filters);
-          // Implement filter logic here
-        }}
-      />
-    </div>
-  );
+  return <AccomplishmentTable data={accomplishments} />;
 }
