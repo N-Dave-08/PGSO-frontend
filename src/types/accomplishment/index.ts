@@ -1,10 +1,10 @@
-export interface Personnel {
+export interface AccomplishmentPersonnel {
   id: number;
   name: string;
   email: string;
 }
 
-export interface RequestedBy {
+export interface AccomplishmentRequestedBy {
   id: number;
   first_name: string;
   last_name: string;
@@ -21,11 +21,11 @@ export interface Accomplishment {
   file_completion_url: string | null;
   category_id: number;
   category_name: string;
-  personnel: Personnel[];
+  personnel: AccomplishmentPersonnel[];
   feedback: string | null;
   rating: number | null;
   status: string;
-  requested_by: RequestedBy;
+  requested_by: AccomplishmentRequestedBy;
   date_requested: string;
   date_completed: string | null;
 }

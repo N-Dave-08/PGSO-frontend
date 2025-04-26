@@ -8,6 +8,8 @@ export interface User {
   is_archived: string;
   number: number;
   status: string;
+  age?: string;
+  gender?: string;
 }
 
 export interface UsersResponse {
