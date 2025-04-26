@@ -89,7 +89,9 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center space-x-2">
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }
