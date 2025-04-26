@@ -19,7 +19,6 @@ interface AccomplishmentTableProps {
     last_page: number;
   };
   onPageChange?: (page: number) => void;
-  onDelete?: () => Promise<void>;
   onSearch?: (searchTerm: string) => void;
 }
 
@@ -27,7 +26,6 @@ export function AccomplishmentTable({
   data,
   pagination,
   onPageChange,
-  onDelete,
   onSearch,
 }: AccomplishmentTableProps) {
   const [selectedAccomplishment, setSelectedAccomplishment] =

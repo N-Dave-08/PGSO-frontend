@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
-import {
-  Shield,
-  UserCog,
-  Users2,
-  UserCircle,
-  User as UserIcon,
-  UserRound,
-} from "lucide-react";
+import { Shield, UserCog, Users2, UserCircle } from "lucide-react";
 
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";

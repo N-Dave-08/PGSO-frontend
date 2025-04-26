@@ -21,7 +21,8 @@ export default function AccomplishmentPage() {
       } else {
         toast.error(response.message || "Failed to fetch accomplishments");
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error("An error occurred while fetching accomplishments");
     } finally {
       setIsLoading(false);

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Request, RequestStatusResponse } from "@/types";
-import { updateRequestStatus, assignRequest } from "@/lib/api/requests";
+import { updateRequestStatus } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
 import { Category } from "@/types/categories";

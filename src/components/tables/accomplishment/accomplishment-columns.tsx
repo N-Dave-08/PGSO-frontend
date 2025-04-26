@@ -1,6 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
@@ -11,25 +10,12 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Division, Accomplishment } from "@/types";
-import { deleteDivision } from "@/lib/api/divisions";
+import { Accomplishment } from "@/types";
 import { toast } from "sonner";
-import EditDivision from "@/components/modals/division/edit-division";
 import { useState } from "react";
 import {
   Dialog,
