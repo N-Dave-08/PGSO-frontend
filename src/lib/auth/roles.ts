@@ -19,6 +19,7 @@ export const ROUTE_ACCESS: RoleAccess = {
   "/feedback": ["admin"],
   "/profile": ["admin", "head", "personnel", "staff"],
   "/reports": ["head"],
+  "/accomplishment": ["personnel"],
 };
 
 export const hasAccess = (

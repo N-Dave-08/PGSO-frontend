@@ -94,4 +94,9 @@ export const routesData: RoutesDataProps = {
     name: "Reports",
     link: "/reports",
   },
+  ACCOMPLISHMENT: {
+    icon: <FileText />,
+    name: "Accomplishment",
+    link: "/accomplishment",
+  },
 };

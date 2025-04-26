@@ -8,3 +8,5 @@ export * from "./departments";
 export * from "./staffs";
 export * from "./personnel";
 export * from "./dashboard";
+export * from "./accomplishment";
+export * from "./reports";
