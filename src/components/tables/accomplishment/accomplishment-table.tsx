@@ -8,6 +8,7 @@ import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar"
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import { columns } from "./accomplishment-columns";
 import { Accomplishment } from "@/types";
+import { AccomplishmentViewModal } from "@/components/modals/accomplishment-view-modal";
 
 interface AccomplishmentTableProps {
   data: Accomplishment[];
@@ -29,6 +30,9 @@ export function AccomplishmentTable({
   onDelete,
   onSearch,
 }: AccomplishmentTableProps) {
+  const [selectedAccomplishment, setSelectedAccomplishment] =
+    React.useState<Accomplishment | null>(null);
+
   const renderToolbar = React.useCallback(
     (table: Table<Accomplishment>) => (
       <DataTableToolbar table={table} onSearch={onSearch} />
@@ -51,12 +55,25 @@ export function AccomplishmentTable({
     [pagination, onPageChange]
   );
 
+  const handleRowClick = React.useCallback((row: Accomplishment) => {
+    setSelectedAccomplishment(row);
+  }, []);
+
   return (
-    <DataTable
-      data={data}
-      columns={columns}
-      renderToolbar={renderToolbar}
-      renderPagination={renderPagination}
-    />
+    <>
+      <DataTable
+        data={data}
+        columns={columns}
+        renderToolbar={renderToolbar}
+        renderPagination={renderPagination}
+        onRowClick={handleRowClick}
+      />
+
+      <AccomplishmentViewModal
+        accomplishment={selectedAccomplishment}
+        open={!!selectedAccomplishment}
+        onOpenChange={(open) => !open && setSelectedAccomplishment(null)}
+      />
+    </>
   );
 }

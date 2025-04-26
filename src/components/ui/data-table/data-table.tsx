@@ -30,6 +30,7 @@ interface DataTableProps<TData> {
   renderToolbar?: (table: TanstackTable<TData>) => React.ReactNode;
   renderPagination?: (table: TanstackTable<TData>) => React.ReactNode;
   rowContextMenu?: (row: React.ReactNode, data: TData) => React.ReactNode;
+  onRowClick?: (data: TData) => void;
 }
 
 export function DataTable<TData>({
@@ -38,6 +39,7 @@ export function DataTable<TData>({
   renderToolbar,
   renderPagination,
   rowContextMenu,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,6 +71,7 @@ export function DataTable<TData>({
       rowSelection,
       globalFilter,
     },
+    enableRowSelection: true,
   });
 
   return (
@@ -101,7 +104,10 @@ export function DataTable<TData>({
                 const tableRow = (
                   <TableRow
                     data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-white/10 data-[state=selected]:bg-white/20"
+                    className={
+                      onRowClick ? "cursor-pointer hover:bg-muted" : ""
+                    }
+                    onClick={() => onRowClick?.(row.original)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
