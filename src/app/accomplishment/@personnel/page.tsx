@@ -6,6 +6,7 @@ import { AccomplishmentTable } from "@/components/tables/accomplishment/accompli
 import { AccomplishmentService } from "@/lib/api/services/accomplishment-service";
 import { Accomplishment } from "@/types";
 import { toast } from "sonner";
+import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
 
 export default function AccomplishmentPage() {
   const [accomplishments, setAccomplishments] = useState<Accomplishment[]>([]);
@@ -32,7 +33,7 @@ export default function AccomplishmentPage() {
   }, [fetchAccomplishments]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <DataTableSkeleton />;
   }
 
   return (
