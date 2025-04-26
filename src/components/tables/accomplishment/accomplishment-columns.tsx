@@ -140,7 +140,8 @@ export const columns: ColumnDef<Accomplishment>[] = [
       <DataTableColumnHeader column={column} title="Requested By" />
     ),
     cell: ({ row }) => {
-      return `${row.original.requested_by_first_name} ${row.original.requested_by_last_name}`;
+      const requestedBy = row.original.requested_by;
+      return `${requestedBy.first_name} ${requestedBy.last_name}`;
     },
   },
 ];
@@ -232,7 +233,7 @@ export const RowContextMenu = ({
               <div className="space-y-2">
                 <h4 className="font-medium">Requested By</h4>
                 <p className="text-sm">
-                  {row.requested_by_first_name} {row.requested_by_last_name}
+                  {row.requested_by.first_name} {row.requested_by.last_name}
                 </p>
               </div>
               <div className="space-y-2">

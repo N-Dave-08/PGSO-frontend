@@ -1,8 +1,13 @@
-export interface PersonnelDetail {
+export interface Personnel {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface RequestedBy {
   id: number;
   first_name: string;
   last_name: string;
-  email: string;
 }
 
 export interface Accomplishment {
@@ -11,19 +16,18 @@ export interface Accomplishment {
   request_title: string;
   description: string;
   file_path: string | null;
+  file_url: string | null;
   file_completion: string | null;
+  file_completion_url: string | null;
   category_id: number;
+  category_name: string;
+  personnel: Personnel[];
   feedback: string | null;
   rating: number | null;
   status: string;
+  requested_by: RequestedBy;
   date_requested: string;
-  date_completed: string;
-  personnel_ids: string;
-  requested_by_id: number;
-  requested_by_first_name: string;
-  requested_by_last_name: string;
-  category_name: string;
-  personnel_details: PersonnelDetail[];
+  date_completed: string | null;
 }
 
 export interface AccomplishmentResponse {

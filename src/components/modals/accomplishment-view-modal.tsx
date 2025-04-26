@@ -68,8 +68,8 @@ export function AccomplishmentViewModal({
                   <div className="space-y-2">
                     <h4 className="font-medium">Requested By</h4>
                     <p className="text-sm">
-                      {accomplishment.requested_by_first_name}{" "}
-                      {accomplishment.requested_by_last_name}
+                      {accomplishment.requested_by.first_name}{" "}
+                      {accomplishment.requested_by.last_name}
                     </p>
                   </div>
                 </div>
@@ -91,14 +91,13 @@ export function AccomplishmentViewModal({
                   )}
                 </div>
 
-                {accomplishment.personnel_details.length > 0 && (
+                {accomplishment.personnel.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="font-medium">Personnel Involved</h4>
                     <div className="grid gap-2">
-                      {accomplishment.personnel_details.map((person) => (
+                      {accomplishment.personnel.map((person) => (
                         <div key={person.id} className="text-sm">
-                          {person.first_name} {person.last_name} ({person.email}
-                          )
+                          {person.name} ({person.email})
                         </div>
                       ))}
                     </div>
@@ -126,12 +125,12 @@ export function AccomplishmentViewModal({
 
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
-                  {accomplishment.file_path && (
+                  {accomplishment.file_url && (
                     <div className="space-y-2">
                       <h4 className="font-medium">Request Photo</h4>
                       <div className="relative h-[300px] w-full overflow-hidden rounded-lg border bg-muted">
                         <Image
-                          src={accomplishment.file_path}
+                          src={accomplishment.file_url}
                           alt="Request photo"
                           fill
                           className="object-contain"
@@ -140,12 +139,12 @@ export function AccomplishmentViewModal({
                     </div>
                   )}
 
-                  {accomplishment.file_completion && (
+                  {accomplishment.file_completion_url && (
                     <div className="space-y-2">
                       <h4 className="font-medium">Completion Photo</h4>
                       <div className="relative h-[300px] w-full overflow-hidden rounded-lg border bg-muted">
                         <Image
-                          src={accomplishment.file_completion}
+                          src={accomplishment.file_completion_url}
                           alt="Completion photo"
                           fill
                           className="object-contain"
