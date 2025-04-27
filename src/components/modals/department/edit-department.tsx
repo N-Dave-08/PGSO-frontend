@@ -100,7 +100,7 @@ export default function EditDepartment({
     };
 
     fetchData();
-  }, [department.id, department.divisions]); // Add department.divisions as dependency since we use it in filtering
+  }, [department.id, department.divisions, department.head]);
 
   useEffect(() => {
     setDepartmentName(department.department_name);

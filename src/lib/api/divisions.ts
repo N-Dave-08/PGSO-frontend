@@ -1,6 +1,6 @@
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
-import { CreateDivisionRequest } from "@/types/divisions";
+import { CreateDivisionRequest, Division } from "@/types/divisions";
 
 export const createDivision = async (data: CreateDivisionRequest) => {
   try {
@@ -237,7 +237,7 @@ export const getAllDivisions = async () => {
       throw new Error("Authentication token not found");
     }
 
-    let allDivisions: any[] = [];
+    let allDivisions: Division[] = [];
     let currentPage = 1;
     let hasMorePages = true;
 
@@ -250,7 +250,7 @@ export const getAllDivisions = async () => {
 
       allDivisions = [
         ...allDivisions,
-        ...Object.values(response.divisions.data),
+        ...(Object.values(response.divisions.data) as Division[]),
       ];
 
       if (currentPage >= response.divisions.last_page) {
