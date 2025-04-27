@@ -1,8 +1,8 @@
 "use client";
 
-import { ReportTable } from "@/components/tables/reports/report-table";
-import { ReportsService } from "@/lib/api/services/reports-service";
-import { ReportRequest } from "@/types/reports";
+import { RequestTable } from "@/components/tables/requests/request-table";
+import { RequestService } from "@/lib/api/services/request-service";
+import { Request } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Pagination } from "@/types";
 
 export default function Reports() {
-  const [reports, setReports] = useState<ReportRequest[]>([]);
+  const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,36 +21,30 @@ export default function Reports() {
     last_page: 1,
   });
 
-  const fetchReports = useCallback(async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
-      const reportsService = new ReportsService();
-      const response = await reportsService.getReports();
+      const requestService = new RequestService();
+      const response = await requestService.getRequests();
       if (response.isSuccess && response.requests) {
-        setReports(response.requests);
-        // Since the API doesn't provide pagination yet, we'll simulate it
-        setPagination({
-          total: response.requests.length,
-          per_page: 10,
-          current_page: 1,
-          last_page: Math.ceil(response.requests.length / 10),
-        });
+        setRequests(response.requests);
+        setPagination(response.pagination);
       } else {
-        setError("No reports data available");
-        setReports([]);
+        setError("No requests data available");
+        setRequests([]);
       }
     } catch (error) {
-      console.error("Error fetching reports:", error);
-      setError("Failed to fetch reports");
-      setReports([]);
+      console.error("Error fetching requests:", error);
+      setError("Failed to fetch requests");
+      setRequests([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    fetchRequests();
+  }, [fetchRequests]);
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({
@@ -80,16 +74,16 @@ export default function Reports() {
     );
   }
 
-  // Filter reports based on search term
-  const filteredReports = reports.filter((report) => {
+  // Filter requests based on search term
+  const filteredRequests = requests.filter((request) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
     return (
-      report.control_no.toLowerCase().includes(searchLower) ||
-      report.request_title.toLowerCase().includes(searchLower) ||
-      report.category_name.toLowerCase().includes(searchLower) ||
-      report.status.toLowerCase().includes(searchLower) ||
-      `${report.requested_by.first_name} ${report.requested_by.last_name}`
+      request.control_no.toLowerCase().includes(searchLower) ||
+      request.request_title.toLowerCase().includes(searchLower) ||
+      request.category_name?.toLowerCase().includes(searchLower) ||
+      request.status.toLowerCase().includes(searchLower) ||
+      `${request.requested_by.first_name} ${request.requested_by.last_name}`
         .toLowerCase()
         .includes(searchLower)
     );
@@ -98,19 +92,19 @@ export default function Reports() {
   // Get paginated data
   const startIndex = (pagination.current_page - 1) * pagination.per_page;
   const endIndex = startIndex + pagination.per_page;
-  const paginatedReports = filteredReports.slice(startIndex, endIndex);
+  const paginatedRequests = filteredRequests.slice(startIndex, endIndex);
 
   // Update pagination based on filtered results
-  const totalPages = Math.ceil(filteredReports.length / pagination.per_page);
+  const totalPages = Math.ceil(filteredRequests.length / pagination.per_page);
   const currentPagination = {
     ...pagination,
-    total: filteredReports.length,
+    total: filteredRequests.length,
     last_page: totalPages,
   };
 
   return (
-    <ReportTable
-      data={paginatedReports}
+    <RequestTable
+      data={paginatedRequests}
       pagination={currentPagination}
       onPageChange={handlePageChange}
       onSearch={handleSearch}
