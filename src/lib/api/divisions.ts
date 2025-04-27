@@ -188,7 +188,7 @@ export const updateDivision = async (
   }
 };
 
-export const getDivisionsByDepartment = async (departmentId: number) => {
+export const getDivisionsByDepartment = async () => {
   try {
     const token = await secureStorage.get("token");
     if (!token) {

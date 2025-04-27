@@ -37,11 +37,6 @@ export function UpdateTask({ task }: UpdateTaskProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement the API call to update the task
-    const updatedTask = {
-      ...task,
-      status,
-      supportingFile,
-    };
     setOpen(false);
   };
 
