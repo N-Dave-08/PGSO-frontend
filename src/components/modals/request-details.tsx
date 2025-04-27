@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { Request } from "@/types";
+import { Request } from "@/lib/columns/request-columns";
 import {
   Dialog,
   DialogContent,

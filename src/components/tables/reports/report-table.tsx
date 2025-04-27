@@ -33,7 +33,9 @@ const transformToRequest = (report: ReportRequest): Request => {
     requested_by: {
       ...report.requested_by,
       division_location: report.requested_by.division_location || "",
-      office_location: report.requested_by.division_location || "",
+      office_location: report.requested_by.division_location,
+      department: report.requested_by.department,
+      division: report.requested_by.division,
     },
     category_id: report.category_id || null,
     category_name: report.category_name || null,

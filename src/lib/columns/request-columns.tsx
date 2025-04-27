@@ -66,9 +66,9 @@ export type RequestedBy = {
   id: number;
   first_name: string;
   last_name: string;
-  division: string;
-  office_location: string;
-  department: string;
+  division?: string;
+  office_location?: string;
+  department?: string;
   division_location: string;
 };
 
