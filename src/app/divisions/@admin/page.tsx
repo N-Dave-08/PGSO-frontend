@@ -58,7 +58,15 @@ export default function Page() {
           id: division.id,
           division_name: division.division_name,
           office_location: division.office_location,
-          staff: division.staff || [],
+          staff:
+            division.staff.map((staff) => ({
+              ...staff,
+              division: {
+                division_id: division.id,
+                division_name: division.division_name,
+                office_location: division.office_location,
+              },
+            })) || [],
           department_id: division.department_id || 0,
           created_at: division.created_at,
           personnel: division.personnel || [],
