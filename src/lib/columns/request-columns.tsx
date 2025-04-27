@@ -55,6 +55,11 @@ export type Request = {
   date_completed: string | null;
   requested_by: RequestedBy;
   note: string | null;
+  reviewed_by?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+  };
 };
 
 export type RequestedBy = {

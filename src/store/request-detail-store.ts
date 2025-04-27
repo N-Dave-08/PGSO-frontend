@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { Request, RequestStatusResponse } from "@/types";
+import { RequestStatusResponse } from "@/types";
+import { Request } from "@/lib/columns/request-columns";
 import { updateRequestStatus } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
@@ -17,6 +18,7 @@ interface RequestDetailState {
   loading: boolean;
   isAssessing: boolean;
   isCompleting: boolean;
+  isReviewing: boolean;
   completionFile: File | null;
   rating: number;
   hoverRating: number;
@@ -44,6 +46,11 @@ interface RequestDetailState {
   setCompletionFile: (file: File | null) => void;
   handleMarkAsComplete: (
     requestId: number,
+    callback?: () => void
+  ) => Promise<{ isSuccess: boolean; message: string } | undefined>;
+  handleReviewRequest: (
+    requestId: number,
+    decision: "accept" | "reject",
     callback?: () => void
   ) => Promise<{ isSuccess: boolean; message: string } | undefined>;
   setRating: (rating: number) => void;
@@ -78,6 +85,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   loading: false,
   isAssessing: false,
   isCompleting: false,
+  isReviewing: false,
   completionFile: null,
   rating: 0,
   hoverRating: 0,
@@ -402,6 +410,68 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       throw error;
     } finally {
       set({ isCompleting: false });
+    }
+  },
+
+  handleReviewRequest: async (
+    requestId: number,
+    decision: "accept" | "reject",
+    callback?: () => void
+  ): Promise<{ isSuccess: boolean; message: string } | undefined> => {
+    try {
+      set({ isReviewing: true });
+      const token = await secureStorage.get("token");
+      const response = await axios.post<{
+        isSuccess: boolean;
+        message: string;
+        request: {
+          id: number;
+          control_no: string;
+          status: string;
+          reviewed_by: {
+            id: number;
+            first_name: string;
+            last_name: string;
+          };
+        };
+      }>(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/review/${requestId}`,
+        { decision },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.isSuccess) {
+        // Update local request state
+        const { request } = get();
+        if (request) {
+          set({
+            request: {
+              ...request,
+              status: decision === "accept" ? "For Feedback" : "In Progress",
+              reviewed_by: response.data.request.reviewed_by,
+            },
+          });
+        }
+        callback?.();
+        return {
+          isSuccess: true,
+          message: response.data.message,
+        };
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        throw new Error(
+          error.response.data.message || "Error reviewing request"
+        );
+      }
+      throw error;
+    } finally {
+      set({ isReviewing: false });
     }
   },
 

@@ -4,6 +4,8 @@ import { Request } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useRequestDetailStore } from "@/store/request-detail-store";
 import { toast } from "sonner";
+import { secureStorage } from "@/lib/utils/encryption";
+import { useEffect, useState } from "react";
 
 interface RequestActionsProps {
   request: Request;
@@ -16,11 +18,13 @@ export function RequestActions({
   onRequestUpdate,
   onClose,
 }: RequestActionsProps) {
+  const [isTeamLead, setIsTeamLead] = useState(false);
   const {
     userRole,
     loading,
     isAssessing,
     isCompleting,
+    isReviewing,
     isSubmittingFeedback,
     showRejectionDialog,
     rejectionNote,
@@ -29,9 +33,18 @@ export function RequestActions({
     handleStatusUpdate,
     handleAssessRequest,
     handleMarkAsComplete,
+    handleReviewRequest,
     handleFeedbackSubmit,
     selectedPersonnel,
   } = useRequestDetailStore();
+
+  useEffect(() => {
+    const checkTeamLead = async () => {
+      const user = await secureStorage.get("user");
+      setIsTeamLead(request.team_lead?.id === user?.id);
+    };
+    checkTeamLead();
+  }, [request.team_lead?.id]);
 
   const onStatusUpdate = async (status: "Approved" | "Rejected") => {
     try {
@@ -62,6 +75,20 @@ export function RequestActions({
     try {
       await handleMarkAsComplete(request.id, onRequestUpdate);
       toast.success("Request marked as complete");
+      onClose();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "An error occurred");
+    }
+  };
+
+  const onReviewRequest = async (decision: "accept" | "reject") => {
+    try {
+      await handleReviewRequest(request.id, decision, onRequestUpdate);
+      toast.success(
+        `Request ${
+          decision === "accept" ? "approved" : "returned for revision"
+        }`
+      );
       onClose();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred");
@@ -148,6 +175,26 @@ export function RequestActions({
           {isCompleting ? "Loading..." : "Mark as Complete"}
         </Button>
       )}
+      {userRole === "personnel" &&
+        request.status === "For Review" &&
+        isTeamLead && (
+          <div className="space-x-2">
+            <Button
+              onClick={() => onReviewRequest("accept")}
+              disabled={isReviewing}
+              variant="default"
+            >
+              {isReviewing ? "Loading..." : "Approve"}
+            </Button>
+            <Button
+              onClick={() => onReviewRequest("reject")}
+              disabled={isReviewing}
+              variant="destructive"
+            >
+              {isReviewing ? "Loading..." : "Return"}
+            </Button>
+          </div>
+        )}
       {userRole === "staff" && request.status === "For Feedback" && (
         <Button onClick={onSubmitFeedback} disabled={isSubmittingFeedback}>
           {isSubmittingFeedback ? "Loading..." : "Submit"}
