@@ -9,5 +9,5 @@ function Reports() {
 }
 
 export default withAuth(Reports, {
-  allowedRoles: ["head"],
+  allowedRoles: ["head", "admin"],
 });

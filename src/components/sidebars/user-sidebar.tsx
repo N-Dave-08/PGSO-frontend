@@ -82,6 +82,7 @@ export default function UserSidebar() {
       "DIVISIONS",
       "AUDIT_LOGS",
       "SETTINGS",
+      "REPORTS",
     ];
     const personnelRoutes = [
       "PROFILE",

@@ -18,7 +18,7 @@ export const ROUTE_ACCESS: RoleAccess = {
   "/calendar": ["admin", "head", "personnel", "staff"],
   "/feedback": ["admin"],
   "/profile": ["admin", "head", "personnel", "staff"],
-  "/reports": ["head"],
+  "/reports": ["head", "admin"],
   "/accomplishment": ["personnel"],
 };
 
