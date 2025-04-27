@@ -57,6 +57,9 @@ export default function EditDepartment({
 
         // Create a set of assigned division IDs (excluding current department's divisions)
         const assignedDivisionIds = new Set();
+        // Create a set of assigned head IDs (excluding current department's head)
+        const assignedHeadIds = new Set();
+
         departments.forEach((dept: Department) => {
           // Skip the current department being edited
           if (dept.id !== department.id) {
@@ -64,6 +67,10 @@ export default function EditDepartment({
               dept.divisions.forEach((division) => {
                 assignedDivisionIds.add(division.id);
               });
+            }
+            // Add the department's head ID to the set if it exists
+            if (dept.head && dept.head.id) {
+              assignedHeadIds.add(dept.head.id);
             }
           }
         });
@@ -79,7 +86,13 @@ export default function EditDepartment({
 
         // Fetch users with head role
         const usersResponse = await getUsers(1, { role_name: "head" });
-        setHeads(usersResponse.user || []);
+        // Filter to show only unassigned heads plus current department's head
+        const availableHeads = (usersResponse.user || []).filter(
+          (head) =>
+            !assignedHeadIds.has(head.id) ||
+            (department.head && head.id === department.head.id)
+        );
+        setHeads(availableHeads);
       } catch (error) {
         console.error("Failed to fetch data:", error);
         setError("Failed to load data");
