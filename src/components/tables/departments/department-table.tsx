@@ -9,7 +9,7 @@ import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar"
 import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { columns, RowContextMenu } from "./department-columns";
 import { Department, Division } from "@/types";
-import { getDivisions } from "@/lib/api/divisions";
+import { getAllDivisions } from "@/lib/api/divisions";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 
 interface DepartmentTableProps {
@@ -37,7 +37,7 @@ export function DepartmentTable({
   React.useEffect(() => {
     const fetchDivisions = async () => {
       try {
-        const response = await getDivisions();
+        const response = await getAllDivisions();
         if (response?.divisions?.data) {
           // Convert the object-based data to an array and cast to Division type
           const divisionsArray = Object.values(

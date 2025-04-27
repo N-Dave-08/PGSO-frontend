@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getDivisions } from "@/lib/api/divisions";
+import { getAllDivisions } from "@/lib/api/divisions";
 import { updateDepartment, getDepartments } from "@/lib/api/department";
 import { Division, Department } from "@/types";
 import { getUsers } from "@/lib/api/users";
@@ -48,7 +48,7 @@ export default function EditDepartment({
     const fetchData = async () => {
       try {
         // Fetch all divisions
-        const divisionsResponse = await getDivisions();
+        const divisionsResponse = await getAllDivisions();
         const allDivisions = divisionsResponse?.divisions?.data || [];
 
         // Fetch all departments to check which divisions are already assigned

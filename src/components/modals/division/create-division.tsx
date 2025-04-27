@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
-import { createDivision, getDivisions } from "@/lib/api/divisions";
+import { createDivision, getAllDivisions } from "@/lib/api/divisions";
 import { getCategories } from "@/lib/api/categories";
 import { getUsers } from "@/lib/api/users";
 import {
@@ -79,7 +79,7 @@ export default function CreateDivision({
         setStaffMembers(staffData.user || []);
 
         // Fetch all divisions to check staff assignments
-        const divisionsResponse = await getDivisions();
+        const divisionsResponse = await getAllDivisions();
         setAllDivisions(divisionsResponse.divisions.data || []);
       } catch (err) {
         console.error("Error fetching staff:", err);

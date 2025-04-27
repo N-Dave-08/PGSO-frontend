@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { updateDivision, getDivisions } from "@/lib/api/divisions";
+import { updateDivision, getAllDivisions } from "@/lib/api/divisions";
 import { Division } from "@/types";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
@@ -54,7 +54,7 @@ export default function EditDivision({
 
       try {
         // Fetch all divisions first to check staff assignments
-        const divisionsResponse = await getDivisions();
+        const divisionsResponse = await getAllDivisions();
         setAllDivisions(divisionsResponse.divisions.data || []);
         setLoadingDivisions(false);
 

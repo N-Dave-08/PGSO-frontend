@@ -229,3 +229,56 @@ export const getDivisionsByDepartment = async () => {
     throw error;
   }
 };
+
+export const getAllDivisions = async () => {
+  try {
+    const token = await secureStorage.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    let allDivisions: any[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+
+    while (hasMorePages) {
+      const response = await getDivisions(currentPage);
+
+      if (!response?.divisions?.data) {
+        throw new Error("No data received from the API");
+      }
+
+      allDivisions = [
+        ...allDivisions,
+        ...Object.values(response.divisions.data),
+      ];
+
+      if (currentPage >= response.divisions.last_page) {
+        hasMorePages = false;
+      } else {
+        currentPage++;
+      }
+    }
+
+    return {
+      divisions: {
+        data: allDivisions,
+        total: allDivisions.length,
+      },
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
+      }
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch all divisions"
+      );
+    }
+    throw error;
+  }
+};
