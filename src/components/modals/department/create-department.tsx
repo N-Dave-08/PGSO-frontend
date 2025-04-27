@@ -39,7 +39,6 @@ export default function CreateDepartment({
 }: CreateDepartmentProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [departmentName, setDepartmentName] = useState<string>("");
-  const [acronym, setAcronym] = useState<string>("");
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [selectedDivisions, setSelectedDivisions] = useState<number[]>([]);
   const [heads, setHeads] = useState<User[]>([]);
@@ -128,13 +127,11 @@ export default function CreateDepartment({
     try {
       await createDepartment(
         departmentName,
-        acronym,
         selectedDivisions,
         selectedHead ? parseInt(selectedHead) : undefined
       );
       setOpen(false);
       setDepartmentName("");
-      setAcronym("");
       setSelectedDivisions([]);
       setSelectedHead("");
       await onDepartmentCreated();
@@ -191,21 +188,6 @@ export default function CreateDepartment({
             {errors.department_name && (
               <div className="text-sm text-red-500 mt-1">
                 {errors.department_name[0]}
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="acronym">Acronym</Label>
-            <Input
-              id="acronym"
-              value={acronym}
-              onChange={(e) => setAcronym(e.target.value)}
-              placeholder="Enter acronym"
-              required
-            />
-            {errors.acronym && (
-              <div className="text-sm text-red-500 mt-1">
-                {errors.acronym[0]}
               </div>
             )}
           </div>

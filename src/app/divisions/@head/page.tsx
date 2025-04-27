@@ -23,7 +23,7 @@ export default function Page() {
 
   const fetchDivisions = async () => {
     try {
-      const response = await getDivisionsByDepartment(1); // Using department ID 1 as per the API response
+      const response = await getDivisionsByDepartment(); // Using department ID 1 as per the API response
       if (response.isSuccess) {
         setDepartment(response.department);
         setDivisions(response.divisions);

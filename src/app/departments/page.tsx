@@ -6,4 +6,4 @@ function Departments() {
   return <></>;
 }
 
-export default withAuth(Departments, { allowedRoles: ["admin", "head"] });
+export default withAuth(Departments, { allowedRoles: ["admin"] });

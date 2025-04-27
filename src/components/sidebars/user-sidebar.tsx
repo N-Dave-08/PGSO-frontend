@@ -93,7 +93,6 @@ export default function UserSidebar() {
     ];
     const headRoutes = [
       "REQUESTS",
-      "DEPARTMENTS",
       "DIVISIONS",
       "STAFFS",
       "SETTINGS",

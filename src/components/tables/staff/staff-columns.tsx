@@ -10,11 +10,17 @@ export const columns: ColumnDef<Staff>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="First Name" />
     ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("first_name")}</div>
+    ),
   },
   {
     accessorKey: "last_name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Name" />
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("last_name")}</div>
     ),
   },
   {
@@ -22,5 +28,22 @@ export const columns: ColumnDef<Staff>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "division.division_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Division" />
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.division.division_name}</div>
+    ),
+  },
+  {
+    accessorKey: "division.office_location",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Office Location" />
+    ),
+    cell: ({ row }) => <div>{row.original.division.office_location}</div>,
   },
 ];

@@ -46,7 +46,6 @@ export const getDepartments = async (
 
 export const createDepartment = async (
   departmentName: string,
-  acronym: string,
   divisionIds: number[],
   head_id?: number
 ) => {
@@ -60,7 +59,6 @@ export const createDepartment = async (
       process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/department/create",
       {
         department_name: departmentName,
-        acronym,
         division_id: divisionIds,
         head_id,
       },
@@ -80,6 +78,9 @@ export const createDepartment = async (
         window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }
+      throw new Error(
+        error.response?.data?.message || "Failed to create department"
+      );
     }
     throw error;
   }
