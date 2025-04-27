@@ -8,7 +8,6 @@ export const createDivision = async (data: CreateDivisionRequest) => {
     if (!token) {
       throw new Error("Authentication token not found");
     }
-    console.log("Creating division with data:", data);
     const response = await axios.post(
       process.env.NEXT_PUBLIC_API_BASE_URL + "/division/create",
       data,
@@ -143,11 +142,6 @@ export const updateDivision = async (
       throw new Error("Authentication token not found");
     }
 
-    console.log("Updating division with data:", {
-      id,
-      ...data,
-    });
-
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/division/update/${id}`,
       data,
@@ -191,5 +185,47 @@ export const updateDivision = async (
     // Handle non-axios errors
     const err = error as Error;
     throw new Error(`Division update failed: ${err.message}`);
+  }
+};
+
+export const getDivisionsByDepartment = async (departmentId: number) => {
+  try {
+    const token = await secureStorage.get("token");
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/department/division`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.data) {
+      throw new Error("No data received from the API");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("API Error:", error);
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        await secureStorage.remove("token");
+        await secureStorage.remove("user");
+        await secureStorage.remove("sessionCode");
+        window.location.href = "/";
+        throw new Error("Session expired. Please login again.");
+      }
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch divisions"
+      );
+    }
+    throw error;
   }
 };

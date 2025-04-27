@@ -29,10 +29,6 @@ export default function Page() {
       const paginationData = response.pagination;
 
       const formattedData = requestData.map((request: Request): Request => {
-        // console.log('Individual Request:', JSON.stringify(request, null, 2));
-        // console.log('Requested By:', request.requested_by);
-        // console.log("REQUESTERRRR", request.requested_by_name)
-
         return {
           id: request.id,
           control_no: request.control_no,
@@ -56,7 +52,6 @@ export default function Page() {
         };
       });
 
-      // console.log("Formatted Data:", formattedData);
       if (isInitialLoad) {
         setRequests(formattedData);
       } else {
@@ -96,7 +91,6 @@ export default function Page() {
     );
   }
 
-  // console.log("REQUEST DATA", requests);
   return (
     <div className="container mx-auto py-10">
       <RequestCards

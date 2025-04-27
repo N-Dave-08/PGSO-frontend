@@ -172,8 +172,6 @@ export default function EditDivision({
         personnel_id: selectedPersonnel,
       };
 
-      console.log("Submitting division update:", updateData);
-
       await updateDivision(division.id, updateData);
       toast.success("Division updated successfully");
       await onDivisionUpdated();

@@ -118,7 +118,6 @@ export default function EditCategory({
       const newSelected = prev.includes(personnelId)
         ? prev.filter((id) => id !== personnelId)
         : [...prev, personnelId];
-      console.log("Selected Personnel after toggle:", newSelected);
       return newSelected;
     });
   };
@@ -143,8 +142,6 @@ export default function EditCategory({
     setError(null);
 
     try {
-      console.log("Current selected personnel:", selectedPersonnel);
-
       const updateData = {
         category_name: categoryName,
         description: description,
@@ -152,10 +149,7 @@ export default function EditCategory({
         teamlead_ids: selectedTeamLeads || [],
       };
 
-      console.log("Update data being sent:", updateData);
-
       const response = await updateCategory(category.id, updateData);
-      console.log("API Response:", response);
 
       if (response.isSuccess) {
         toast.success(response.message || "Category updated successfully");

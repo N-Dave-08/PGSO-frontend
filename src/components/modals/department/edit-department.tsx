@@ -68,12 +68,6 @@ export default function EditDepartment({
           }
         });
 
-        console.log("All Divisions:", allDivisions);
-        console.log(
-          "Assigned Division IDs (excluding current dept):",
-          Array.from(assignedDivisionIds)
-        );
-
         // Filter to show only unassigned divisions plus current department's divisions
         const availableDivisions = allDivisions.filter(
           (division: Division) =>
@@ -81,7 +75,6 @@ export default function EditDepartment({
             department.divisions.some((dept_div) => dept_div.id === division.id)
         );
 
-        console.log("Available Divisions:", availableDivisions);
         setDivisions(availableDivisions);
 
         // Fetch users with head role

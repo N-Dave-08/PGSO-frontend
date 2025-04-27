@@ -82,15 +82,11 @@ export default function CreateDepartment({
           }
         });
 
-        console.log("All Divisions:", allDivisions);
-        console.log("Assigned Division IDs:", Array.from(assignedDivisionIds));
-
         // Filter out divisions that are already assigned to departments
         const unassignedDivisions = allDivisions.filter(
           (division: Division) => !assignedDivisionIds.has(division.id)
         );
 
-        console.log("Unassigned Divisions:", unassignedDivisions);
         setDivisions(unassignedDivisions);
 
         // Fetch users with head role
@@ -112,11 +108,6 @@ export default function CreateDepartment({
       fetchData();
     }
   }, [open]);
-
-  useEffect(() => {
-    console.log("Current divisions state:", divisions);
-    console.log("Filtered divisions:", filteredDivisions);
-  }, [divisions, filteredDivisions]);
 
   const handleDivisionToggle = (divisionId: number) => {
     setSelectedDivisions((prev) => {
