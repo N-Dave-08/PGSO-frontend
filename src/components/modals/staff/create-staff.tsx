@@ -34,7 +34,7 @@ import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { staffSchema, type StaffFormValues } from "@/schemas/staff-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, ControllerRenderProps } from "react-hook-form";
 
 interface Division {
   id: number;
@@ -152,7 +152,7 @@ export default function CreateStaff({ onStaffCreated }: CreateStaffProps) {
 
   const handlePhoneNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: any
+    field: ControllerRenderProps<StaffFormValues, "number">
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     if (value.length <= 11) {
