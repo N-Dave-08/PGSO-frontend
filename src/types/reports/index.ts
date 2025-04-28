@@ -4,6 +4,12 @@ export interface ReportPersonnel {
   email: string;
 }
 
+export interface ReportTeamLead {
+  id: number;
+  full_name: string;
+  email: string;
+}
+
 export interface ReportRequestedBy {
   id: number;
   full_name: string;
@@ -24,6 +30,7 @@ export interface ReportRequest {
   category_id: number;
   category_name: string;
   personnel: ReportPersonnel[];
+  team_lead: ReportTeamLead | null;
   feedback: string | null;
   rating: number | null;
   status: string;

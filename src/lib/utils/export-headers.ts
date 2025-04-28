@@ -10,6 +10,7 @@ export const requestExportHeaders = {
   "requested_by.department": "Department",
   "requested_by.division": "Division",
   personnel: "Personnel",
+  team_lead: "Team Lead",
   feedback: "Feedback",
   rating: "Rating",
   file_url: "Request Photo URL",
@@ -32,6 +33,7 @@ export const transformRequestForExport = (item: any) => ({
   personnel: Array.isArray(item.personnel)
     ? item.personnel.map((p: any) => p.name).join("; ")
     : "N/A",
+  team_lead: item.team_lead ? item.team_lead.full_name : "N/A",
   feedback: item.feedback || "N/A",
   rating: item.rating || "N/A",
   file_url: item.file_url || "N/A",

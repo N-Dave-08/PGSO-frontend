@@ -28,10 +28,6 @@ interface ReportTableProps {
 }
 
 const transformToRequest = (report: ReportRequest): Request => {
-  const [firstName, ...lastNameParts] =
-    report.requested_by.full_name.split(" ");
-  const lastName = lastNameParts.join(" ");
-
   return {
     ...report,
     personnel: report.personnel.map((p) => ({
@@ -40,14 +36,14 @@ const transformToRequest = (report: ReportRequest): Request => {
     })),
     requested_by: {
       ...report.requested_by,
-      first_name: firstName,
-      last_name: lastName,
+      first_name: report.requested_by.full_name.split(" ")[0],
+      last_name: report.requested_by.full_name.split(" ").slice(1).join(" "),
       division_location: "",
       office_location: "",
     },
+    team_lead: null,
     category_id: report.category_id || null,
     category_name: report.category_name || null,
-    team_lead: null,
     note: null,
   };
 };

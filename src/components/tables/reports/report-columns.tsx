@@ -28,7 +28,38 @@ export const columns: ColumnDef<ReportRequest>[] = [
     header: "Requested By",
     cell: ({ row }) => {
       const requestedBy = row.original.requested_by;
-      return <div>{requestedBy.full_name}</div>;
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="font-medium">{requestedBy.full_name}</span>
+          <span className="text-sm text-muted-foreground">
+            {requestedBy.department}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "requested_by.division",
+    header: "Division",
+    cell: ({ row }) => {
+      const requestedBy = row.original.requested_by;
+      return <div>{requestedBy.division}</div>;
+    },
+  },
+  {
+    accessorKey: "personnel",
+    header: "Personnel",
+    cell: ({ row }) => {
+      const personnel = row.original.personnel;
+      return <div>{personnel.map((p) => p.name).join("; ")}</div>;
+    },
+  },
+  {
+    accessorKey: "team_lead",
+    header: "Team Lead",
+    cell: ({ row }) => {
+      const teamLead = row.original.team_lead;
+      return <div>{teamLead ? teamLead.full_name : "N/A"}</div>;
     },
   },
   {
