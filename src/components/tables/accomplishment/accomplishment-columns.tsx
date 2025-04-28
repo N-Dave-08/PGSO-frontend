@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, FileText } from "lucide-react";
+import { Eye, FileText, Star } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
@@ -60,43 +60,64 @@ export const columns: ColumnDef<Accomplishment>[] = [
     ),
   },
   {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
-    ),
+    accessorKey: "category_name",
+    header: "Category",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => {
-      const description = row.getValue("description") as string;
+      const status = row.getValue("status") as string;
       return (
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <span className="line-clamp-1">{description}</span>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-80">
-            <div className="space-y-1">
-              <p className="text-sm">{description}</p>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
+        <Badge variant={status === "Completed" ? "default" : "secondary"}>
+          {status}
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "category_name",
+    accessorKey: "rating",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Rating" />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const rating = row.getValue("rating") as string;
       return (
-        <Badge variant={status === "For Feedback" ? "default" : "secondary"}>
-          {status}
-        </Badge>
+        <div className="flex items-center gap-1">
+          <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+          <span>{rating}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "requested_by",
+    header: "Requested By",
+    cell: ({ row }) => {
+      const requestedBy = row.original.requested_by;
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="font-medium">{requestedBy.full_name}</span>
+          <span className="text-sm text-muted-foreground">
+            {requestedBy.department} - {requestedBy.division}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "personnel",
+    header: "Personnel",
+    cell: ({ row }) => {
+      const personnel = row.original.personnel;
+      return (
+        <div className="max-w-[200px] space-y-1">
+          {personnel.map((p) => (
+            <div key={p.id} className="text-sm truncate">
+              {p.name}
+            </div>
+          ))}
+        </div>
       );
     },
   },
@@ -118,16 +139,6 @@ export const columns: ColumnDef<Accomplishment>[] = [
     cell: ({ row }) => {
       const date = row.getValue("date_completed") as string;
       return date ? format(new Date(date), "MMM dd, yyyy") : "-";
-    },
-  },
-  {
-    accessorKey: "requested_by",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Requested By" />
-    ),
-    cell: ({ row }) => {
-      const requestedBy = row.original.requested_by;
-      return `${requestedBy.first_name} ${requestedBy.last_name}`;
     },
   },
 ];
@@ -218,9 +229,7 @@ export const RowContextMenu = ({
               </div>
               <div className="space-y-2">
                 <h4 className="font-medium">Requested By</h4>
-                <p className="text-sm">
-                  {row.requested_by.first_name} {row.requested_by.last_name}
-                </p>
+                <p className="text-sm">{row.requested_by.full_name}</p>
               </div>
               <div className="space-y-2">
                 <h4 className="font-medium">Date Requested</h4>

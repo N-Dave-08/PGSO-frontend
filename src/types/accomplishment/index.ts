@@ -1,13 +1,20 @@
+export interface AccomplishmentRequestedBy {
+  id: number;
+  full_name: string;
+  division: string;
+  department: string;
+}
+
 export interface AccomplishmentPersonnel {
   id: number;
   name: string;
   email: string;
 }
 
-export interface AccomplishmentRequestedBy {
+export interface AccomplishmentTeamLead {
   id: number;
-  first_name: string;
-  last_name: string;
+  full_name: string;
+  email: string;
 }
 
 export interface Accomplishment {
@@ -22,6 +29,7 @@ export interface Accomplishment {
   category_id: number;
   category_name: string;
   personnel: AccomplishmentPersonnel[];
+  team_lead: AccomplishmentTeamLead;
   feedback: string | null;
   rating: number | null;
   status: string;

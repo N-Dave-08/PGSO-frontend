@@ -66,10 +66,15 @@ export function AccomplishmentViewModal({
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-medium">Requested By</h4>
-                    <p className="text-sm">
-                      {accomplishment.requested_by.first_name}{" "}
-                      {accomplishment.requested_by.last_name}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        {accomplishment.requested_by.full_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {accomplishment.requested_by.department} -{" "}
+                        {accomplishment.requested_by.division}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -90,18 +95,25 @@ export function AccomplishmentViewModal({
                   )}
                 </div>
 
-                {accomplishment.personnel.length > 0 && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Team Lead</h4>
+                    <div className="text-sm">
+                      {accomplishment.team_lead.full_name}
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <h4 className="font-medium">Personnel Involved</h4>
                     <div className="grid gap-2">
                       {accomplishment.personnel.map((person) => (
                         <div key={person.id} className="text-sm">
-                          {person.name} ({person.email})
+                          {person.name}
                         </div>
                       ))}
                     </div>
                   </div>
-                )}
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   {accomplishment.feedback && (
