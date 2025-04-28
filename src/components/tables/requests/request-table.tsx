@@ -38,11 +38,9 @@ export function RequestTable({
       status: "Status",
       date_requested: "Date Requested",
       date_completed: "Date Completed",
-      "requested_by.first_name": "Requested By First Name",
-      "requested_by.last_name": "Requested By Last Name",
+      "requested_by.full_name": "Requested By",
       "requested_by.department": "Department",
       "requested_by.division": "Division",
-      "requested_by.division_location": "Division Location",
       personnel: "Personnel",
       team_lead: "Team Lead",
       feedback: "Feedback",
@@ -64,12 +62,9 @@ export function RequestTable({
         status: item.status,
         date_requested: item.date_requested,
         date_completed: item.date_completed,
-        "requested_by.first_name": item.requested_by.first_name,
-        "requested_by.last_name": item.requested_by.last_name,
+        "requested_by.full_name": item.requested_by.full_name,
         "requested_by.department": item.requested_by.department || "N/A",
         "requested_by.division": item.requested_by.division || "N/A",
-        "requested_by.division_location":
-          item.requested_by.division_location || "N/A",
         personnel: item.personnel
           .map((p) => `${p.name}${p.is_team_lead ? " (Team Lead)" : ""}`)
           .join("; "),
