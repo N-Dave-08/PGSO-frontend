@@ -23,3 +23,11 @@ export interface StaffResponse {
   department: Department;
   staff: Staff[];
 }
+
+export interface CreateStaffRequest {
+  first_name: string;
+  last_name: string;
+  email: string;
+  number: string;
+  division_id: number;
+}

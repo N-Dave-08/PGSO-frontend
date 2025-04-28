@@ -10,6 +10,7 @@ import { StaffService } from "@/lib/api/services/staff-service";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
+import CreateStaff from "@/components/modals/staff/create-staff";
 
 export function StaffTable() {
   const [staff, setStaff] = React.useState<Staff[]>([]);
@@ -78,7 +79,10 @@ export function StaffTable() {
           Department: {department.department_name}
         </div>
       )}
-      <DataTableToolbar table={table} onSearch={handleSearch} />
+      <div className="flex items-center justify-between">
+        <DataTableToolbar table={table} onSearch={handleSearch} />
+        <CreateStaff onStaffCreated={fetchStaff} />
+      </div>
     </div>
   );
 

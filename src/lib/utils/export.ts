@@ -109,14 +109,49 @@ export async function convertToPDF<T extends DataRecord>(
   data: T[],
   headers: Record<string, string>
 ): Promise<jsPDF> {
-  const doc = new jsPDF();
-  const headerRow = Object.values(headers).filter(
-    (header) => !header.includes("Photo URL")
+  // Create PDF in landscape for better layout
+  const doc = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+  });
+
+  // Add header
+  doc.setFontSize(20);
+  doc.setTextColor(44, 62, 80);
+  doc.text("Request Report", doc.internal.pageSize.width / 2, 15, {
+    align: "center",
+  });
+  doc.setFontSize(10);
+  doc.text(
+    new Date().toLocaleDateString(),
+    doc.internal.pageSize.width - 20,
+    15,
+    { align: "right" }
   );
 
-  // Filter out photo URLs from the data rows
-  const rows = data.map((item) =>
-    Object.keys(headers)
+  // Filter out columns where all values are N/A
+  const filteredHeaders: Record<string, string> = {};
+  Object.entries(headers).forEach(([key, value]) => {
+    const allNA = data.every((item) => item[key] === "N/A");
+    if (!allNA) {
+      filteredHeaders[key] = value;
+    }
+  });
+
+  let currentY = 25; // Starting Y position
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  const margin = 10;
+  const photoWidth = 60;
+  const photoHeight = 45;
+  const photosPerRow = 2;
+  const photoSpacing =
+    (pageWidth - 2 * margin - photosPerRow * photoWidth) / (photosPerRow - 1);
+
+  // Process each request
+  for (const item of data) {
+    // Add table row for current request
+    const rowData = Object.keys(filteredHeaders)
       .filter((key) => !key.includes("_url"))
       .map((key) => {
         const value = item[key];
@@ -127,24 +162,40 @@ export async function convertToPDF<T extends DataRecord>(
           return JSON.stringify(value);
         }
         return value ?? "";
-      })
-  );
+      });
 
-  // Add the table
-  autoTable(doc, {
-    head: [headerRow],
-    body: rows,
-    startY: 10,
-    styles: { fontSize: 8, cellPadding: 1 },
-    headStyles: { fillColor: [66, 66, 66] },
-  });
+    // Add single row table
+    autoTable(doc, {
+      head: [
+        Object.values(filteredHeaders).filter(
+          (header) => !header.includes("Photo URL")
+        ),
+      ],
+      body: [rowData],
+      startY: currentY,
+      styles: {
+        fontSize: 9,
+        cellPadding: 2,
+        lineColor: [44, 62, 80],
+        lineWidth: 0.1,
+      },
+      headStyles: {
+        fillColor: [44, 62, 80],
+        fontSize: 10,
+        fontStyle: "bold",
+        halign: "center",
+      },
+      alternateRowStyles: {
+        fillColor: [240, 244, 248],
+      },
+    });
 
-  // Add images after the table
-  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } })
-    .lastAutoTable.finalY;
-  let yOffset = finalY + 10;
+    // Update Y position after table
+    currentY =
+      (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable
+        .finalY + 10;
 
-  for (const item of data) {
+    // Add photos for current request
     const fileUrl = item.file_url as string | undefined | null;
     const fileCompletionUrl = item.file_completion_url as
       | string
@@ -152,36 +203,60 @@ export async function convertToPDF<T extends DataRecord>(
       | null;
     const controlNo = item.control_no as string;
 
-    if (fileUrl && fileUrl !== "N/A") {
+    // Function to add photo
+    const addPhoto = async (
+      url: string | undefined | null,
+      label: string,
+      xPosition: number
+    ) => {
+      if (!url || url === "N/A") return;
+
       try {
-        const imgData = await loadImage(fileUrl);
+        const imgData = await loadImage(url);
         if (imgData) {
-          doc.addImage(imgData, "JPEG", 10, yOffset, 80, 60);
-          doc.text(`Request Photo (${controlNo})`, 10, yOffset - 5);
-          yOffset += 70;
+          // Check if we need to add a new page
+          if (currentY + photoHeight + 20 > pageHeight) {
+            doc.addPage();
+            currentY = 20;
+          }
+
+          // Add photo with border
+          doc.setDrawColor(44, 62, 80);
+          doc.setLineWidth(0.1);
+          doc.rect(xPosition, currentY, photoWidth, photoHeight);
+          doc.addImage(
+            imgData,
+            "JPEG",
+            xPosition,
+            currentY,
+            photoWidth,
+            photoHeight
+          );
+
+          // Add label
+          doc.setFontSize(8);
+          doc.text(`${label} (${controlNo})`, xPosition, currentY - 2);
         }
       } catch (error) {
-        console.error("Error adding request photo:", error);
+        console.error(`Error adding ${label}:`, error);
       }
-    }
+    };
 
-    if (fileCompletionUrl && fileCompletionUrl !== "N/A") {
-      try {
-        const imgData = await loadImage(fileCompletionUrl);
-        if (imgData) {
-          doc.addImage(imgData, "JPEG", 10, yOffset, 80, 60);
-          doc.text(`Completion Photo (${controlNo})`, 10, yOffset - 5);
-          yOffset += 70;
-        }
-      } catch (error) {
-        console.error("Error adding completion photo:", error);
-      }
-    }
+    // Add request and completion photos side by side
+    await addPhoto(fileUrl, "Request Photo", margin);
+    await addPhoto(
+      fileCompletionUrl,
+      "Completion Photo",
+      margin + photoWidth + photoSpacing
+    );
 
-    // Add a new page if we're running out of space
-    if (yOffset > doc.internal.pageSize.height - 80) {
+    // Update Y position for next request
+    currentY += photoHeight + 20;
+
+    // Add new page if needed
+    if (currentY > pageHeight - 40) {
       doc.addPage();
-      yOffset = 10;
+      currentY = 20;
     }
   }
 
