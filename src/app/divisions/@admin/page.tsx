@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { DivisionTable } from "@/components/tables/divisions/division-table";
 import { getDivisions } from "@/lib/api/divisions";
-import CreateDivision from "@/components/modals/division/create-division";
 import { Division } from "@/types";
 import { Pagination } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
@@ -111,19 +110,15 @@ export default function Page() {
 
   return (
     <div>
-      <div className="mb-4">
-        <CreateDivision
-          onDivisionCreated={() =>
-            fetchDivisions(pagination.current_page, searchTerm)
-          }
-        />
-      </div>
       <DivisionTable
         data={divisions}
         pagination={pagination}
         onPageChange={handlePageChange}
         onDelete={() => fetchDivisions(pagination.current_page, searchTerm)}
         onSearch={handleSearch}
+        onDivisionCreated={() =>
+          fetchDivisions(pagination.current_page, searchTerm)
+        }
       />
     </div>
   );

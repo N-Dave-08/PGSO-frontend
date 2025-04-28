@@ -6,7 +6,6 @@ import { DepartmentTable } from "@/components/tables/departments/department-tabl
 import { Department } from "@/types";
 import { Pagination } from "@/types";
 import { DataTableSkeleton } from "@/components/loaders/data-table-skeleton";
-import CreateDepartment from "@/components/modals/department/create-department";
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -70,20 +69,18 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-4">
-      <CreateDepartment
-        onDepartmentCreated={() =>
-          fetchDepartments(pagination.current_page, currentFilters)
-        }
-      />
+    <div>
       <DepartmentTable
         data={departments}
         pagination={pagination}
         onPageChange={handlePageChange}
-        onDelete={() =>
-          fetchDepartments(pagination.current_page, currentFilters)
-        }
+        onDelete={async () => {
+          await fetchDepartments(pagination.current_page, currentFilters);
+        }}
         onFilterChange={handleFilterChange}
+        onDepartmentCreated={async () => {
+          await fetchDepartments(pagination.current_page, currentFilters);
+        }}
       />
     </div>
   );

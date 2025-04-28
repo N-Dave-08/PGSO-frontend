@@ -11,6 +11,7 @@ import {
   RowContextMenu,
 } from "@/components/tables/divisions/division-columns";
 import { Division } from "@/types";
+import CreateDivision from "@/components/modals/division/create-division";
 
 interface DivisionTableProps {
   data: Division[];
@@ -23,6 +24,7 @@ interface DivisionTableProps {
   onPageChange?: (page: number) => void;
   onDelete: () => Promise<void>;
   onSearch?: (searchTerm: string) => void;
+  onDivisionCreated: () => void;
 }
 
 export function DivisionTable({
@@ -31,12 +33,20 @@ export function DivisionTable({
   onPageChange,
   onDelete,
   onSearch,
+  onDivisionCreated,
 }: DivisionTableProps) {
   const renderToolbar = React.useCallback(
     (table: Table<Division>) => (
-      <DataTableToolbar table={table} onSearch={onSearch} />
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <DataTableToolbar table={table} onSearch={onSearch} />
+        </div>
+        <div className="ml-4">
+          <CreateDivision onDivisionCreated={onDivisionCreated} />
+        </div>
+      </div>
     ),
-    [onSearch]
+    [onSearch, onDivisionCreated]
   );
 
   const renderPagination = React.useCallback(

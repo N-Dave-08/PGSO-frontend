@@ -56,42 +56,38 @@ export function DataTableToolbar<TData>({
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
-        <div className="relative flex items-center">
-          <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search table..."
-            value={searchValue}
-            onChange={(event) => handleSearch(event.target.value)}
-            className="h-8 w-[150px] pl-8 lg:w-[250px]"
-          />
-          {searchValue && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-0 h-8 w-8 p-0 hover:bg-transparent"
-              onClick={handleClear}
-            >
-              <Cross2Icon className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-        {children}
-        {isFiltered && (
+    <div className="flex items-center gap-4">
+      <div className="relative flex items-center">
+        <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search table..."
+          value={searchValue}
+          onChange={(event) => handleSearch(event.target.value)}
+          className="h-8 w-[150px] pl-8 lg:w-[250px]"
+        />
+        {searchValue && (
           <Button
             variant="ghost"
+            size="sm"
+            className="absolute right-0 h-8 w-8 p-0 hover:bg-transparent"
             onClick={handleClear}
-            className="h-8 px-2 lg:px-3"
           >
-            Reset filters
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <Cross2Icon className="h-4 w-4" />
           </Button>
         )}
       </div>
-      <div className="flex items-center space-x-2">
-        <DataTableViewOptions table={table} />
-      </div>
+      {children}
+      {isFiltered && (
+        <Button
+          variant="ghost"
+          onClick={handleClear}
+          className="h-8 px-2 lg:px-3"
+        >
+          Reset filters
+          <Cross2Icon className="ml-2 h-4 w-4" />
+        </Button>
+      )}
+      <DataTableViewOptions table={table} />
     </div>
   );
 }
