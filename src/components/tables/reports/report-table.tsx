@@ -10,6 +10,10 @@ import { columns } from "./report-columns";
 import { ReportRequest } from "@/types/reports";
 import RequestDetailsModal from "@/components/modals/request-details";
 import { Request } from "@/types";
+import {
+  requestExportHeaders,
+  transformRequestForExport,
+} from "@/lib/utils/export-headers";
 
 interface ReportTableProps {
   data: ReportRequest[];
@@ -24,21 +28,27 @@ interface ReportTableProps {
 }
 
 const transformToRequest = (report: ReportRequest): Request => {
+  const [firstName, ...lastNameParts] =
+    report.requested_by.full_name.split(" ");
+  const lastName = lastNameParts.join(" ");
+
   return {
     ...report,
     personnel: report.personnel.map((p) => ({
       ...p,
-      is_team_lead: Boolean(p.is_team_lead),
+      is_team_lead: false,
     })),
     requested_by: {
       ...report.requested_by,
-      division_location: report.requested_by.division_location || "",
-      office_location: report.requested_by.division_location,
-      department: report.requested_by.department,
-      division: report.requested_by.division,
+      first_name: firstName,
+      last_name: lastName,
+      division_location: "",
+      office_location: "",
     },
     category_id: report.category_id || null,
     category_name: report.category_name || null,
+    team_lead: null,
+    note: null,
   };
 };
 
@@ -48,59 +58,8 @@ export function ReportTable({
   onPageChange,
   onSearch,
 }: ReportTableProps) {
-  const exportHeaders = React.useMemo(
-    () => ({
-      control_no: "Control No.",
-      request_title: "Title",
-      description: "Description",
-      category_name: "Category",
-      status: "Status",
-      date_requested: "Date Requested",
-      date_completed: "Date Completed",
-      "requested_by.first_name": "Requested By First Name",
-      "requested_by.last_name": "Requested By Last Name",
-      "requested_by.department": "Department",
-      "requested_by.division": "Division",
-      "requested_by.division_location": "Division Location",
-      personnel: "Personnel",
-      team_lead: "Team Lead",
-      feedback: "Feedback",
-      rating: "Rating",
-      note: "Note",
-      file_url: "Request Photo URL",
-      file_completion_url: "Completion Photo URL",
-    }),
-    []
-  );
-
   const exportData = React.useMemo(
-    () =>
-      data.map((item) => ({
-        control_no: item.control_no,
-        request_title: item.request_title,
-        description: item.description,
-        category_name: item.category_name,
-        status: item.status,
-        date_requested: item.date_requested,
-        date_completed: item.date_completed,
-        "requested_by.first_name": item.requested_by.first_name,
-        "requested_by.last_name": item.requested_by.last_name,
-        "requested_by.department": item.requested_by.department || "N/A",
-        "requested_by.division": item.requested_by.division || "N/A",
-        "requested_by.division_location":
-          item.requested_by.division_location || "N/A",
-        personnel: item.personnel
-          .map((p) => `${p.name}${p.is_team_lead ? " (Team Lead)" : ""}`)
-          .join("; "),
-        team_lead: item.team_lead
-          ? `${item.team_lead.first_name} ${item.team_lead.last_name}`
-          : "N/A",
-        feedback: item.feedback,
-        rating: item.rating,
-        note: item.note,
-        file_url: item.file_url || "N/A",
-        file_completion_url: item.file_completion_url || "N/A",
-      })),
+    () => data.map(transformRequestForExport),
     [data]
   );
 
@@ -109,12 +68,12 @@ export function ReportTable({
       <DataTableToolbar table={table} onSearch={onSearch}>
         <DataTableExport
           data={exportData}
-          headers={exportHeaders}
+          headers={requestExportHeaders}
           filename="reports"
         />
       </DataTableToolbar>
     ),
-    [onSearch, exportData, exportHeaders]
+    [onSearch, exportData]
   );
 
   const renderPagination = React.useCallback(

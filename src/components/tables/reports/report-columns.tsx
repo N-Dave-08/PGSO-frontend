@@ -28,11 +28,7 @@ export const columns: ColumnDef<ReportRequest>[] = [
     header: "Requested By",
     cell: ({ row }) => {
       const requestedBy = row.original.requested_by;
-      return (
-        <div>
-          {requestedBy.first_name} {requestedBy.last_name}
-        </div>
-      );
+      return <div>{requestedBy.full_name}</div>;
     },
   },
   {
@@ -44,10 +40,10 @@ export const columns: ColumnDef<ReportRequest>[] = [
         <Badge
           variant={
             status === "For Feedback"
-              ? "default"
+              ? "secondary"
               : status === "Completed"
-              ? "outline"
-              : "secondary"
+              ? "default"
+              : "outline"
           }
         >
           {status}

@@ -1,17 +1,15 @@
 export interface ReportPersonnel {
   id: number;
   name: string;
-  is_team_lead?: boolean;
-  team_lead_id?: number;
+  email: string;
 }
 
 export interface ReportRequestedBy {
   id: number;
-  first_name: string;
-  last_name: string;
-  department?: string;
-  division?: string;
-  division_location?: string;
+  full_name: string;
+  division: string;
+  department: string;
+  department_acronym: string;
 }
 
 export interface ReportRequest {
@@ -25,7 +23,6 @@ export interface ReportRequest {
   file_completion_url: string | null;
   category_id: number;
   category_name: string;
-  team_lead: { id: number; first_name: string; last_name: string } | null;
   personnel: ReportPersonnel[];
   feedback: string | null;
   rating: number | null;
@@ -33,7 +30,6 @@ export interface ReportRequest {
   requested_by: ReportRequestedBy;
   date_requested: string;
   date_completed: string | null;
-  note: string | null;
 }
 
 export interface ReportsResponse {

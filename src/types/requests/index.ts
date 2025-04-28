@@ -3,16 +3,18 @@ export interface RequestedBy {
   first_name: string;
   last_name: string;
   division_location: string;
+  office_location: string;
   division?: string;
   department?: string;
-  office_location?: string;
+  department_acronym?: string;
+  full_name?: string;
 }
 
 export interface RequestPersonnel {
   id: number;
   name: string;
+  email: string;
   is_team_lead: boolean;
-  team_lead_id?: number;
 }
 
 export interface Request {

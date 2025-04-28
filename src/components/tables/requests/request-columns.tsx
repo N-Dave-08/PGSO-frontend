@@ -123,10 +123,10 @@ export const columns: ColumnDef<Request>[] = [
         <Badge
           variant={
             status === "For Assessment"
-              ? "default"
+              ? "secondary"
               : status === "Completed"
-              ? "outline"
-              : "secondary"
+              ? "default"
+              : "outline"
           }
         >
           {status}
