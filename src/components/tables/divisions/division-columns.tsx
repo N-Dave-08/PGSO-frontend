@@ -60,19 +60,21 @@ export const columns: ColumnDef<Division>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "division_name",
+    accessorKey: "Division",
+    accessorFn: (row) => row.division_name,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Division" />
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("division_name")}</div>
+      <div className="capitalize">{row.getValue("Division")}</div>
     ),
   },
   {
-    accessorKey: "office_location",
+    accessorKey: "Office Location",
+    accessorFn: (row) => row.office_location,
     header: "Office Location",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("office_location")}</div>
+      <div className="capitalize">{row.getValue("Office Location")}</div>
     ),
   },
   {

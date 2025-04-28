@@ -60,12 +60,13 @@ export const columns: ColumnDef<
     enableHiding: false,
   },
   {
-    accessorKey: "department_name",
+    accessorKey: "Department",
+    accessorFn: (row) => row.department_name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Department" />
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("department_name")}</div>
+      <div className="capitalize">{row.getValue("Department")}</div>
     ),
   },
   {
