@@ -1,6 +1,5 @@
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 export type DataValue =
   | string
@@ -11,6 +10,9 @@ export type DataValue =
   | DataValue[]
   | { [key: string]: DataValue };
 export type DataRecord = Record<string, DataValue>;
+
+// Add type for text wrapping function
+type TextWrapResult = number;
 
 /**
  * Convert data to CSV format
@@ -106,8 +108,7 @@ async function loadImage(url: string): Promise<string> {
  * @returns PDF document
  */
 export async function convertToPDF<T extends DataRecord>(
-  data: T[],
-  headers: Record<string, string>
+  data: T[]
 ): Promise<jsPDF> {
   // Create PDF in portrait for receipt-like format
   const doc = new jsPDF({
@@ -117,38 +118,37 @@ export async function convertToPDF<T extends DataRecord>(
   });
 
   const pageWidth = doc.internal.pageSize.width;
-  const pageHeight = doc.internal.pageSize.height;
   const margin = 20;
   const contentWidth = pageWidth - 2 * margin;
 
-  // Helper function to add wrapped text
+  // Helper function to add wrapped text with proper type
   const addWrappedText = (
     text: string,
     x: number,
     y: number,
     maxWidth: number,
     lineHeight: number
-  ): number => {
+  ): TextWrapResult => {
     const lines = doc.splitTextToSize(text, maxWidth);
     doc.text(lines, x, y);
     return y + lines.length * lineHeight;
   };
 
-  // Helper function to add a field with label
+  // Helper function to add a field with label with proper type
   const addField = (
     label: string,
-    value: any,
+    value: string,
     x: number,
     y: number,
     maxWidth: number
-  ): number => {
+  ): TextWrapResult => {
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.text(label + ": ", x, y);
 
     const labelWidth = doc.getTextWidth(label + ": ");
     doc.setFont("helvetica", "normal");
-    const displayValue = value?.toString() || "N/A";
+    const displayValue = value || "N/A";
     return addWrappedText(
       displayValue,
       x + labelWidth,
@@ -159,7 +159,7 @@ export async function convertToPDF<T extends DataRecord>(
   };
 
   // Helper function to safely convert to string
-  const toString = (value: any): string => {
+  const toString = (value: DataValue): string => {
     if (value === null || value === undefined) return "N/A";
     return String(value);
   };
@@ -460,6 +460,6 @@ export async function downloadPDF<T extends DataRecord>(
   headers: Record<string, string>,
   filename: string
 ): Promise<void> {
-  const doc = await convertToPDF(data, headers);
+  const doc = await convertToPDF(data);
   doc.save(filename);
 }

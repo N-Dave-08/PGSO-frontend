@@ -9,11 +9,6 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { Accomplishment } from "@/types";
 import { toast } from "sonner";
 import { useState } from "react";
