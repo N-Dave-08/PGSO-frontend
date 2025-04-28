@@ -86,9 +86,7 @@ export default function Reports() {
       report.request_title.toLowerCase().includes(searchLower) ||
       report.category_name.toLowerCase().includes(searchLower) ||
       report.status.toLowerCase().includes(searchLower) ||
-      `${report.requested_by.first_name} ${report.requested_by.last_name}`
-        .toLowerCase()
-        .includes(searchLower)
+      report.requested_by.full_name.toLowerCase().includes(searchLower)
     );
   });
 
