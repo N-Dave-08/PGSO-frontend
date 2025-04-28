@@ -5,7 +5,7 @@ import { Table } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
 import { columns } from "./staff-columns";
-import { Staff, Department } from "@/types/staffs";
+import { Staff, Department, StaffResponse } from "@/types/staffs";
 import { StaffService } from "@/lib/api/services/staff-service";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -40,6 +40,25 @@ export function StaffTable() {
   React.useEffect(() => {
     fetchStaff();
   }, [fetchStaff]);
+
+  const handleStaffCreated = React.useCallback(
+    async (newStaffResponse: StaffResponse) => {
+      if (newStaffResponse.isSuccess) {
+        // Fetch fresh data without showing loading state
+        const staffService = new StaffService();
+        try {
+          const response = await staffService.getStaff();
+          if (response.isSuccess) {
+            setStaff(response.staff);
+            setDepartment(response.department);
+          }
+        } catch (error) {
+          console.error("Error refreshing staff data:", error);
+        }
+      }
+    },
+    []
+  );
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -81,7 +100,7 @@ export function StaffTable() {
       )}
       <div className="flex items-center justify-between">
         <DataTableToolbar table={table} onSearch={handleSearch} />
-        <CreateStaff onStaffCreated={fetchStaff} />
+        <CreateStaff onStaffCreated={handleStaffCreated} />
       </div>
     </div>
   );

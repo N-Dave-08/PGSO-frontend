@@ -35,6 +35,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { staffSchema, type StaffFormValues } from "@/schemas/staff-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, ControllerRenderProps } from "react-hook-form";
+import { StaffResponse } from "@/types/staffs";
 
 interface Division {
   id: number;
@@ -42,7 +43,7 @@ interface Division {
 }
 
 interface CreateStaffProps {
-  onStaffCreated: () => void;
+  onStaffCreated: (response: StaffResponse) => void;
 }
 
 export default function CreateStaff({ onStaffCreated }: CreateStaffProps) {
@@ -125,7 +126,7 @@ export default function CreateStaff({ onStaffCreated }: CreateStaffProps) {
       if (response.isSuccess) {
         toast.success("Staff created successfully");
         setOpen(false);
-        onStaffCreated();
+        onStaffCreated(response);
         form.reset();
       } else {
         toast.error(response.message || "Failed to create staff");
