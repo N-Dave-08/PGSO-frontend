@@ -167,7 +167,7 @@ export class StaffService {
     try {
       const headers = await this.getAuthHeaders();
       const response = await axios.post(
-        `${this.baseUrl}/public/api/remove/staff/${id}`,
+        `${this.baseUrl}/remove/staff/${id}`,
         {},
         { headers }
       );

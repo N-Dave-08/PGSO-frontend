@@ -60,7 +60,7 @@ export default function EditStaff({
       first_name: staff.first_name,
       last_name: staff.last_name,
       email: staff.email,
-      number: staff.number,
+      number: staff.number?.toString() || "",
       division_id: staff.division.division_id.toString(),
     },
   });
@@ -118,7 +118,7 @@ export default function EditStaff({
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     if (value.length <= 11) {
-      field.onChange(value);
+      field.onChange(value.toString());
     }
   };
 
