@@ -114,6 +114,89 @@ export class StaffService {
   }
 
   /**
+   * Update a staff member
+   */
+  async updateStaff(
+    id: number,
+    data: CreateStaffRequest
+  ): Promise<StaffResponse> {
+    try {
+      const headers = await this.getAuthHeaders();
+      const response = await axios.post(
+        `${this.baseUrl}/update/staff/${id}`,
+        data,
+        { headers }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Staff update error:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          await secureStorage.remove("token");
+          await secureStorage.remove("user");
+          await secureStorage.remove("sessionCode");
+          window.location.href = "/";
+          throw new Error("Session expired. Please login again.");
+        }
+
+        // If there's a specific error message from the API, use it
+        if (error.response?.data?.message) {
+          throw new Error(error.response.data.message);
+        }
+
+        // If there's validation errors
+        if (error.response?.data?.errors) {
+          const validationErrors = Object.values(
+            error.response.data.errors
+          ).flat();
+          throw new Error(validationErrors.join(", "));
+        }
+
+        throw new Error(error.message || "Failed to update staff");
+      }
+      // Handle non-axios errors
+      const err = error as Error;
+      throw new Error(`Staff update failed: ${err.message}`);
+    }
+  }
+
+  /**
+   * Delete a staff member
+   */
+  async deleteStaff(id: number): Promise<StaffResponse> {
+    try {
+      const headers = await this.getAuthHeaders();
+      const response = await axios.post(
+        `${this.baseUrl}/public/api/remove/staff/${id}`,
+        {},
+        { headers }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Staff deletion error:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          await secureStorage.remove("token");
+          await secureStorage.remove("user");
+          await secureStorage.remove("sessionCode");
+          window.location.href = "/";
+          throw new Error("Session expired. Please login again.");
+        }
+
+        // If there's a specific error message from the API, use it
+        if (error.response?.data?.message) {
+          throw new Error(error.response.data.message);
+        }
+
+        throw new Error(error.message || "Failed to delete staff");
+      }
+      // Handle non-axios errors
+      const err = error as Error;
+      throw new Error(`Staff deletion failed: ${err.message}`);
+    }
+  }
+
+  /**
    * Get divisions for dropdown
    */
   async getDivisions(): Promise<{

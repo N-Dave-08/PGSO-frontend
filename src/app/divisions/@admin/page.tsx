@@ -42,6 +42,7 @@ export default function Page() {
             first_name: string;
             last_name: string;
             email: string;
+            number: string;
           }>;
           personnel: Array<{
             id: number;
@@ -60,6 +61,7 @@ export default function Page() {
           staff:
             division.staff.map((staff) => ({
               ...staff,
+              number: staff.number || "",
               division: {
                 division_id: division.id,
                 division_name: division.division_name,

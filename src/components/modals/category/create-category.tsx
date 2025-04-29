@@ -102,9 +102,9 @@ export default function CreateCategory({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8">
+        <Button size="sm" className="h-8">
           <Plus className="mr-2 h-4 w-4" />
-          Add New Category
+          Add Category
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
