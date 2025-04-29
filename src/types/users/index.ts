@@ -21,3 +21,21 @@ export interface UsersResponse {
     last_page: number;
   };
 }
+
+export interface UserResponse {
+  isSuccess: boolean;
+  message: string;
+  user: {
+    id: number;
+    first_name: string;
+    middle_initial: string | null;
+    last_name: string;
+    number: string;
+    email: string;
+    designation: string | null;
+    role_name: string;
+    division_id: number | null;
+    department_id: number | null;
+    avatar: string | null;
+  };
+}

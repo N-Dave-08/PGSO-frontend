@@ -35,6 +35,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { userSchema, type UserFormValues } from "@/schemas/user-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, ControllerRenderProps } from "react-hook-form";
+import { UserResponse } from "@/types/users";
 
 interface Role {
   id: number;
@@ -42,7 +43,7 @@ interface Role {
 }
 
 interface CreateUserProps {
-  onUserCreated: (response: any) => void;
+  onUserCreated: (response: UserResponse) => void;
 }
 
 export default function CreateUser({ onUserCreated }: CreateUserProps) {

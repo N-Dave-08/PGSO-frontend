@@ -9,7 +9,7 @@ import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar"
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { columns, RowContextMenu } from "./user-columns";
-import { User } from "@/types";
+import { User, UserResponse } from "@/types";
 import CreateUser from "@/components/modals/users/create-user";
 
 interface UserTableProps {
@@ -81,7 +81,7 @@ export function UserTable({
   );
 
   const handleUserCreated = React.useCallback(
-    (response: any) => {
+    (response: UserResponse) => {
       if (response.isSuccess) {
         onUserCreated?.();
       }
