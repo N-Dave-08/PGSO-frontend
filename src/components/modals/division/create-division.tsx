@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
 import { createDivision, getAllDivisions } from "@/lib/api/divisions";
 import { getCategories } from "@/lib/api/categories";
-import { getUsers } from "@/lib/api/users";
+import { getAllUsers } from "@/lib/api/users";
 import {
   Select,
   SelectContent,
@@ -75,7 +75,7 @@ export default function CreateDivision({
       try {
         setLoadingStaff(true);
         setStaffError(null);
-        const staffData = await getUsers(1, { role_name: "staff" });
+        const staffData = await getAllUsers({ role_name: "staff" });
         setStaffMembers(staffData.user || []);
 
         // Fetch all divisions to check staff assignments
@@ -93,7 +93,7 @@ export default function CreateDivision({
       try {
         setLoadingPersonnel(true);
         setPersonnelError(null);
-        const personnelData = await getUsers(1, { role_name: "personnel" });
+        const personnelData = await getAllUsers({ role_name: "personnel" });
         setPersonnelMembers(personnelData.user || []);
       } catch (err) {
         console.error("Error fetching personnel:", err);

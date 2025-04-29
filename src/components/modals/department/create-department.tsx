@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { getAllDivisions } from "@/lib/api/divisions";
 import { createDepartment, getDepartments } from "@/lib/api/department";
 import { Division } from "@/types";
-import { getUsers } from "@/lib/api/users";
+import { getAllUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import {
   Select,
@@ -96,7 +96,7 @@ export default function CreateDepartment({
         setDivisions(unassignedDivisions);
 
         // Fetch users with head role
-        const usersResponse = await getUsers(1, { role_name: "head" });
+        const usersResponse = await getAllUsers({ role_name: "head" });
         // Filter out heads that are already assigned to departments
         const unassignedHeads = (usersResponse.user || []).filter(
           (head) => !assignedHeadIds.has(head.id)
