@@ -1,6 +1,9 @@
 import { DataRecord, DataValue } from "./export";
 import { Request } from "@/types/requests";
 
+type FlattenedDataValue = string | number | boolean | null | undefined;
+type FlattenedDataRecord = Record<string, FlattenedDataValue>;
+
 export const requestExportHeaders = {
   control_no: "Control No.",
   request_title: "Title",
@@ -20,14 +23,16 @@ export const requestExportHeaders = {
   file_completion_url: "Completion Photo URL",
 };
 
-export const transformRequestForExport = (item: Request): DataRecord => ({
+export const transformRequestForExport = (
+  item: Request
+): FlattenedDataRecord => ({
   control_no: item.control_no,
   request_title: item.request_title,
   description: item.description,
   category_name: item.category_name || "N/A",
   status: item.status,
   date_requested: item.date_requested,
-  date_completed: item.date_completed,
+  date_completed: item.date_completed || "N/A",
   "requested_by.full_name":
     item.requested_by.full_name ||
     `${item.requested_by.first_name} ${item.requested_by.last_name}`,
@@ -53,7 +58,7 @@ export type HeaderConfig = {
 
 export type HeadersConfig = Record<string, HeaderConfig>;
 
-export function formatValue(value: DataValue): string {
+export function formatValue(value: DataValue): FlattenedDataValue {
   if (value === null || value === undefined) {
     return "N/A";
   }
@@ -80,9 +85,9 @@ export function convertHeadersToDisplayMap(
 export function formatDataForExport(
   data: DataRecord[],
   config: HeadersConfig
-): DataRecord[] {
+): FlattenedDataRecord[] {
   return data.map((item) => {
-    const formattedItem: DataRecord = {};
+    const formattedItem: FlattenedDataRecord = {};
 
     Object.entries(config).forEach(([key, { format }]) => {
       const value = item[key];

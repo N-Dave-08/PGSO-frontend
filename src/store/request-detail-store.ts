@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { RequestStatusResponse } from "@/types";
-import { Request } from "@/lib/columns/request-columns";
+import { Request } from "@/types/requests";
 import { updateRequestStatus } from "@/lib/api/requests";
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
@@ -277,6 +277,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
                 id,
                 name: "", // This will be updated when the page refreshes
                 is_team_lead: false,
+                email: "", // Add required email field
               })),
               status: "In Progress",
             },

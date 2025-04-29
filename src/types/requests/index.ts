@@ -15,6 +15,7 @@ export interface RequestPersonnel {
   name: string;
   email: string;
   is_team_lead: boolean;
+  team_lead_id?: number;
 }
 
 export interface Request {
@@ -37,6 +38,11 @@ export interface Request {
   date_requested: string;
   date_completed: string | null;
   requested_by: RequestedBy;
+  reviewed_by?: {
+    id: number;
+    first_name: string;
+    last_name: string;
+  };
 }
 
 export interface Pagination {

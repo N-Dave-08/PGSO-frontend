@@ -33,13 +33,15 @@ const transformToRequest = (report: ReportRequest): Request => {
     personnel: report.personnel.map((p) => ({
       ...p,
       is_team_lead: false,
+      email: p.email || "",
+      team_lead_id: undefined,
     })),
     requested_by: {
       ...report.requested_by,
       first_name: report.requested_by.full_name.split(" ")[0],
       last_name: report.requested_by.full_name.split(" ").slice(1).join(" "),
-      division_location: "",
-      office_location: "",
+      division_location: report.requested_by.division || "",
+      office_location: report.requested_by.department || "",
     },
     team_lead: null,
     category_id: report.category_id || null,
@@ -55,7 +57,10 @@ export function ReportTable({
   onSearch,
 }: ReportTableProps) {
   const exportData = React.useMemo(
-    () => data.map(transformRequestForExport),
+    () =>
+      data.map((report) =>
+        transformRequestForExport(transformToRequest(report))
+      ),
     [data]
   );
 

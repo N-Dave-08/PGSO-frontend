@@ -25,52 +25,11 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { Request, RequestedBy } from "@/types/requests";
 
 // Initialize dayjs plugins for timezone support
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-export type Request = {
-  id: number;
-  control_no: string;
-  request_title: string;
-  description: string;
-  file_path: string | null;
-  file_url: string | null;
-  file_completion: string | null;
-  file_completion_url: string | null;
-  category_id: number | null;
-  category_name: string | null;
-  team_lead: { id: number; first_name: string; last_name: string } | null;
-  personnel: {
-    id: number;
-    name: string;
-    is_team_lead: boolean;
-    team_lead_id?: number;
-  }[];
-  feedback: string | null;
-  rating: number | null;
-  status: string;
-  date_requested: string;
-  date_completed: string | null;
-  requested_by: RequestedBy;
-  note: string | null;
-  reviewed_by?: {
-    id: number;
-    first_name: string;
-    last_name: string;
-  };
-};
-
-export type RequestedBy = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  division?: string;
-  office_location?: string;
-  department?: string;
-  division_location: string;
-};
 
 interface RequestColumnProps {
   onRequestUpdate?: () => void;
