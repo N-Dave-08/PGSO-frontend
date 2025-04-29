@@ -10,6 +10,7 @@ import { DataTablePagination } from "@/components/ui/data-table/data-table-pagin
 import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { columns, RowContextMenu } from "./user-columns";
 import { User } from "@/types";
+import CreateUser from "@/components/modals/users/create-user";
 
 interface UserTableProps {
   data: User[];
@@ -22,6 +23,7 @@ interface UserTableProps {
   onPageChange: (page: number) => void;
   onFilterChange?: (filters: { role_name?: string }) => void;
   onSearch?: (searchTerm: string) => void;
+  onUserCreated?: () => void;
 }
 
 function generateFilterOptions() {
@@ -59,6 +61,7 @@ export function UserTable({
   onPageChange,
   onFilterChange,
   onSearch,
+  onUserCreated,
 }: UserTableProps) {
   const { roleOptions } = generateFilterOptions();
   const [filters, setFilters] = React.useState<{
@@ -77,9 +80,19 @@ export function UserTable({
     [filters, onFilterChange]
   );
 
+  const handleUserCreated = React.useCallback(
+    (response: any) => {
+      if (response.isSuccess) {
+        onUserCreated?.();
+      }
+    },
+    [onUserCreated]
+  );
+
   const renderToolbar = React.useCallback(
     (table: Table<User>) => (
       <DataTableToolbar table={table} onSearch={onSearch}>
+        <CreateUser onUserCreated={handleUserCreated} />
         <DataTableFacetedFilter
           title="Role"
           options={roleOptions}
@@ -87,7 +100,7 @@ export function UserTable({
         />
       </DataTableToolbar>
     ),
-    [roleOptions, handleFilterChange, onSearch]
+    [roleOptions, handleFilterChange, onSearch, handleUserCreated]
   );
 
   const renderPagination = React.useCallback(

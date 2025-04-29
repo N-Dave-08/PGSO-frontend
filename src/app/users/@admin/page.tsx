@@ -94,7 +94,14 @@ export default function Page() {
   };
 
   const handlePageChange = (page: number) => {
-    fetchUsers(page, searchTerm, roleFilter);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: page,
+    }));
+  };
+
+  const handleUserCreated = () => {
+    fetchUsers(1, searchTerm, roleFilter);
   };
 
   if (loading) {
@@ -111,14 +118,13 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-4">
-      <UserTable
-        data={users}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        onFilterChange={handleFilterChange}
-        onSearch={handleSearch}
-      />
-    </div>
+    <UserTable
+      data={users}
+      pagination={pagination}
+      onPageChange={handlePageChange}
+      onFilterChange={handleFilterChange}
+      onSearch={handleSearch}
+      onUserCreated={handleUserCreated}
+    />
   );
 }
