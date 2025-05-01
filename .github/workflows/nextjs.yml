@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+     env:
+      NEXT_PUBLIC_METADATA_BASE_URL: ${{ secrets.NEXT_PUBLIC_METADATA_BASE_URL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
