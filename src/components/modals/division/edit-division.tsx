@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { updateDivision } from "@/lib/api/divisions";
 import { Division } from "@/types";
-import { getUsers } from "@/lib/api/users";
+import { getUsers, getAllUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { toast } from "sonner";
 import { getDepartmentDropdown } from "@/lib/api/departments";
@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getAllDivisions } from "@/lib/api/divisions";
 
 interface EditDivisionProps {
   division: Division;
@@ -65,9 +66,31 @@ export default function EditDivision({
         setDepartments(departmentData.department || []);
         setLoadingDepartments(false);
 
+        // Fetch all divisions to check assigned staff
+        const divisionsResponse = await getAllDivisions();
+        const allDivisions = divisionsResponse.divisions as Division[];
+
+        // Get all staff IDs that are assigned to other divisions
+        const assignedStaffIds = new Set<number>();
+        allDivisions.forEach((div: Division) => {
+          if (div.id !== division.id) {
+            // Exclude current division
+            div.staff.forEach((staff: { id: number }) => {
+              assignedStaffIds.add(staff.id);
+            });
+          }
+        });
+
         // Fetch users with staff role
-        const usersResponse = await getUsers(1, { role_name: "staff" });
-        setStaffMembers(usersResponse.user || []);
+        const usersResponse = await getAllUsers({ role_name: "staff" });
+        // Filter out staff members who are already assigned to other divisions
+        const availableStaff = usersResponse.user.filter(
+          (staff) =>
+            !assignedStaffIds.has(staff.id) ||
+            division.staff.some((divStaff) => divStaff.id === staff.id)
+        );
+
+        setStaffMembers(availableStaff || []);
         setLoadingStaff(false);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -76,7 +99,7 @@ export default function EditDivision({
     };
 
     fetchData();
-  }, []);
+  }, [division.id, division.staff]);
 
   useEffect(() => {
     setDivisionName(division.division_name);
@@ -201,7 +224,7 @@ export default function EditDivision({
           </div>
         ) : filteredStaff.length === 0 ? (
           <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-            No available staff members found.
+            No available staff members available.
           </div>
         ) : (
           <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
