@@ -117,7 +117,7 @@ export default function UserSidebar() {
         <SidebarMenu>
           <div className="flex items-center gap-2 p-1">
             <div className="relative size-8">
-              <Image src="/images/bulacan-logo.jpg" alt="PGSO" fill />
+              <Image src="/images/bulacan.png" alt="PGSO" fill />
             </div>
             <span className="text-base font-semibold">PGSO</span>
           </div>

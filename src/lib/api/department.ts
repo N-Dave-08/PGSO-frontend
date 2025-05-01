@@ -59,7 +59,6 @@ export const createDepartment = async (
       process.env.NEXT_PUBLIC_API_BASE_URL + "/admin/department/create",
       {
         department_name: departmentName,
-        division_id: divisionIds,
         head_id,
       },
       {
@@ -132,9 +131,7 @@ export const deleteDepartment = async (id: number) => {
 
 export const updateDepartment = async (
   id: number,
-  departmentName: string,
-  acronym: string,
-  divisionIds: number[],
+  department_name: string,
   head_id?: number
 ) => {
   try {
@@ -143,12 +140,10 @@ export const updateDepartment = async (
       throw new Error("Authentication token not found");
     }
 
-    const response = await api.post(
-      `/admin/department/update/${id}`,
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/department/update/${id}`,
       {
-        department_name: departmentName,
-        acronym,
-        division_id: divisionIds,
+        department_name,
         head_id,
       },
       {

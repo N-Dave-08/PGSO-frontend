@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { getAllDivisions } from "@/lib/api/divisions";
-import { updateDepartment, getDepartments } from "@/lib/api/department";
-import { Division, Department } from "@/types";
+import { updateDepartment } from "@/lib/api/department";
+import { Department } from "@/types";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import {
@@ -31,102 +29,31 @@ export default function EditDepartment({
   const [departmentName, setDepartmentName] = useState<string>(
     department.department_name
   );
-  const [acronym, setAcronym] = useState<string>(department.acronym);
-  const [divisions, setDivisions] = useState<Division[]>([]);
-  const [selectedDivisions, setSelectedDivisions] = useState<number[]>(
-    department.divisions.map((div) => div.id)
-  );
   const [heads, setHeads] = useState<User[]>([]);
   const [selectedHead, setSelectedHead] = useState<string>(
     department.head?.id ? department.head.id.toString() : ""
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchHeads = async () => {
       try {
-        // Fetch all divisions
-        const divisionsResponse = await getAllDivisions();
-        const allDivisions = divisionsResponse?.divisions?.data || [];
-
-        // Fetch all departments to check which divisions are already assigned
-        const departmentsResponse = await getDepartments();
-        const departments = departmentsResponse?.departments || [];
-
-        // Create a set of assigned division IDs (excluding current department's divisions)
-        const assignedDivisionIds = new Set();
-        // Create a set of assigned head IDs (excluding current department's head)
-        const assignedHeadIds = new Set();
-
-        departments.forEach((dept: Department) => {
-          // Skip the current department being edited
-          if (dept.id !== department.id) {
-            if (dept.divisions && Array.isArray(dept.divisions)) {
-              dept.divisions.forEach((division) => {
-                assignedDivisionIds.add(division.id);
-              });
-            }
-            // Add the department's head ID to the set if it exists
-            if (dept.head && dept.head.id) {
-              assignedHeadIds.add(dept.head.id);
-            }
-          }
-        });
-
-        // Filter to show only unassigned divisions plus current department's divisions
-        const availableDivisions = allDivisions.filter(
-          (division: Division) =>
-            !assignedDivisionIds.has(division.id) ||
-            department.divisions.some((dept_div) => dept_div.id === division.id)
-        );
-
-        setDivisions(availableDivisions);
-
-        // Fetch users with head role
         const usersResponse = await getUsers(1, { role_name: "head" });
-        // Filter to show only unassigned heads plus current department's head
-        const availableHeads = (usersResponse.user || []).filter(
-          (head) =>
-            !assignedHeadIds.has(head.id) ||
-            (department.head && head.id === department.head.id)
-        );
-        setHeads(availableHeads);
+        setHeads(usersResponse.user || []);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
-        setError("Failed to load data");
+        console.error("Failed to fetch heads:", error);
+        setError("Failed to load department heads");
       }
     };
 
-    fetchData();
-  }, [department.id, department.divisions, department.head]);
+    fetchHeads();
+  }, []);
 
   useEffect(() => {
     setDepartmentName(department.department_name);
-    setAcronym(department.acronym);
-    setSelectedDivisions(department.divisions.map((div) => div.id));
     setSelectedHead(department.head?.id ? department.head.id.toString() : "");
-  }, [
-    department.department_name,
-    department.acronym,
-    department.divisions,
-    department.head,
-  ]);
-
-  const filteredDivisions = divisions.filter((division) =>
-    division.division_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleDivisionToggle = (divisionId: number) => {
-    setSelectedDivisions((prev) => {
-      if (prev.includes(divisionId)) {
-        return prev.filter((id) => id !== divisionId);
-      } else {
-        return [...prev, divisionId];
-      }
-    });
-  };
+  }, [department.department_name, department.head]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -137,8 +64,6 @@ export default function EditDepartment({
       await updateDepartment(
         department.id,
         departmentName,
-        acronym,
-        selectedDivisions,
         selectedHead ? parseInt(selectedHead) : undefined
       );
       await onDepartmentUpdated();
@@ -162,16 +87,6 @@ export default function EditDepartment({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="acronym">Acronym</Label>
-        <Input
-          id="acronym"
-          value={acronym}
-          onChange={(e) => setAcronym(e.target.value)}
-          placeholder="Enter acronym"
-          required
-        />
-      </div>
-      <div className="space-y-2">
         <Label htmlFor="head">Department Head</Label>
         <Select value={selectedHead} onValueChange={setSelectedHead}>
           <SelectTrigger>
@@ -180,43 +95,11 @@ export default function EditDepartment({
           <SelectContent>
             {heads.map((head) => (
               <SelectItem key={head.id} value={head.id.toString()}>
-                {head.first_name.charAt(0).toUpperCase() +
-                  head.first_name.slice(1)}{" "}
-                {head.last_name.charAt(0).toUpperCase() +
-                  head.last_name.slice(1)}
+                {head.first_name} {head.last_name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
-      <div className="space-y-2">
-        <Label>Divisions</Label>
-        <div className="mb-2">
-          <Input
-            type="text"
-            placeholder="Search divisions..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-2"
-          />
-        </div>
-        <div className="space-y-2 max-h-[200px] overflow-y-auto border rounded-md p-2">
-          {filteredDivisions.map((division) => (
-            <div key={division.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={`division-${division.id}`}
-                checked={selectedDivisions.includes(division.id)}
-                onCheckedChange={() => handleDivisionToggle(division.id)}
-              />
-              <label
-                htmlFor={`division-${division.id}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {division.division_name}
-              </label>
-            </div>
-          ))}
-        </div>
       </div>
       {error && <div className="text-sm text-red-500">{error}</div>}
       <div className="flex justify-end">

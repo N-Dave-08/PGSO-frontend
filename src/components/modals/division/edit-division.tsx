@@ -6,15 +6,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { updateDivision, getAllDivisions } from "@/lib/api/divisions";
+import { updateDivision } from "@/lib/api/divisions";
 import { Division } from "@/types";
 import { getUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { toast } from "sonner";
+import { getDepartmentDropdown } from "@/lib/api/departments";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface EditDivisionProps {
   division: Division;
   onDivisionUpdated: () => Promise<void>;
+}
+
+interface Department {
+  id: number;
+  department_name: string;
 }
 
 export default function EditDivision({
@@ -27,51 +40,38 @@ export default function EditDivision({
   const [officeLocation, setOfficeLocation] = useState<string>(
     division.office_location
   );
+  const [departmentId, setDepartmentId] = useState<string>(
+    division.department_id?.toString() || ""
+  );
   const [staffMembers, setStaffMembers] = useState<User[]>([]);
   const [selectedStaff, setSelectedStaff] = useState<number[]>(
     division.staff.map((staff) => staff.id)
   );
-  const [personnelMembers, setPersonnelMembers] = useState<User[]>([]);
-  const [selectedPersonnel, setSelectedPersonnel] = useState<number[]>(
-    division.personnel.map((personnel) => personnel.id)
-  );
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStaff, setLoadingStaff] = useState(true);
-  const [loadingPersonnel, setLoadingPersonnel] = useState(true);
-  const [loadingDivisions, setLoadingDivisions] = useState(true);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [personnelSearchQuery, setPersonnelSearchQuery] = useState<string>("");
-  const [allDivisions, setAllDivisions] = useState<Division[]>([]);
-  const [dataInitialized, setDataInitialized] = useState(false);
+  const [departments, setDepartments] = useState<Department[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoadingStaff(true);
-      setLoadingPersonnel(true);
-      setLoadingDivisions(true);
-      setDataInitialized(false);
+      setLoadingDepartments(true);
 
       try {
-        // Fetch all divisions first to check staff assignments
-        const divisionsResponse = await getAllDivisions();
-        setAllDivisions(divisionsResponse.divisions.data || []);
-        setLoadingDivisions(false);
+        // Fetch departments
+        const departmentData = await getDepartmentDropdown();
+        setDepartments(departmentData.department || []);
+        setLoadingDepartments(false);
 
         // Fetch users with staff role
         const usersResponse = await getUsers(1, { role_name: "staff" });
         setStaffMembers(usersResponse.user || []);
         setLoadingStaff(false);
-
-        // Fetch users with personnel role
-        const personnelResponse = await getUsers(1, { role_name: "personnel" });
-        setPersonnelMembers(personnelResponse.user || []);
-        setLoadingPersonnel(false);
-
-        setDataInitialized(true);
       } catch (error) {
         console.error("Failed to fetch data:", error);
-        setError("Failed to load division data");
+        setError("Failed to load data");
       }
     };
 
@@ -81,36 +81,15 @@ export default function EditDivision({
   useEffect(() => {
     setDivisionName(division.division_name);
     setOfficeLocation(division.office_location);
+    setDepartmentId(division.department_id?.toString() || "");
     setSelectedStaff(division.staff.map((staff) => staff.id));
-    setSelectedPersonnel(division.personnel.map((personnel) => personnel.id));
   }, [division]);
 
-  // Only compute filtered lists when all data is loaded
-  const availableStaff = dataInitialized
-    ? staffMembers.filter((staff) => {
-        // If staff is already selected in current division, show them
-        if (selectedStaff.includes(staff.id)) {
-          return true;
-        }
-
-        // Check if staff is assigned to any other division
-        const isAssignedToOtherDivision = allDivisions.some(
-          (div) =>
-            div.id !== division.id && // Not current division
-            div.staff.some((s) => s.id === staff.id) // Staff is assigned to this division
-        );
-
-        return !isAssignedToOtherDivision;
-      })
-    : [];
-
-  const filteredStaff = dataInitialized
-    ? availableStaff.filter((staff) =>
-        `${staff.first_name} ${staff.last_name}`
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const filteredStaff = staffMembers.filter((staff) =>
+    `${staff.first_name} ${staff.last_name}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
 
   const handleStaffToggle = (staffId: number) => {
     setSelectedStaff((prev) => {
@@ -118,43 +97,6 @@ export default function EditDivision({
         return prev.filter((id) => id !== staffId);
       } else {
         return [...prev, staffId];
-      }
-    });
-  };
-
-  // Filter out personnel that are already assigned to other divisions
-  const availablePersonnel = dataInitialized
-    ? personnelMembers.filter((personnel) => {
-        // If personnel is already selected in current division, show them
-        if (selectedPersonnel.includes(personnel.id)) {
-          return true;
-        }
-
-        // Check if personnel is assigned to any other division
-        const isAssignedToOtherDivision = allDivisions.some(
-          (div) =>
-            div.id !== division.id && // Not current division
-            div.personnel.some((p) => p.id === personnel.id) // Personnel is assigned to this division
-        );
-
-        return !isAssignedToOtherDivision;
-      })
-    : [];
-
-  const filteredPersonnel = dataInitialized
-    ? availablePersonnel.filter((personnel) =>
-        `${personnel.first_name} ${personnel.last_name}`
-          .toLowerCase()
-          .includes(personnelSearchQuery.toLowerCase())
-      )
-    : [];
-
-  const handlePersonnelToggle = (personnelId: number) => {
-    setSelectedPersonnel((prev) => {
-      if (prev.includes(personnelId)) {
-        return prev.filter((id) => id !== personnelId);
-      } else {
-        return [...prev, personnelId];
       }
     });
   };
@@ -169,7 +111,7 @@ export default function EditDivision({
         division_name: divisionName,
         office_location: officeLocation,
         staff_id: selectedStaff,
-        personnel_id: selectedPersonnel,
+        department_id: parseInt(departmentId, 10),
       };
 
       await updateDivision(division.id, updateData);
@@ -211,14 +153,48 @@ export default function EditDivision({
         />
       </div>
       <div className="space-y-2">
-        <Label>Add Staff Members</Label>
+        <Label htmlFor="department">Department</Label>
+        <Select
+          value={departmentId}
+          onValueChange={setDepartmentId}
+          required
+          disabled={loadingDepartments}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a department" />
+          </SelectTrigger>
+          <SelectContent>
+            {loadingDepartments ? (
+              <SelectItem value="loading" disabled>
+                <Loader2 className="mr-2 inline-block h-4 w-4 animate-spin" />
+                Loading departments...
+              </SelectItem>
+            ) : departments.length === 0 ? (
+              <SelectItem value="empty" disabled>
+                No Departments Found
+              </SelectItem>
+            ) : (
+              departments.map((department) => (
+                <SelectItem
+                  key={department.id}
+                  value={department.id.toString()}
+                >
+                  {department.department_name}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <Label>Staff Members</Label>
         <Input
           type="text"
           placeholder="Search staff..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        {!dataInitialized || loadingStaff || loadingDivisions ? (
+        {loadingStaff ? (
           <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Loading available staff...
@@ -247,48 +223,8 @@ export default function EditDivision({
           </div>
         )}
       </div>
-      <div className="space-y-2">
-        <Label>Add Personnel Members</Label>
-        <Input
-          type="text"
-          placeholder="Search personnel..."
-          value={personnelSearchQuery}
-          onChange={(e) => setPersonnelSearchQuery(e.target.value)}
-        />
-        {!dataInitialized || loadingPersonnel || loadingDivisions ? (
-          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Loading available personnel...
-          </div>
-        ) : filteredPersonnel.length === 0 ? (
-          <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-            No available personnel members found.
-          </div>
-        ) : (
-          <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-2">
-            {filteredPersonnel.map((personnel) => (
-              <div key={personnel.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`personnel-${personnel.id}`}
-                  checked={selectedPersonnel.includes(personnel.id)}
-                  onCheckedChange={() => handlePersonnelToggle(personnel.id)}
-                />
-                <label
-                  htmlFor={`personnel-${personnel.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {personnel.first_name} {personnel.last_name}
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
       {error && <div className="text-sm text-red-500">{error}</div>}
       <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" disabled={isLoading}>
-          Cancel
-        </Button>
         <Button type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? "Updating..." : "Update Division"}

@@ -70,6 +70,14 @@ export const columns: ColumnDef<Division>[] = [
     ),
   },
   {
+    accessorKey: "Department",
+    accessorFn: (row) => row.department_name || "Not Assigned",
+    header: "Department",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("Department")}</div>
+    ),
+  },
+  {
     accessorKey: "Office Location",
     accessorFn: (row) => row.office_location,
     header: "Office Location",
@@ -93,34 +101,6 @@ export const columns: ColumnDef<Division>[] = [
                 <div className="">No members</div>
               ) : (
                 staff.map((member) => (
-                  <div key={member.id} className="text-sm">
-                    {member.first_name} {member.last_name}
-                  </div>
-                ))
-              )}
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      );
-    },
-  },
-  {
-    accessorKey: "personnel",
-    header: "Personnel",
-    cell: ({ row }) => {
-      const personnel =
-        (row.getValue("personnel") as Division["personnel"]) || [];
-      return (
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <Button variant="ghost">{personnel.length} members</Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-80">
-            <div className="space-y-1">
-              {personnel.length === 0 ? (
-                <div className="">No members</div>
-              ) : (
-                personnel.map((member) => (
                   <div key={member.id} className="text-sm">
                     {member.first_name} {member.last_name}
                   </div>

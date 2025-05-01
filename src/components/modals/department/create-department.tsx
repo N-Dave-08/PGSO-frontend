@@ -13,10 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { getAllDivisions } from "@/lib/api/divisions";
 import { createDepartment, getDepartments } from "@/lib/api/department";
-import { Division } from "@/types";
 import { getAllUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import {
@@ -39,18 +36,11 @@ export default function CreateDepartment({
 }: CreateDepartmentProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [departmentName, setDepartmentName] = useState<string>("");
-  const [divisions, setDivisions] = useState<Division[]>([]);
-  const [selectedDivisions, setSelectedDivisions] = useState<number[]>([]);
   const [heads, setHeads] = useState<User[]>([]);
   const [selectedHead, setSelectedHead] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const filteredDivisions = divisions.filter((division) =>
-    division.division_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,40 +53,20 @@ export default function CreateDepartment({
           return;
         }
 
-        // Fetch all divisions
-        const divisionsResponse = await getAllDivisions();
-        const allDivisions = divisionsResponse?.divisions?.data || [];
-
-        // Fetch all departments to check which divisions are already assigned
+        // Fetch all users with head role
+        const usersResponse = await getAllUsers({ role_name: "head" });
+        // Filter out heads that are already assigned to departments
         const departmentsResponse = await getDepartments();
         const departments = departmentsResponse?.departments || [];
 
-        // Create a set of assigned division IDs
-        const assignedDivisionIds = new Set();
         // Create a set of assigned head IDs
         const assignedHeadIds = new Set();
-
         departments.forEach((department: Department) => {
-          if (department.divisions && Array.isArray(department.divisions)) {
-            department.divisions.forEach((division) => {
-              assignedDivisionIds.add(division.id);
-            });
-          }
-          // Add the department's head ID to the set if it exists
           if (department.head && department.head.id) {
             assignedHeadIds.add(department.head.id);
           }
         });
 
-        // Filter out divisions that are already assigned to departments
-        const unassignedDivisions = allDivisions.filter(
-          (division: Division) => !assignedDivisionIds.has(division.id)
-        );
-
-        setDivisions(unassignedDivisions);
-
-        // Fetch users with head role
-        const usersResponse = await getAllUsers({ role_name: "head" });
         // Filter out heads that are already assigned to departments
         const unassignedHeads = (usersResponse.user || []).filter(
           (head) => !assignedHeadIds.has(head.id)
@@ -110,7 +80,6 @@ export default function CreateDepartment({
         ) {
           window.location.href = "/";
         }
-        setDivisions([]);
       }
     };
 
@@ -118,16 +87,6 @@ export default function CreateDepartment({
       fetchData();
     }
   }, [open]);
-
-  const handleDivisionToggle = (divisionId: number) => {
-    setSelectedDivisions((prev) => {
-      if (prev.includes(divisionId)) {
-        return prev.filter((id) => id !== divisionId);
-      } else {
-        return [...prev, divisionId];
-      }
-    });
-  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -138,12 +97,11 @@ export default function CreateDepartment({
     try {
       await createDepartment(
         departmentName,
-        selectedDivisions,
+        [],
         selectedHead ? parseInt(selectedHead) : undefined
       );
       setOpen(false);
       setDepartmentName("");
-      setSelectedDivisions([]);
       setSelectedHead("");
       await onDepartmentCreated();
     } catch (err) {
@@ -222,51 +180,6 @@ export default function CreateDepartment({
             {errors.head_id && (
               <div className="text-sm text-red-500 mt-1">
                 {errors.head_id[0]}
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label>Divisions</Label>
-            <div className="mb-2">
-              <Input
-                type="text"
-                placeholder="Search divisions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="mb-2"
-              />
-            </div>
-            <div className="space-y-2 max-h-[200px] overflow-y-auto border rounded-md p-2">
-              {filteredDivisions.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-2">
-                  {searchQuery
-                    ? "No divisions found"
-                    : "No divisions available"}
-                </p>
-              ) : (
-                filteredDivisions.map((division) => (
-                  <div
-                    key={division.id}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={`division-${division.id}`}
-                      checked={selectedDivisions.includes(division.id)}
-                      onCheckedChange={() => handleDivisionToggle(division.id)}
-                    />
-                    <label
-                      htmlFor={`division-${division.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {division.division_name}
-                    </label>
-                  </div>
-                ))
-              )}
-            </div>
-            {errors.division_id && (
-              <div className="text-sm text-red-500 mt-1">
-                {errors.division_id[0]}
               </div>
             )}
           </div>

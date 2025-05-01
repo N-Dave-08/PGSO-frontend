@@ -26,59 +26,22 @@ export default function Page() {
           search ? { search } : undefined
         );
 
-        if (!response?.divisions?.data) {
+        if (!response?.divisions) {
           console.error("Invalid response format:", response);
           setDivisions([]);
           return;
         }
 
-        // Convert the object-based data to an array
-        const divisionsArray = Object.values(response.divisions.data) as Array<{
-          id: number;
-          division_name: string;
-          office_location: string;
-          staff: Array<{
-            id: number;
-            first_name: string;
-            last_name: string;
-            email: string;
-            number: string;
-          }>;
-          personnel: Array<{
-            id: number;
-            first_name: string;
-            last_name: string;
-            email: string;
-          }>;
-          department_id: number;
-          created_at: string;
-        }>;
+        // Convert the divisions object to an array and type it as Division[]
+        const divisionsArray = Object.values(response.divisions) as Division[];
 
-        const formattedData: Division[] = divisionsArray.map((division) => ({
-          id: division.id,
-          division_name: division.division_name,
-          office_location: division.office_location,
-          staff:
-            division.staff.map((staff) => ({
-              ...staff,
-              number: staff.number || "",
-              division: {
-                division_id: division.id,
-                division_name: division.division_name,
-                office_location: division.office_location,
-              },
-            })) || [],
-          department_id: division.department_id || 0,
-          created_at: division.created_at,
-          personnel: division.personnel || [],
-        }));
-
-        setDivisions(formattedData);
+        // Set the divisions array from the response
+        setDivisions(divisionsArray);
         setPagination({
-          current_page: response.divisions.current_page,
-          last_page: response.divisions.last_page,
-          total: response.divisions.total,
-          per_page: response.divisions.per_page,
+          current_page: response.current_page,
+          last_page: response.last_page,
+          total: response.total,
+          per_page: response.per_page,
         });
       } catch (error) {
         console.error("Failed to fetch divisions:", error);
@@ -103,7 +66,10 @@ export default function Page() {
   };
 
   const handlePageChange = (page: number) => {
-    fetchDivisions(page, searchTerm);
+    setPagination((prev) => ({
+      ...prev,
+      current_page: page,
+    }));
   };
 
   if (loading) {

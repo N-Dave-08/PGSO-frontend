@@ -2,14 +2,11 @@
 
 import * as React from "react";
 import { Table } from "@tanstack/react-table";
-import { Building2 } from "lucide-react";
 
 import { DataTable } from "@/components/ui/data-table/data-table";
 import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar";
-import { DataTableFacetedFilter } from "@/components/ui/data-table/data-table-faceted-filter";
 import { columns, RowContextMenu } from "./department-columns";
-import { Department, Division } from "@/types";
-import { getAllDivisions } from "@/lib/api/divisions";
+import { Department } from "@/types";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import CreateDepartment from "@/components/modals/department/create-department";
 
@@ -23,7 +20,7 @@ interface DepartmentTableProps {
   };
   onPageChange?: (page: number) => void;
   onDelete: () => Promise<void>;
-  onFilterChange?: (filters: { division_id?: number; search?: string }) => void;
+  onFilterChange?: (filters: { search?: string }) => void;
   onDepartmentCreated: () => Promise<void>;
 }
 
@@ -35,26 +32,6 @@ export function DepartmentTable({
   onFilterChange,
   onDepartmentCreated,
 }: DepartmentTableProps) {
-  const [divisions, setDivisions] = React.useState<Division[]>([]);
-
-  React.useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const response = await getAllDivisions();
-        if (response?.divisions?.data) {
-          // Convert the object-based data to an array and cast to Division type
-          const divisionsArray = Object.values(
-            response.divisions.data
-          ) as Division[];
-          setDivisions(divisionsArray);
-        }
-      } catch (error) {
-        console.error("Failed to fetch divisions:", error);
-      }
-    };
-    fetchDivisions();
-  }, []);
-
   const handleSearch = React.useCallback(
     (searchTerm: string) => {
       onFilterChange?.({ search: searchTerm });
@@ -66,28 +43,14 @@ export function DepartmentTable({
     (table: Table<Department & { onDelete: () => Promise<void> }>) => (
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <DataTableToolbar table={table} onSearch={handleSearch}>
-            <DataTableFacetedFilter
-              title="Division"
-              options={divisions.map((division) => ({
-                label: division.division_name,
-                value: division.id.toString(),
-              }))}
-              onFilterChange={(value) =>
-                onFilterChange?.({
-                  division_id: value ? parseInt(value) : undefined,
-                })
-              }
-              optionsIcon={Building2}
-            />
-          </DataTableToolbar>
+          <DataTableToolbar table={table} onSearch={handleSearch} />
         </div>
         <div className="ml-4">
           <CreateDepartment onDepartmentCreated={onDepartmentCreated} />
         </div>
       </div>
     ),
-    [divisions, onFilterChange, handleSearch, onDepartmentCreated]
+    [handleSearch, onDepartmentCreated]
   );
 
   const renderPagination = React.useCallback(
