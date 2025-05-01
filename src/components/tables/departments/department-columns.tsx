@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { PenSquare, Trash, UserRoundIcon } from "lucide-react";
+import { PenSquare, Trash, UserRoundIcon, Users } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import {
@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Division, Department, Head } from "@/types";
+import { Division, Department, Head, Staff } from "@/types";
 import { deleteDepartment } from "@/lib/api/department";
 import { toast } from "sonner";
 import EditDepartment from "@/components/modals/department/edit-department";
@@ -33,6 +33,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const columns: ColumnDef<
   Department & { onDelete: () => Promise<void> }
@@ -80,17 +86,60 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "divisions",
-    header: "Divisions",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Divisions" />
+    ),
     cell: ({ row }) => {
       const divisions = row.getValue("divisions") as Division[];
+      const maxDisplayDivisions = 3;
+
+      if (!divisions.length) {
+        return <div className="text-muted-foreground">No divisions</div>;
+      }
+
       return (
-        <div className="flex flex-wrap gap-1 max-w-[550px]">
-          {divisions.map((division) => (
-            <Badge key={division.id} variant="secondary">
-              {division.division_name}
-            </Badge>
-          ))}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="flex flex-wrap gap-1 max-w-[550px]">
+                {divisions.slice(0, maxDisplayDivisions).map((division) => (
+                  <Badge key={division.id} variant="secondary">
+                    {division.division_name}
+                  </Badge>
+                ))}
+                {divisions.length > maxDisplayDivisions && (
+                  <Badge variant="outline">
+                    +{divisions.length - maxDisplayDivisions} more
+                  </Badge>
+                )}
+              </div>
+            </TooltipTrigger>
+            {divisions.length > maxDisplayDivisions && (
+              <TooltipContent>
+                <div className="flex flex-col gap-1">
+                  {divisions.slice(maxDisplayDivisions).map((division) => (
+                    <span key={division.id}>{division.division_name}</span>
+                  ))}
+                </div>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    accessorKey: "staff",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Staff" />
+    ),
+    cell: ({ row }) => {
+      const staff = row.getValue("staff") as Staff[];
+      return (
+        <Badge variant="outline">
+          <Users className="w-4 h-4 mr-1" />
+          {staff.length} member{staff.length !== 1 ? "s" : ""}
+        </Badge>
       );
     },
   },
@@ -106,7 +155,7 @@ export const columns: ColumnDef<
       }
       return (
         <Badge variant="outline">
-          <UserRoundIcon className="w-4 h-4" />
+          <UserRoundIcon className="w-4 h-4 mr-1" />
           {head.first_name.charAt(0).toUpperCase() +
             head.first_name.slice(1)}{" "}
           {head.last_name.charAt(0).toUpperCase() + head.last_name.slice(1)}
@@ -152,84 +201,59 @@ export const RowContextMenu = ({
   };
 
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <ContextMenuItem
-          onClick={() => {
-            navigator.clipboard.writeText(department.id.toString());
-            toast.success("Department ID copied to clipboard");
-          }}
-        >
-          Copy Department ID
-        </ContextMenuItem>
-        <ContextMenuSeparator />
-        <ContextMenuItem
-          onSelect={(e) => {
-            e.preventDefault();
-            setShowEditModal(true);
-          }}
-        >
-          <PenSquare className="mr-2 h-4 w-4" />
-          <span>Edit Department</span>
-        </ContextMenuItem>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <ContextMenuItem
-              onSelect={(e) => e.preventDefault()}
-              className="text-red-600"
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              <span>Delete Department</span>
-            </ContextMenuItem>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                department and remove its data from the server.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </ContextMenuContent>
-      {showEditModal && (
-        <Dialog
-          open={showEditModal}
-          onOpenChange={(open) => {
-            setShowEditModal(open);
-            if (!open) {
-              setTimeout(() => {
-                document.body.style.pointerEvents = "";
-              }, 0);
-            }
-          }}
-        >
-          <DialogContent
-            onPointerDownOutside={(e) => {
-              e.preventDefault();
-            }}
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          <ContextMenuItem
+            onClick={() => setShowEditModal(true)}
+            className="cursor-pointer"
           >
-            <DialogHeader>
-              <DialogTitle>Edit Department</DialogTitle>
-              <DialogDescription>
-                Update the department details below.
-              </DialogDescription>
-            </DialogHeader>
-            <EditDepartment
-              department={department}
-              onDepartmentUpdated={handleEditComplete}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-    </ContextMenu>
+            <PenSquare className="mr-2 h-4 w-4" />
+            Edit
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <ContextMenuItem className="cursor-pointer">
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </ContextMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  department and remove all associated data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Department</DialogTitle>
+            <DialogDescription>
+              Make changes to the department here. Click save when you&apos;re
+              done.
+            </DialogDescription>
+          </DialogHeader>
+          <EditDepartment
+            department={department}
+            onDepartmentUpdated={handleEditComplete}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

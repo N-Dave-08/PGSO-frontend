@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { DepartmentTable } from "@/components/tables/departments/department-table";
 import { getDepartments } from "@/lib/api/department";
 import { Department } from "@/types";
@@ -13,7 +13,7 @@ interface Filters {
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [currentFilters, setCurrentFilters] = useState<Filters>({});
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
@@ -22,10 +22,20 @@ export default function Page() {
     last_page: 1,
   });
 
+  // Use refs to store the latest values without causing rerenders
+  const currentFiltersRef = useRef(currentFilters);
+  const paginationRef = useRef(pagination);
+  const isInitialLoadRef = useRef(true);
+
+  // Update refs when state changes
+  useEffect(() => {
+    currentFiltersRef.current = currentFilters;
+    paginationRef.current = pagination;
+  }, [currentFilters, pagination]);
+
   const fetchDepartments = useCallback(
     async (page: number = 1, filters?: Filters) => {
       try {
-        setLoading(true);
         const response = await getDepartments(page, filters);
 
         if (!response?.departments) {
@@ -35,26 +45,21 @@ export default function Page() {
         }
 
         setDepartments(response.departments);
-        setPagination({
-          current_page: response.current_page,
-          last_page: response.last_page,
-          total: response.total,
-          per_page: response.per_page,
-        });
+        setPagination(response.pagination);
       } catch (error) {
         console.error("Failed to fetch departments:", error);
         setDepartments([]);
       } finally {
-        setLoading(false);
+        if (isInitialLoadRef.current) {
+          setInitialLoading(false);
+          isInitialLoadRef.current = false;
+        }
       }
     },
     []
   );
 
-  useEffect(() => {
-    fetchDepartments(pagination.current_page, currentFilters);
-  }, [fetchDepartments, pagination.current_page, currentFilters]);
-
+  // Memoize the handlers to prevent unnecessary rerenders
   const handleFilterChange = useCallback((filters: Filters) => {
     setCurrentFilters(filters);
     setPagination((prev) => ({
@@ -70,7 +75,18 @@ export default function Page() {
     }));
   }, []);
 
-  if (loading) {
+  const handleRefresh = useCallback(async () => {
+    await fetchDepartments(
+      paginationRef.current.current_page,
+      currentFiltersRef.current
+    );
+  }, [fetchDepartments]);
+
+  useEffect(() => {
+    fetchDepartments(pagination.current_page, currentFilters);
+  }, [fetchDepartments, pagination.current_page, currentFilters]);
+
+  if (initialLoading) {
     return <DataTableSkeleton />;
   }
 
@@ -80,13 +96,9 @@ export default function Page() {
         data={departments}
         pagination={pagination}
         onPageChange={handlePageChange}
-        onDelete={async () => {
-          await fetchDepartments(pagination.current_page, currentFilters);
-        }}
+        onDelete={handleRefresh}
         onFilterChange={handleFilterChange}
-        onDepartmentCreated={async () => {
-          await fetchDepartments(pagination.current_page, currentFilters);
-        }}
+        onDepartmentCreated={handleRefresh}
       />
     </div>
   );

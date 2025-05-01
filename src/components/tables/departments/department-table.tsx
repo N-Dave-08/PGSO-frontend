@@ -28,14 +28,14 @@ interface DepartmentTableProps {
   onDepartmentCreated: () => Promise<void>;
 }
 
-export function DepartmentTable({
+const DepartmentTableComponent = ({
   data,
   pagination,
   onPageChange,
   onDelete,
   onFilterChange,
   onDepartmentCreated,
-}: DepartmentTableProps) {
+}: DepartmentTableProps) => {
   const handleSearch = React.useCallback(
     (searchTerm: string) => {
       onFilterChange?.({ search: searchTerm });
@@ -93,4 +93,6 @@ export function DepartmentTable({
       )}
     />
   );
-}
+};
+
+export const DepartmentTable = React.memo(DepartmentTableComponent);
