@@ -10,6 +10,10 @@ import { Department } from "@/types";
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination";
 import CreateDepartment from "@/components/modals/department/create-department";
 
+interface Filters {
+  search?: string;
+}
+
 interface DepartmentTableProps {
   data: Department[];
   pagination?: {
@@ -20,7 +24,7 @@ interface DepartmentTableProps {
   };
   onPageChange?: (page: number) => void;
   onDelete: () => Promise<void>;
-  onFilterChange?: (filters: { search?: string }) => void;
+  onFilterChange?: (filters: Filters) => void;
   onDepartmentCreated: () => Promise<void>;
 }
 
