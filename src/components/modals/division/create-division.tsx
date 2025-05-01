@@ -23,8 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Division } from "@/types";
-import { User } from "@/types/users";
+import type { User } from "@/types/users";
 import { getDepartmentDropdown } from "@/lib/api/departments";
 
 interface CreateDivisionProps {
@@ -47,17 +46,14 @@ export default function CreateDivision({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [loadingDepartments, setLoadingDepartments] = useState(true);
   const [departmentError, setDepartmentError] = useState<string | null>(null);
   const [staffMembers, setStaffMembers] = useState<User[]>([]);
-  const [loadingStaff, setLoadingStaff] = useState(true);
   const [staffError, setStaffError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        setLoadingDepartments(true);
         setDepartmentError(null);
         const departmentData = await getDepartmentDropdown();
         setDepartments(departmentData.department || []);
@@ -66,12 +62,9 @@ export default function CreateDivision({
         setDepartmentError(
           err instanceof Error ? err.message : "Failed to load departments"
         );
-      } finally {
-        setLoadingDepartments(false);
       }
 
       try {
-        setLoadingStaff(true);
         setStaffError(null);
         const staffData = await getAllUsers({ role_name: "staff" });
         setStaffMembers(staffData.user || []);
@@ -80,8 +73,6 @@ export default function CreateDivision({
         setStaffError(
           err instanceof Error ? err.message : "Failed to load staff members"
         );
-      } finally {
-        setLoadingStaff(false);
       }
     };
 

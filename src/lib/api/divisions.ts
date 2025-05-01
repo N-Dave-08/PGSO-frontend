@@ -1,6 +1,6 @@
 import axios from "axios";
 import { secureStorage } from "@/lib/utils/encryption";
-import { CreateDivisionRequest, Division } from "@/types/divisions";
+import type { CreateDivisionRequest } from "@/types/divisions";
 
 export const createDivision = async (data: CreateDivisionRequest) => {
   try {

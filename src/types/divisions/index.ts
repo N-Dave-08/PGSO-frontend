@@ -1,5 +1,3 @@
-import { Staff, Personnel } from "@/types";
-
 export interface Division {
   id: number;
   division_name: string;
