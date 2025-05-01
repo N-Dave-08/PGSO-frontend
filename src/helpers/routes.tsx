@@ -5,7 +5,6 @@ import {
   Building2,
   Network,
   FileText,
-  Settings,
   ChartBarStacked,
   User,
   ListTodo,
@@ -83,11 +82,6 @@ export const routesData: RoutesDataProps = {
     icon: <User />,
     name: "Profile",
     link: "/profile",
-  },
-  SETTINGS: {
-    icon: <Settings />,
-    name: "Settings",
-    link: "/settings",
   },
   REPORTS: {
     icon: <FileText />,

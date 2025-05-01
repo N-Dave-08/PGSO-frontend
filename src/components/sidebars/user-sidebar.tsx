@@ -1,30 +1,34 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Sidebar,
-  SidebarHeader,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarFooter,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { routesData } from "@/helpers/routes";
-import { LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LoginUser } from "@/types/auth";
-import Link from "next/link";
 import { secureStorage } from "@/lib/utils/encryption";
+import { NavMain } from "@/components/nav/nav-main";
+import { NavManagement } from "@/components/nav/nav-management";
+import { NavOperations } from "@/components/nav/nav-operations";
+import { NavFeedback } from "@/components/nav/nav-feedback";
+import { NavAudit } from "@/components/nav/nav-audit";
+import { NavUser } from "@/components/nav/nav-user";
+import { ArrowUpCircleIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function UserSidebar() {
-  const path = usePathname();
   const router = useRouter();
   const [role, setRole] = useState<string>("");
   const [user, setUser] = useState<LoginUser | null>(null);
+  const [allowedRoutes, setAllowedRoutes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,6 +39,7 @@ export default function UserSidebar() {
         if (userData && storedRole) {
           setUser(userData);
           setRole(storedRole);
+          setAllowedRoutes(getAllowedRoutes(storedRole));
         } else {
           router.push("/");
         }
@@ -62,17 +67,7 @@ export default function UserSidebar() {
     }
   };
 
-  // Define route categories
-  const routeCategories = {
-    main: ["DASHBOARD", "PROFILE"],
-    management: ["USERS", "STAFFS", "DEPARTMENTS", "DIVISIONS", "CATEGORIES"],
-    operations: ["REQUESTS", "TASKS", "CALENDAR", "REPORTS", "ACCOMPLISHMENT"],
-    feedback: ["FEEDBACK", "AUDIT_LOGS"],
-    settings: ["SETTINGS"],
-  };
-
-  // Define allowed routes by role
-  const allowedRoutesByRole = React.useMemo(() => {
+  const getAllowedRoutes = (userRole: string): string[] => {
     const adminRoutes = [
       "DASHBOARD",
       "USERS",
@@ -81,7 +76,6 @@ export default function UserSidebar() {
       "DEPARTMENTS",
       "DIVISIONS",
       "AUDIT_LOGS",
-      "SETTINGS",
       "REPORTS",
     ];
     const personnelRoutes = [
@@ -89,20 +83,18 @@ export default function UserSidebar() {
       "TASKS",
       "CALENDAR",
       "FEEDBACK",
-      "SETTINGS",
       "ACCOMPLISHMENT",
     ];
     const headRoutes = [
       "REQUESTS",
       "DIVISIONS",
       "STAFFS",
-      "SETTINGS",
       "PROFILE",
       "REPORTS",
     ];
-    const staffRoutes = ["REQUESTS", "PROFILE", "SETTINGS"];
+    const staffRoutes = ["REQUESTS", "PROFILE"];
 
-    switch (role) {
+    switch (userRole) {
       case "personnel":
         return personnelRoutes;
       case "head":
@@ -114,226 +106,59 @@ export default function UserSidebar() {
       default:
         return [];
     }
-  }, [role]);
-
-  // Group routes by category - use a ref for routeCategories to avoid dependency issues
-  const routeCategoriesRef = React.useRef(routeCategories);
-
-  // Group routes by category
-  const groupedRoutes = React.useMemo(() => {
-    const result: Record<
-      string,
-      [string, (typeof routesData)[keyof typeof routesData]][]
-    > = {};
-
-    Object.keys(routeCategoriesRef.current).forEach((category) => {
-      result[category] = Object.entries(routesData)
-        .filter(
-          ([key]) =>
-            routeCategoriesRef.current[
-              category as keyof typeof routeCategories
-            ].includes(key) && allowedRoutesByRole.includes(key)
-        )
-        .sort((a, b) => {
-          // Sort by the order in the category array
-          const categoryArray =
-            routeCategoriesRef.current[
-              category as keyof typeof routeCategories
-            ];
-          return categoryArray.indexOf(a[0]) - categoryArray.indexOf(b[0]);
-        });
-    });
-
-    return result;
-  }, [allowedRoutesByRole]);
+  };
 
   return (
-    <Sidebar variant={"sidebar"} className="hidden md:block w-[16rem]">
-      <SidebarHeader className="border-b border-sidebar-border pb-2">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <Avatar className="h-10 w-10 rounded-lg">
-            <AvatarImage
-              src={
-                user?.profile
-                  ? `${
-                      process.env.NEXT_PUBLIC_API_BASE_URL
-                    }/${user.profile.replace(/\\/g, "")}`
-                  : ""
-              }
-              alt={user?.first_name + " " + user?.last_name || "User"}
-            />
-            <AvatarFallback className="rounded-lg">
-              {user ? user.first_name[0] + user.last_name[0] : "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="flex gap-1 truncate">
-              <p className="font-semibold truncate">
-                {user ? user.first_name + " " + user.last_name : "Loading..."}
-              </p>
-              <p className="opacity-50 font-light text-xs">({role})</p>
-            </span>
-            <span className="truncate text-xs">
-              {user ? user.email : "Loading..."}
-            </span>
+    <Sidebar
+      variant={"sidebar"}
+      className="hidden md:flex md:flex-col w-[16rem]"
+    >
+      <SidebarHeader>
+        <SidebarMenu>
+          <div className="flex items-center gap-2 p-1">
+            <div className="relative size-8">
+              <Image src="/images/bulacan-logo.jpg" alt="PGSO" fill />
+            </div>
+            <span className="text-base font-semibold">PGSO</span>
           </div>
-        </div>
+        </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        {/* Main Navigation */}
+      <SidebarContent className="flex-1">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {groupedRoutes.main?.map(([key, route]) => (
-                <SidebarMenuItem key={key}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={path === `${route.link}/`}
-                    className="text-base-content/70"
-                  >
-                    <Link href={route.link}>
-                      {route.icon}
-                      {route.name}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <NavMain allowedRoutes={allowedRoutes} />
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Management Section */}
-        {groupedRoutes.management?.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                Management
-              </h3>
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {groupedRoutes.management.map(([key, route]) => (
-                  <SidebarMenuItem key={key}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={path === `${route.link}/`}
-                      className="text-base-content/70"
-                    >
-                      <Link href={route.link}>
-                        {route.icon}
-                        {route.name}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavManagement allowedRoutes={allowedRoutes} />
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        {/* Operations Section */}
-        {groupedRoutes.operations?.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                Operations
-              </h3>
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {groupedRoutes.operations.map(([key, route]) => (
-                  <SidebarMenuItem key={key}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={path === `${route.link}/`}
-                      className="text-base-content/70"
-                    >
-                      <Link href={route.link}>
-                        {route.icon}
-                        {route.name}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavOperations allowedRoutes={allowedRoutes} />
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        {/* Feedback Section */}
-        {groupedRoutes.feedback?.length > 0 && (
-          <SidebarGroup>
-            <div className="px-3 py-2">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                Feedback
-              </h3>
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {groupedRoutes.feedback.map(([key, route]) => (
-                  <SidebarMenuItem key={key}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={path === `${route.link}/`}
-                      className="text-base-content/70"
-                    >
-                      <Link href={route.link}>
-                        {route.icon}
-                        {route.name}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavFeedback allowedRoutes={allowedRoutes} />
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        {/* Settings Section */}
-        {groupedRoutes.settings?.length > 0 && (
+        <div className="mt-auto pt-4">
           <SidebarGroup>
-            <div className="px-3 py-2">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                Settings
-              </h3>
-            </div>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {groupedRoutes.settings.map(([key, route]) => (
-                  <SidebarMenuItem key={key}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={path === `${route.link}/`}
-                      className="text-base-content/70"
-                    >
-                      <Link href={route.link}>
-                        {route.icon}
-                        {route.name}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <NavAudit allowedRoutes={allowedRoutes} />
             </SidebarGroupContent>
           </SidebarGroup>
-        )}
+        </div>
       </SidebarContent>
+
       <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={handleLogout}
-                  className="text-base-content/70"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavUser user={user} role={role} onLogout={handleLogout} />
       </SidebarFooter>
     </Sidebar>
   );
