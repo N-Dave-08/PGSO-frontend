@@ -14,13 +14,7 @@ interface NavOperationsProps {
 
 export function NavOperations({ allowedRoutes }: NavOperationsProps) {
   const path = usePathname();
-  const operationsRoutes = [
-    "REQUESTS",
-    "TASKS",
-    "CALENDAR",
-    "REPORTS",
-    "ACCOMPLISHMENT",
-  ];
+  const operationsRoutes = ["REQUESTS", "TASKS", "REPORTS", "ACCOMPLISHMENT"];
 
   const filteredRoutes = operationsRoutes.filter((route) =>
     allowedRoutes.includes(route)

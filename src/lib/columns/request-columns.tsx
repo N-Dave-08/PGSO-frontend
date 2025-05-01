@@ -162,25 +162,43 @@ export const columns = ({
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const requestStatus = row.getValue("status");
+      const requestStatus = row.getValue("status") as string;
       return requestStatus === "Completed" ? (
-        <div className="bg-success p-1 rounded-lg text-success-content">
+        <div className="bg-success text-success-content p-1 rounded-lg">
           {requestStatus}
         </div>
       ) : requestStatus === "Pending" ? (
-        <div className="bg-neutral p-1 rounded-lg">{requestStatus}</div>
-      ) : requestStatus === "Returned" ? (
-        <div className="bg-warning text-warning-content p-1 rounded-lg">
+        <div className="bg-neutral text-neutral-content p-1 rounded-lg">
           {requestStatus}
         </div>
-      ) : requestStatus === "For Completion" ? (
+      ) : requestStatus === "For Process" ? (
+        <div className="bg-primary text-primary-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
+      ) : requestStatus === "For Assignment" ? (
+        <div className="bg-secondary text-secondary-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
+      ) : requestStatus === "Queued" ? (
         <div className="bg-info text-info-content p-1 rounded-lg">
           {requestStatus}
         </div>
+      ) : requestStatus === "For Review" ? (
+        <div className="bg-accent text-accent-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
       ) : requestStatus === "For Feedback" ? (
-        <div className="bg-info text-black p-1 rounded-lg">{requestStatus}</div>
+        <div className="bg-warning text-warning-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
+      ) : requestStatus === "Returned" ? (
+        <div className="bg-error text-error-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
       ) : (
-        ""
+        <div className="bg-neutral text-neutral-content p-1 rounded-lg">
+          {requestStatus}
+        </div>
       );
     },
   },

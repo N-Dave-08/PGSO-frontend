@@ -12,13 +12,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LoginUser } from "@/types/auth";
 import { secureStorage } from "@/lib/utils/encryption";
 import { NavMain } from "@/components/nav/nav-main";
 import { NavManagement } from "@/components/nav/nav-management";
 import { NavOperations } from "@/components/nav/nav-operations";
-import { NavFeedback } from "@/components/nav/nav-feedback";
 import { NavAudit } from "@/components/nav/nav-audit";
 import { NavUser } from "@/components/nav/nav-user";
 import { ArrowUpCircleIcon } from "lucide-react";
@@ -78,13 +78,7 @@ export default function UserSidebar() {
       "AUDIT_LOGS",
       "REPORTS",
     ];
-    const personnelRoutes = [
-      "PROFILE",
-      "TASKS",
-      "CALENDAR",
-      "FEEDBACK",
-      "ACCOMPLISHMENT",
-    ];
+    const personnelRoutes = ["PROFILE", "TASKS", "ACCOMPLISHMENT"];
     const headRoutes = [
       "REQUESTS",
       "DIVISIONS",
@@ -109,57 +103,55 @@ export default function UserSidebar() {
   };
 
   return (
-    <Sidebar
-      variant={"sidebar"}
-      className="hidden md:flex md:flex-col w-[16rem]"
-    >
-      <SidebarHeader>
-        <SidebarMenu>
-          <div className="flex items-center gap-2 p-1">
-            <div className="relative size-8">
-              <Image src="/images/bulacan.png" alt="PGSO" fill />
+    <>
+      <Sidebar
+        variant="sidebar"
+        collapsible="icon"
+        className="fixed inset-y-0 z-50 h-full w-[16rem] transition-all duration-300 ease-in-out data-[collapsed=true]:w-[4rem]"
+      >
+        <SidebarHeader>
+          <SidebarMenu>
+            <div className="flex items-center gap-2 p-1">
+              <div className="relative size-8">
+                <Image src="/images/bulacan.png" alt="PGSO" fill />
+              </div>
+              <span className="text-base font-semibold">PGSO</span>
             </div>
-            <span className="text-base font-semibold">PGSO</span>
-          </div>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent className="flex-1">
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <NavMain allowedRoutes={allowedRoutes} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <NavManagement allowedRoutes={allowedRoutes} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <NavOperations allowedRoutes={allowedRoutes} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <NavFeedback allowedRoutes={allowedRoutes} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <div className="mt-auto pt-4">
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent className="flex-1">
           <SidebarGroup>
             <SidebarGroupContent>
-              <NavAudit allowedRoutes={allowedRoutes} />
+              <NavMain allowedRoutes={allowedRoutes} />
             </SidebarGroupContent>
           </SidebarGroup>
-        </div>
-      </SidebarContent>
 
-      <SidebarFooter>
-        <NavUser user={user} role={role} onLogout={handleLogout} />
-      </SidebarFooter>
-    </Sidebar>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <NavManagement allowedRoutes={allowedRoutes} />
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <NavOperations allowedRoutes={allowedRoutes} />
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <div className="mt-auto pt-4">
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <NavAudit allowedRoutes={allowedRoutes} />
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </div>
+        </SidebarContent>
+
+        <SidebarFooter>
+          <NavUser user={user} role={role} onLogout={handleLogout} />
+        </SidebarFooter>
+      </Sidebar>
+      <SidebarTrigger className="fixed left-4 top-4 z-50 md:hidden" />
+    </>
   );
 }

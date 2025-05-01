@@ -99,7 +99,7 @@ export default function CreateRequest({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
@@ -111,7 +111,7 @@ export default function CreateRequest({
               placeholder="Enter request title"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input
               id="description"
@@ -123,7 +123,7 @@ export default function CreateRequest({
               placeholder="Enter request description"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="file">Supporting File</Label>
             <Input
               id="file"

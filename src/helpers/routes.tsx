@@ -8,8 +8,6 @@ import {
   ChartBarStacked,
   User,
   ListTodo,
-  Calendar,
-  MessageSquare,
 } from "lucide-react";
 
 interface RouteProps {
@@ -67,16 +65,6 @@ export const routesData: RoutesDataProps = {
     icon: <FileText />,
     name: "Audit Logs",
     link: "/audits",
-  },
-  CALENDAR: {
-    icon: <Calendar />,
-    name: "Calendar",
-    link: "/calendar",
-  },
-  FEEDBACK: {
-    icon: <MessageSquare />,
-    name: "Feedback",
-    link: "/feedback",
   },
   PROFILE: {
     icon: <User />,

@@ -8,6 +8,7 @@ import { Request } from "@/types";
 import RequestDetailsModal from "@/components/modals/request-details";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useInView } from "react-intersection-observer";
+import { useRequestDetailStore } from "@/store/request-detail-store";
 
 interface RequestCardsProps {
   requests: Request[];
@@ -30,35 +31,47 @@ export default function RequestCards({
   loading = false,
 }: RequestCardsProps) {
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [localRequests, setLocalRequests] = React.useState(requests);
+  const { subscribeToUpdates } = useRequestDetailStore();
   const { ref, inView } = useInView({
     threshold: 0.1,
   });
 
-  // First deduplicate the requests array by ID
-  const uniqueRequests = React.useMemo(() => {
-    const uniqueMap = new Map();
-    requests.forEach((request) => {
-      if (!uniqueMap.has(request.id)) {
-        uniqueMap.set(request.id, request);
-      }
-    });
-    return Array.from(uniqueMap.values());
+  // Initialize local requests when props change
+  React.useEffect(() => {
+    setLocalRequests(requests);
   }, [requests]);
 
-  // Then apply the filter on the deduplicated array
-  const filteredData = React.useMemo(() => {
-    return uniqueRequests.filter((request) => {
-      const searchTerm = globalFilter.toLowerCase();
-      return (
-        request.control_no.toLowerCase().includes(searchTerm) ||
-        request.request_title.toLowerCase().includes(searchTerm) ||
-        request.description.toLowerCase().includes(searchTerm) ||
-        request.status.toLowerCase().includes(searchTerm) ||
-        request.requested_by.first_name.toLowerCase().includes(searchTerm) ||
-        request.requested_by.last_name.toLowerCase().includes(searchTerm)
+  // Subscribe to request updates
+  React.useEffect(() => {
+    const unsubscribe = subscribeToUpdates((updatedRequest: Request) => {
+      setLocalRequests((prevRequests) =>
+        prevRequests.map((request) =>
+          request.id === updatedRequest.id ? updatedRequest : request
+        )
       );
     });
-  }, [uniqueRequests, globalFilter]);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [subscribeToUpdates]);
+
+  const filteredData = React.useMemo(() => {
+    if (!globalFilter) return localRequests;
+
+    return localRequests.filter((request) => {
+      const searchStr = globalFilter.toLowerCase();
+      return (
+        request.control_no.toLowerCase().includes(searchStr) ||
+        request.request_title.toLowerCase().includes(searchStr) ||
+        request.description.toLowerCase().includes(searchStr) ||
+        request.status.toLowerCase().includes(searchStr) ||
+        request.requested_by.first_name.toLowerCase().includes(searchStr) ||
+        request.requested_by.last_name.toLowerCase().includes(searchStr)
+      );
+    });
+  }, [globalFilter, localRequests]);
 
   // Trigger loading more when scrolling to bottom
   React.useEffect(() => {
@@ -97,14 +110,24 @@ export default function RequestCards({
                       {request.control_no}
                     </CardTitle>
                     <Badge
-                      variant={
-                        request.status === "Pending"
-                          ? "default"
-                          : request.status === "In Progress"
-                          ? "secondary"
-                          : request.status === "Completed"
-                          ? "outline"
-                          : "destructive"
+                      className={
+                        request.status === "Completed"
+                          ? "bg-emerald-500 hover:bg-emerald-500 text-white"
+                          : request.status === "Pending"
+                          ? "bg-neutral-500 hover:bg-neutral-500 text-white"
+                          : request.status === "For Process"
+                          ? "bg-blue-600 hover:bg-blue-600 text-white"
+                          : request.status === "For Assignment"
+                          ? "bg-violet-500 hover:bg-violet-500 text-white"
+                          : request.status === "Queued"
+                          ? "bg-cyan-500 hover:bg-cyan-500 text-white"
+                          : request.status === "For Review"
+                          ? "bg-amber-500 hover:bg-amber-500 text-white"
+                          : request.status === "For Feedback"
+                          ? "bg-yellow-500 hover:bg-yellow-500 text-black"
+                          : request.status === "Returned"
+                          ? "bg-red-500 hover:bg-red-500 text-white"
+                          : "bg-neutral-500 hover:bg-neutral-500 text-white"
                       }
                     >
                       {request.status}
@@ -112,26 +135,33 @@ export default function RequestCards({
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <h3 className="font-medium mb-2">{request.request_title}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {request.description}
-                  </p>
-                  <div className="mt-4 text-sm flex items-center gap-3">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="" alt="user" />
-                      <AvatarFallback className="rounded-lg">
-                        {request.requested_by.first_name.charAt(0)}
-                        {request.requested_by.last_name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+                  <div className="space-y-4">
                     <div>
-                      <p className="text-muted-foreground">
-                        {request.requested_by.first_name}{" "}
-                        {request.requested_by.last_name}
+                      <h3 className="font-medium">{request.request_title}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {request.description}
                       </p>
-                      <p className="text-muted-foreground">
-                        Location: {request.requested_by.division_location}
-                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/initials/svg?seed=${request.requested_by.first_name} ${request.requested_by.last_name}`}
+                          alt={`${request.requested_by.first_name} ${request.requested_by.last_name}`}
+                        />
+                        <AvatarFallback>
+                          {request.requested_by.first_name[0]}
+                          {request.requested_by.last_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-sm">
+                        <p className="font-medium">
+                          {request.requested_by.first_name}{" "}
+                          {request.requested_by.last_name}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {request.requested_by.division_location}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

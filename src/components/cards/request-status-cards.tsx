@@ -12,7 +12,7 @@ const getStatusIcon = (status: string) => {
   switch (status.toLowerCase()) {
     case "for feedback":
       return <MessageSquare className="h-4 w-4" />;
-    case "pending":
+    case "Pending":
       return <Clock className="h-4 w-4" />;
     case "completed":
       return <CheckCircle className="h-4 w-4" />;
@@ -27,7 +27,7 @@ const getStatusColor = (status: string): string => {
   switch (status.toLowerCase()) {
     case "for feedback":
       return "text-blue-600";
-    case "pending":
+    case "Pending":
       return "text-yellow-600";
     case "completed":
       return "text-green-600";

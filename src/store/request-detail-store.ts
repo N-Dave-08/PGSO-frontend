@@ -24,6 +24,7 @@ interface RequestDetailState {
   hoverRating: number;
   feedback: string;
   isSubmittingFeedback: boolean;
+  subscribers: Set<(request: Request) => void>;
 
   // Actions
   setRequest: (request: Request) => void;
@@ -62,6 +63,8 @@ interface RequestDetailState {
   ) => Promise<{ isSuccess: boolean; message: string } | undefined>;
   clearRejectionNote: () => void;
   init: () => Promise<void>;
+  subscribeToUpdates: (callback: (request: Request) => void) => () => void;
+  notifySubscribers: (request: Request) => void;
 }
 
 interface CompletionResponse {
@@ -91,6 +94,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   hoverRating: 0,
   feedback: "",
   isSubmittingFeedback: false,
+  subscribers: new Set(),
 
   setRequest: (request) => {
     set({
@@ -98,6 +102,7 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       selectedCategory: request.category_id?.toString(),
       selectedPersonnel: request.personnel?.map((p) => p.id) || [],
     });
+    get().notifySubscribers(request);
   },
 
   fetchUserRole: async () => {
@@ -212,19 +217,16 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       const response = await updateRequestStatus(requestId, status);
 
       if (response.isSuccess) {
-        // Update local request state
-        const { request } = get();
-        if (request && response.request) {
-          set({
-            request: {
-              ...request,
-              status: response.request.status,
-              date_completed:
-                status === "Rejected"
-                  ? response.request.date_rejected ?? null
-                  : request.date_completed,
-            },
-          });
+        // Update local request state with all fields from response
+        const { request: currentRequest } = get();
+        if (currentRequest && response.request) {
+          const updatedRequest: Request = {
+            ...currentRequest,
+            status: response.request.status,
+            note: response.request.note || null,
+          };
+          set({ request: updatedRequest });
+          get().notifySubscribers(updatedRequest);
         }
 
         if (status === "Rejected") {
@@ -243,10 +245,15 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
   },
 
   handleAssessRequest: async (requestId, callback) => {
-    const { selectedCategory, selectedPersonnel, request, categories } = get();
+    const {
+      selectedCategory,
+      selectedPersonnel,
+      request: currentRequest,
+      categories,
+    } = get();
 
-    // If status is "For Assign", we're assigning personnel, not team lead
-    if (request?.status === "For Assign") {
+    // If status is "For Assignment", we're assigning personnel, not team lead
+    if (currentRequest?.status === "For Assignment") {
       if (selectedPersonnel.length === 0) {
         throw new Error("Please select at least one personnel");
       }
@@ -268,20 +275,20 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
           }
         );
 
-        if (response.data.isSuccess && request) {
-          // Update local request state
-          set({
-            request: {
-              ...request,
-              personnel: selectedPersonnel.map((id) => ({
-                id,
-                name: "", // This will be updated when the page refreshes
-                is_team_lead: false,
-                email: "", // Add required email field
-              })),
-              status: "In Progress",
-            },
-          });
+        if (response.data.isSuccess && currentRequest) {
+          // Update local request state with all fields from response
+          const updatedRequest: Request = {
+            ...currentRequest,
+            status: "In Progress",
+            personnel: selectedPersonnel.map((id) => ({
+              id,
+              name: "",
+              is_team_lead: false,
+              email: "",
+            })),
+          };
+          set({ request: updatedRequest });
+          get().notifySubscribers(updatedRequest);
 
           callback?.();
           return response.data;
@@ -296,75 +303,75 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
       } finally {
         set({ isAssessing: false });
       }
-    } else {
-      // Initial team lead assignment
-      if (!selectedCategory) {
-        throw new Error("Please select a category");
-      }
+    }
 
-      const category = categories.find(
-        (cat) => cat.id.toString() === selectedCategory
-      );
-      if (!category) {
-        throw new Error("Selected category not found");
-      }
+    // Initial team lead assignment
+    if (!selectedCategory) {
+      throw new Error("Please select a category");
+    }
 
-      // Find the selected team lead from the selected personnel
-      const selectedTeamLead = category.personnel.find(
-        (p) => p.is_team_lead && selectedPersonnel.includes(p.id)
-      );
+    const category = categories.find(
+      (cat) => cat.id.toString() === selectedCategory
+    );
+    if (!category) {
+      throw new Error("Selected category not found");
+    }
 
-      if (!selectedTeamLead) {
-        throw new Error("Please select a team lead");
-      }
+    // Find the selected team lead from the selected personnel
+    const selectedTeamLead = category.personnel.find(
+      (p) => p.is_team_lead && selectedPersonnel.includes(p.id)
+    );
 
-      try {
-        set({ isAssessing: true });
-        const token = await secureStorage.get("token");
+    if (!selectedTeamLead) {
+      throw new Error("Please select a team lead");
+    }
 
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/assign/${requestId}`,
-          {
-            category_id: Number(selectedCategory),
-            team_lead_id: selectedTeamLead.id,
+    try {
+      set({ isAssessing: true });
+      const token = await secureStorage.get("token");
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/request/assign/${requestId}`,
+        {
+          category_id: Number(selectedCategory),
+          team_lead_id: selectedTeamLead.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.data.isSuccess && request) {
-          // Update local request state with all required properties
-          set({
-            request: {
-              ...request,
-              category_id: Number(selectedCategory),
-              category_name: category.category_name,
-              team_lead: {
-                id: selectedTeamLead.id,
-                first_name: selectedTeamLead.name.split(" ")[0],
-                last_name: selectedTeamLead.name.split(" ")[1] || "",
-              },
-              status: "For Assign",
-            },
-          });
-
-          callback?.();
-          return response.data;
         }
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.data) {
-          throw new Error(
-            error.response.data.message || "Error assigning team lead"
-          );
-        }
-        throw error;
-      } finally {
-        set({ isAssessing: false });
+      );
+
+      if (response.data.isSuccess && currentRequest) {
+        // Update local request state with all fields from response
+        const updatedRequest: Request = {
+          ...currentRequest,
+          category_id: Number(selectedCategory),
+          category_name: category.category_name,
+          team_lead: {
+            id: selectedTeamLead.id,
+            first_name: selectedTeamLead.name.split(" ")[0],
+            last_name: selectedTeamLead.name.split(" ")[1] || "",
+          },
+          status: "For Assignment",
+        };
+        set({ request: updatedRequest });
+        get().notifySubscribers(updatedRequest);
+
+        callback?.();
+        return response.data;
       }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        throw new Error(
+          error.response.data.message || "Error assigning team lead"
+        );
+      }
+      throw error;
+    } finally {
+      set({ isAssessing: false });
     }
   },
 
@@ -558,5 +565,16 @@ export const useRequestDetailStore = create<RequestDetailState>((set, get) => ({
     } catch (error) {
       console.error("Error initializing store:", error);
     }
+  },
+
+  subscribeToUpdates: (callback) => {
+    get().subscribers.add(callback);
+    return () => {
+      get().subscribers.delete(callback);
+    };
+  },
+
+  notifySubscribers: (request) => {
+    get().subscribers.forEach((callback) => callback(request));
   },
 }));

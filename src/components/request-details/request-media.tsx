@@ -24,7 +24,7 @@ export function RequestMedia({ request }: RequestMediaProps) {
 
   return (
     <div className="space-y-4">
-      {userRole === "personnel" && request.status === "For Completion" && (
+      {userRole === "personnel" && request.status === "Queued" && (
         <div className="flex flex-col space-y-1">
           <span className="font-medium text-sm">Completion File:</span>
           <div>

@@ -156,7 +156,7 @@ export function RequestActions({
           )}
         </>
       )}
-      {userRole === "personnel" && request.status === "For Assign" && (
+      {userRole === "personnel" && request.status === "For Assignment" && (
         <Button
           onClick={() => {
             if (selectedPersonnel.length === 0) {
@@ -170,7 +170,7 @@ export function RequestActions({
           {isAssessing ? "Loading..." : "Assign Personnel"}
         </Button>
       )}
-      {userRole === "personnel" && request.status === "For Completion" && (
+      {userRole === "personnel" && request.status === "Queued" && (
         <Button onClick={onMarkAsComplete} disabled={isCompleting}>
           {isCompleting ? "Loading..." : "Mark as Complete"}
         </Button>
