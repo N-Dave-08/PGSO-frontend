@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus } from "lucide-react";
-import { createDivision } from "@/lib/api/divisions";
+import { createDivision, getAllDivisions } from "@/lib/api/divisions";
 import { getAllUsers } from "@/lib/api/users";
 import {
   Select,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { User } from "@/types/users";
+import type { Division } from "@/types";
 import { getDepartmentDropdown } from "@/lib/api/departments";
 
 interface CreateDivisionProps {
@@ -66,8 +67,28 @@ export default function CreateDivision({
 
       try {
         setStaffError(null);
+
+        // Fetch all divisions to check assigned staff
+        const divisionsResponse = await getAllDivisions();
+        const allDivisions = divisionsResponse.divisions as Division[];
+
+        // Get all staff IDs that are assigned to divisions
+        const assignedStaffIds = new Set<number>();
+        allDivisions.forEach((div: Division) => {
+          div.staff.forEach((staff: { id: number }) => {
+            assignedStaffIds.add(staff.id);
+          });
+        });
+
+        // Fetch all users with staff role
         const staffData = await getAllUsers({ role_name: "staff" });
-        setStaffMembers(staffData.user || []);
+
+        // Filter out staff members who are already assigned to divisions
+        const availableStaff = staffData.user.filter(
+          (staff) => !assignedStaffIds.has(staff.id)
+        );
+
+        setStaffMembers(availableStaff || []);
       } catch (err) {
         console.error("Error fetching staff:", err);
         setStaffError(
@@ -190,24 +211,30 @@ export default function CreateDivision({
               className="mb-2"
             />
             <div className="max-h-40 overflow-y-auto space-y-2">
-              {filteredStaff.map((staff) => (
-                <div key={staff.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`staff-${staff.id}`}
-                    checked={selectedStaff.includes(staff.id.toString())}
-                    onCheckedChange={(checked) => {
-                      setSelectedStaff((prev) =>
-                        checked
-                          ? [...prev, staff.id.toString()]
-                          : prev.filter((id) => id !== staff.id.toString())
-                      );
-                    }}
-                  />
-                  <Label htmlFor={`staff-${staff.id}`}>
-                    {staff.first_name} {staff.last_name}
-                  </Label>
+              {filteredStaff.length === 0 ? (
+                <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                  {staffError ? staffError : "No staffs available."}
                 </div>
-              ))}
+              ) : (
+                filteredStaff.map((staff) => (
+                  <div key={staff.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`staff-${staff.id}`}
+                      checked={selectedStaff.includes(staff.id.toString())}
+                      onCheckedChange={(checked) => {
+                        setSelectedStaff((prev) =>
+                          checked
+                            ? [...prev, staff.id.toString()]
+                            : prev.filter((id) => id !== staff.id.toString())
+                        );
+                      }}
+                    />
+                    <Label htmlFor={`staff-${staff.id}`}>
+                      {staff.first_name} {staff.last_name}
+                    </Label>
+                  </div>
+                ))
+              )}
             </div>
             {staffError && <p className="text-sm text-red-500">{staffError}</p>}
           </div>

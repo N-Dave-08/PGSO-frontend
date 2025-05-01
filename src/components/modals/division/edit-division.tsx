@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { updateDivision } from "@/lib/api/divisions";
 import { Division } from "@/types";
-import { getUsers, getAllUsers } from "@/lib/api/users";
+import { getAllUsers } from "@/lib/api/users";
 import { User } from "@/types/users";
 import { toast } from "sonner";
 import { getDepartmentDropdown } from "@/lib/api/departments";
