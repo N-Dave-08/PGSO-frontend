@@ -13,7 +13,6 @@ export const ROUTE_ACCESS: RoleAccess = {
   "/staffs": ["admin", "head"],
   "/tasks": ["personnel"],
   "/requests": ["admin", "head", "staff"],
-  "/audits": ["admin"],
   "/settings": ["admin", "head", "staff"],
   "/calendar": ["admin", "head", "personnel", "staff"],
   "/feedback": ["admin"],

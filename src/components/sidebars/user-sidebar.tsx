@@ -10,8 +10,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { LoginUser } from "@/types/auth";
@@ -19,9 +17,7 @@ import { secureStorage } from "@/lib/utils/encryption";
 import { NavMain } from "@/components/nav/nav-main";
 import { NavManagement } from "@/components/nav/nav-management";
 import { NavOperations } from "@/components/nav/nav-operations";
-import { NavAudit } from "@/components/nav/nav-audit";
 import { NavUser } from "@/components/nav/nav-user";
-import { ArrowUpCircleIcon } from "lucide-react";
 import Image from "next/image";
 
 export default function UserSidebar() {
@@ -75,7 +71,6 @@ export default function UserSidebar() {
       "CATEGORIES",
       "DEPARTMENTS",
       "DIVISIONS",
-      "AUDIT_LOGS",
       "REPORTS",
     ];
     const personnelRoutes = ["PROFILE", "TASKS", "ACCOMPLISHMENT"];
@@ -112,7 +107,7 @@ export default function UserSidebar() {
         <SidebarHeader>
           <SidebarMenu>
             <div className="flex items-center gap-2 p-1">
-              <div className="relative size-8">
+              <div className="relative size-5">
                 <Image src="/images/bulacan.png" alt="PGSO" fill />
               </div>
               <span className="text-base font-semibold">PGSO</span>
@@ -137,14 +132,6 @@ export default function UserSidebar() {
               <NavOperations allowedRoutes={allowedRoutes} />
             </SidebarGroupContent>
           </SidebarGroup>
-
-          <div className="mt-auto pt-4">
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <NavAudit allowedRoutes={allowedRoutes} />
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </div>
         </SidebarContent>
 
         <SidebarFooter>

@@ -61,11 +61,6 @@ export const routesData: RoutesDataProps = {
     name: "Staffs",
     link: "/staffs",
   },
-  AUDIT_LOGS: {
-    icon: <FileText />,
-    name: "Audit Logs",
-    link: "/audits",
-  },
   PROFILE: {
     icon: <User />,
     name: "Profile",
