@@ -69,12 +69,24 @@ export const columns: ColumnDef<ReportRequest>[] = [
       const status = row.getValue("status") as string;
       return (
         <Badge
-          variant={
-            status === "For Feedback"
-              ? "secondary"
-              : status === "Completed"
-              ? "default"
-              : "outline"
+          className={
+            status === "Completed"
+              ? "bg-emerald-500 hover:bg-emerald-500 text-white"
+              : status === "Pending"
+              ? "bg-neutral-500 hover:bg-neutral-500 text-white"
+              : status === "For Process"
+              ? "bg-blue-600 hover:bg-blue-600 text-white"
+              : status === "For Assignment"
+              ? "bg-violet-500 hover:bg-violet-500 text-white"
+              : status === "Queued"
+              ? "bg-cyan-500 hover:bg-cyan-500 text-white"
+              : status === "For Review"
+              ? "bg-amber-500 hover:bg-amber-500 text-white"
+              : status === "For Feedback"
+              ? "bg-yellow-500 hover:bg-yellow-500 text-black"
+              : status === "Returned"
+              ? "bg-red-500 hover:bg-red-500 text-white"
+              : "bg-neutral-500 hover:bg-neutral-500 text-white"
           }
         >
           {status}
